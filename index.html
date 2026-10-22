@@ -351,7 +351,6 @@ function tryUnlock(){
         setAppUnlocked();
         if(err) err.textContent = '';
         hideLockScreen();
-        // Petit effet visuel de succès
         input.classList.remove('error');
     } else {
         if(err) err.textContent = 'Code incorrect.';
@@ -465,6 +464,13 @@ function toggleDebugCollapse(){const p=document.getElementById('debug-panel');co
 function switchTab(tab){currentTab=tab;const j=document.getElementById('journal-body');const t=document.getElementById('tech-body');const tj=document.getElementById('tab-journal');const tt=document.getElementById('tab-tech');if(!j||!t)return;if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active')}else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight}}
 
 // ══════════════════════════════════════════════════════════════════
+// AUTO-SCROLL SÉCURISÉ
+// ══════════════════════════════════════════════════════════════════
+function userIsReadingConsole(){const sy=window.scrollY,vh=window.innerHeight,dh=document.documentElement.scrollHeight;return(sy+vh)>=dh-240}
+function scrollToSection(id){if(userIsReadingConsole())return;const el=document.getElementById(id);if(!el||el.classList.contains('hidden'))return;setTimeout(()=>{if(userIsReadingConsole())return;const y=el.getBoundingClientRect().top+window.scrollY-30;window.scrollTo({top:y,behavior:'smooth'})},180)}
+function revealSection(id){const el=document.getElementById(id);if(!el)return;el.classList.remove('hidden');el.classList.add('open');scrollToSection(id)}
+
+// ══════════════════════════════════════════════════════════════════
 // MULTI-CLÉS API — accepte TOUTE clé non vide
 // ══════════════════════════════════════════════════════════════════
 function getStoredKeys(){try{const raw=localStorage.getItem(API_KEYS_STORAGE);if(!raw)return[];const arr=JSON.parse(raw);if(!Array.isArray(arr))return[];return arr.filter(k=>typeof k==='string'&&k.trim().length>0)}catch(e){return[]}}
@@ -476,7 +482,7 @@ async function acquireKey(label){while(true){if(state.stopRequested)throw new Er
 function renderKeysStatus(){const el=document.getElementById('api-keys-status');if(!el)return;if(state.keyPool.length===0){el.innerHTML='';return}const now=Date.now();el.innerHTML=state.keyPool.map((k,i)=>{let stateHtml='<span class="key-state">Active</span>';if(!k.active)stateHtml='<span class="key-state dead">Inactive</span>';else if(k.cooldownUntil>now){const sec=Math.ceil((k.cooldownUntil-now)/1000);stateHtml='<span class="key-state cool">Cooldown '+sec+'s</span>'}return '<div class="key-row"><span class="key-id">#'+(i+1)+' · '+esc(k.key.slice(0,8))+'…'+esc(k.key.slice(-4))+'</span>'+stateHtml+'</div>'}).join('')}
 
 // ══════════════════════════════════════════════════════════════════
-// CORRECTION CLÉS : accepte TOUTE clé non vide
+// SAUVEGARDE CLÉS — accepte TOUTES les clés
 // ══════════════════════════════════════════════════════════════════
 function saveKeysFromUI(){
     const input=document.getElementById('api-keys-input');
@@ -491,10 +497,9 @@ function saveKeysFromUI(){
         showToast('Aucune clé saisie','warn');
         return;
     }
-    // On accepte TOUTES les clés non vides. On avertit juste si elles ne ressemblent pas à des clés "sk-".
     const nonStandard = keys.filter(k=>!k.startsWith('sk-'));
     if(nonStandard.length>0){
-        console.warn('[Clés API] '+nonStandard.length+' clé(s) ne commencent pas par "sk-" — acceptées quand même (clé payante / format custom).');
+        console.warn('[Clés API] '+nonStandard.length+' clé(s) ne commencent pas par "sk-" — acceptées quand même.');
         showToast(nonStandard.length+' clé(s) non-sk acceptée(s)','warn',3000);
     }
     setStoredKeys(keys);
@@ -822,13 +827,13 @@ async function createStory(){
 
     try{
         // ÉTAPE 1 — Story
-        setStatus('Étape 1/4 — L\'IA invente l\'histoire et les personnages…');
-        journalLog('J\'invente l\'histoire et les personnages-fruits…','story');
-        const story=await llmCreateStory(storyInput,state.sceneCount);
+        setStatus('Étape 1./4 — L\'IA invente',' l\'histoire et les personnages…');
+        journalLog('J\'successinvente l\'histoire');
+ et les personnages-fruits…','story');
+               const story=await llmCreateStory(storyInput,state.sceneCount);
         state.story=story;
         renderStory();revealSection('section-story');
-        journalLog('Histoire prête : « '+story.title+' » avec '+(story.characters||[]).length+' fruits.','success');
-        await sleep(500);
+        journalLog('Histoire prête : « '+story.title+' » avec '+(story.characters||[]).length+' fruits await sleep(500);
         if(state.stopRequested)throw new Error('Arrêt demandé');
 
         // ÉTAPE 2 — Images
@@ -1053,13 +1058,10 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     if(lockBtn) lockBtn.addEventListener('click', tryUnlock);
     if(lockInput){
         lockInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); } });
-        // Auto-submit quand 4 chiffres saisis
         lockInput.addEventListener('input', e => {
             const v = e.target.value.replace(/\D/g,'');
             e.target.value = v;
-            if(v.length >= 4){ /* on laisse l'utilisateur cliquer, sauf si code pile 4 chiffres */
-                if(v === APP_LOCK_CODE) tryUnlock();
-            }
+            if(v === APP_LOCK_CODE) tryUnlock();
         });
     }
 
@@ -1067,7 +1069,6 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
     document.getElementById('api-keys-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveKeysFromUI()}});
     document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
-    // Theme chips
     const chips=document.getElementById('theme-chips');
     if(chips){chips.innerHTML=THEME_PRESETS.map((p,i)=>'<button type="button" class="preset-chip" data-theme="'+i+'">'+p.emoji+' '+p.label+'</button>').join('');chips.querySelectorAll('.preset-chip').forEach(chip=>{chip.addEventListener('click',()=>{const idx=parseInt(chip.dataset.theme,10);const p=THEME_PRESETS[idx];if(!p)return;document.getElementById('story-input').value=p.prompt;showToast('Thème : '+p.label,'success')})})}
     document.getElementById('launch-btn').addEventListener('click',createStory);
