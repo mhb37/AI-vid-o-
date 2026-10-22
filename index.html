@@ -101,7 +101,6 @@ select option{background:var(--bg2);color:var(--ink)}
 .player-row .btn{margin-bottom:0;flex:1;min-width:120px}
 .voice-toggle{display:flex;align-items:center;gap:.5rem;margin-top:.5rem;font-size:.72rem;color:var(--dim)}
 .voice-toggle input{width:auto;margin:0;accent-color:var(--fruit2)}
-.eta-line{font-size:.7rem;color:var(--warn);font-family:var(--fm);margin-top:.4rem;padding:.4rem .6rem;background:rgba(212,160,23,.08);border-radius:4px;border:1px solid rgba(212,160,23,.2)}
 .status-bar{position:fixed;bottom:200px;left:0;right:0;background:var(--bg3);border-top:1px solid var(--border);color:var(--ink);padding:.65rem 1rem;font-size:.72rem;display:flex;align-items:center;gap:.6rem;transform:translateY(200%);transition:transform .35s cubic-bezier(.2,.9,.3,1);z-index:150;font-family:var(--fm);box-shadow:0 -4px 20px rgba(0,0,0,.4)}
 .status-bar.visible{transform:translateY(0)}
 .spinner{width:12px;height:12px;border:2px solid rgba(132,204,22,.2);border-top-color:var(--fruit2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
@@ -139,10 +138,35 @@ select option{background:var(--bg2);color:var(--ink)}
 .debug-msg{color:#d8d8e0}
 .debug-data{margin-top:.25rem;padding:.35rem .45rem;background:#0a0a12;border:1px solid var(--border);border-radius:2px;font-size:.64rem;color:#a8d8b0;max-height:140px;overflow:auto;white-space:pre-wrap;word-break:break-all;line-height:1.4}
 .hidden{display:none!important}
+
+/* ══ ÉCRAN DE VERROUILLAGE ══ */
+#lock-screen{position:fixed;inset:0;background:linear-gradient(160deg,#0a0a12 0%,#1a1a28 100%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;transition:opacity .4s ease, visibility .4s ease}
+#lock-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.lock-icon{font-size:3.2rem;margin-bottom:1.2rem;filter:drop-shadow(0 0 18px rgba(132,204,22,.4))}
+.lock-title{font-size:1.4rem;font-weight:300;letter-spacing:.02em;margin-bottom:.4rem;background:linear-gradient(135deg,var(--fruit1),var(--fruit2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.lock-subtitle{font-size:.75rem;color:var(--dim);margin-bottom:2rem;text-align:center;font-style:italic}
+.lock-input{width:100%;max-width:280px;padding:1rem;border-radius:10px;border:1px solid var(--border);background:rgba(10,10,18,.6);color:var(--ink);font-family:var(--fm);font-size:1.4rem;text-align:center;letter-spacing:.8em;outline:none;transition:border-color .2s,box-shadow .2s}
+.lock-input:focus{border-color:var(--fruit2);box-shadow:0 0 0 3px rgba(132,204,22,.15)}
+.lock-input.error{border-color:var(--err);box-shadow:0 0 0 3px rgba(200,90,74,.2);animation:lockShake .4s}
+@keyframes lockShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.lock-btn{width:100%;max-width:280px;margin-top:1rem;padding:.9rem;border-radius:10px;border:1px solid var(--fruit2);background:linear-gradient(135deg,rgba(244,114,182,.15),rgba(132,204,22,.12));color:var(--fruit2);font-size:.9rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:all .2s}
+.lock-btn:hover{background:linear-gradient(135deg,rgba(244,114,182,.25),rgba(132,204,22,.22))}
+.lock-error{font-size:.72rem;color:var(--err);margin-top:.8rem;min-height:1.2em;font-family:var(--fm);text-align:center}
+
 @media(max-width:480px){h1{font-size:1.3rem}.scenes-grid{grid-template-columns:1fr}body{padding-bottom:22rem}.debug-panel{height:170px}.status-bar{bottom:180px}}
 </style>
 </head>
 <body>
+
+<!-- ══════════ ÉCRAN DE VERROUILLAGE ══════════ -->
+<div id="lock-screen">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">Fruit Tales Studio</div>
+    <div class="lock-subtitle">Accès protégé</div>
+    <input type="password" id="lock-code" class="lock-input" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••" autocomplete="off" autofocus>
+    <button type="button" class="lock-btn" id="lock-btn">Déverrouiller</button>
+    <div class="lock-error" id="lock-error"></div>
+</div>
 
 <header>
 <h1>Fruit Tales Studio</h1>
@@ -160,7 +184,7 @@ Style Wes Anderson pastel · Voix off française · Player avec sous-titres.
 <!-- API KEYS -->
 <div class="panel" id="api-panel">
 <label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600;">Clés API Agnes — une par ligne</label>
-<textarea id="api-keys-input" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx&#10;sk-yyyyyyyyyyyyyyyyyyyyyyyy" rows="3" spellcheck="false" autocomplete="off"></textarea>
+<textarea id="api-keys-input" placeholder="Collez votre clé API ici — une par ligne" rows="3" spellcheck="false" autocomplete="off"></textarea>
 <button type="button" class="btn" id="api-save-btn">Enregistrer les clés</button>
 <div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé API enregistrée</span></div>
 <div class="keys-list" id="api-keys-status"></div>
@@ -295,6 +319,50 @@ Style Wes Anderson pastel · Voix off française · Player avec sous-titres.
 
 <script>
 // ══════════════════════════════════════════════════════════════════
+// VERROUILLAGE PAR CODE
+// ══════════════════════════════════════════════════════════════════
+const APP_LOCK_CODE = '1992';
+const LOCK_STORAGE_KEY = 'fruit_tales_unlocked_session';
+
+function isAppUnlocked(){
+    try { return sessionStorage.getItem(LOCK_STORAGE_KEY) === '1'; } catch(e){ return false; }
+}
+function setAppUnlocked(){
+    try { sessionStorage.setItem(LOCK_STORAGE_KEY, '1'); } catch(e){}
+}
+function hideLockScreen(){
+    const el = document.getElementById('lock-screen');
+    if(el) el.classList.add('hidden');
+}
+function showLockScreen(){
+    const el = document.getElementById('lock-screen');
+    if(el) el.classList.remove('hidden');
+    const input = document.getElementById('lock-code');
+    if(input){ input.value=''; setTimeout(()=>input.focus(), 100); }
+    const err = document.getElementById('lock-error');
+    if(err) err.textContent = '';
+}
+function tryUnlock(){
+    const input = document.getElementById('lock-code');
+    const err = document.getElementById('lock-error');
+    if(!input) return;
+    const code = (input.value || '').trim();
+    if(code === APP_LOCK_CODE){
+        setAppUnlocked();
+        if(err) err.textContent = '';
+        hideLockScreen();
+        // Petit effet visuel de succès
+        input.classList.remove('error');
+    } else {
+        if(err) err.textContent = 'Code incorrect.';
+        input.classList.add('error');
+        setTimeout(()=>input.classList.remove('error'), 500);
+        input.value = '';
+        input.focus();
+    }
+}
+
+// ══════════════════════════════════════════════════════════════════
 // CONFIG
 // ══════════════════════════════════════════════════════════════════
 const API_BASE = 'https://apihub.agnes-ai.com/v1';
@@ -397,7 +465,7 @@ function toggleDebugCollapse(){const p=document.getElementById('debug-panel');co
 function switchTab(tab){currentTab=tab;const j=document.getElementById('journal-body');const t=document.getElementById('tech-body');const tj=document.getElementById('tab-journal');const tt=document.getElementById('tab-tech');if(!j||!t)return;if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active')}else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight}}
 
 // ══════════════════════════════════════════════════════════════════
-// MULTI-CLÉS API
+// MULTI-CLÉS API — accepte TOUTE clé non vide
 // ══════════════════════════════════════════════════════════════════
 function getStoredKeys(){try{const raw=localStorage.getItem(API_KEYS_STORAGE);if(!raw)return[];const arr=JSON.parse(raw);if(!Array.isArray(arr))return[];return arr.filter(k=>typeof k==='string'&&k.trim().length>0)}catch(e){return[]}}
 function setStoredKeys(keys){try{localStorage.setItem(API_KEYS_STORAGE,JSON.stringify(keys))}catch(e){}}
@@ -406,8 +474,39 @@ function hasActiveKey(){return state.keyPool.some(k=>k.active)}
 function getReadyKey(){const now=Date.now();const active=state.keyPool.filter(k=>k.active);if(active.length===0)return{key:null,waitMs:0};const ready=active.filter(k=>!k.cooldownUntil||k.cooldownUntil<=now);if(ready.length===0){const soonest=active.reduce((a,b)=>(a.cooldownUntil||0)<(b.cooldownUntil||0)?a:b);return{key:null,waitMs:Math.max(1000,(soonest.cooldownUntil||0)-now)}}ready.sort((a,b)=>(a.lastUsed||0)-(b.lastUsed||0));return{key:ready[0],waitMs:0}}
 async function acquireKey(label){while(true){if(state.stopRequested)throw new Error('Arrêt demandé');const{key,waitMs}=getReadyKey();if(key){key.lastUsed=Date.now();return key}if(waitMs===0)throw new Error('Aucune clé API active');debugLog('warn',label,'Toutes les clés en cooldown — attente '+Math.round(waitMs/1000)+'s');setStatus('Clés en cooldown — attente '+Math.round(waitMs/1000)+'s');await sleep(waitMs)}}
 function renderKeysStatus(){const el=document.getElementById('api-keys-status');if(!el)return;if(state.keyPool.length===0){el.innerHTML='';return}const now=Date.now();el.innerHTML=state.keyPool.map((k,i)=>{let stateHtml='<span class="key-state">Active</span>';if(!k.active)stateHtml='<span class="key-state dead">Inactive</span>';else if(k.cooldownUntil>now){const sec=Math.ceil((k.cooldownUntil-now)/1000);stateHtml='<span class="key-state cool">Cooldown '+sec+'s</span>'}return '<div class="key-row"><span class="key-id">#'+(i+1)+' · '+esc(k.key.slice(0,8))+'…'+esc(k.key.slice(-4))+'</span>'+stateHtml+'</div>'}).join('')}
-function saveKeysFromUI(){const input=document.getElementById('api-keys-input');if(!input)return;const raw=input.value||'';const keys=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);const valid=keys.filter(k=>k.startsWith('sk-'));const invalid=keys.filter(k=>!k.startsWith('sk-'));if(invalid.length>0){if(!confirm(invalid.length+' clé(s) ne commencent pas par "sk-". Les ignorer ?'))return}setStoredKeys(valid);refreshKeyPool();updateApiPanel();renderKeysStatus();if(valid.length===0)showToast('Aucune clé valide','warn');else showToast(valid.length+' clé(s) enregistrée(s) ✓','success');journalLog(valid.length+' clé(s) API active(s). Parallélisme : '+valid.length+'.','key')}
-function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');if(!panel||!input||!line||!text)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s) · parallélisme : '+n;input.value=state.keyPool.map(k=>k.key).join('\n');input.placeholder=''}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';input.placeholder='Collez vos clés API Agnes — une par ligne'}renderKeysStatus();updateButtons()}
+
+// ══════════════════════════════════════════════════════════════════
+// CORRECTION CLÉS : accepte TOUTE clé non vide
+// ══════════════════════════════════════════════════════════════════
+function saveKeysFromUI(){
+    const input=document.getElementById('api-keys-input');
+    if(!input)return;
+    const raw=input.value||'';
+    const keys=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+    if(keys.length===0){
+        setStoredKeys([]);
+        refreshKeyPool();
+        updateApiPanel();
+        renderKeysStatus();
+        showToast('Aucune clé saisie','warn');
+        return;
+    }
+    // On accepte TOUTES les clés non vides. On avertit juste si elles ne ressemblent pas à des clés "sk-".
+    const nonStandard = keys.filter(k=>!k.startsWith('sk-'));
+    if(nonStandard.length>0){
+        console.warn('[Clés API] '+nonStandard.length+' clé(s) ne commencent pas par "sk-" — acceptées quand même (clé payante / format custom).');
+        showToast(nonStandard.length+' clé(s) non-sk acceptée(s)','warn',3000);
+    }
+    setStoredKeys(keys);
+    refreshKeyPool();
+    updateApiPanel();
+    renderKeysStatus();
+    showToast(keys.length+' clé(s) enregistrée(s) ✓','success');
+    journalLog(keys.length+' clé(s) API active(s). Parallélisme : '+keys.length+'.','key');
+    debugLog('success','CLÉS',keys.length+' clé(s) enregistrée(s) · '+(nonStandard.length?'dont '+nonStandard.length+' non-sk':'toutes sk-'));
+}
+
+function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');if(!panel||!input||!line||!text)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s) · parallélisme : '+n;input.value=state.keyPool.map(k=>k.key).join('\n');input.placeholder=''}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';input.placeholder='Collez votre clé API — une par ligne'}renderKeysStatus();updateButtons()}
 
 // ══════════════════════════════════════════════════════════════════
 // API FETCH
@@ -943,6 +1042,28 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
 // INIT
 // ══════════════════════════════════════════════════════════════════
 (function init(){
+    // ══ VERROUILLAGE ══
+    if(isAppUnlocked()){
+        hideLockScreen();
+    } else {
+        showLockScreen();
+    }
+    const lockBtn = document.getElementById('lock-btn');
+    const lockInput = document.getElementById('lock-code');
+    if(lockBtn) lockBtn.addEventListener('click', tryUnlock);
+    if(lockInput){
+        lockInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); } });
+        // Auto-submit quand 4 chiffres saisis
+        lockInput.addEventListener('input', e => {
+            const v = e.target.value.replace(/\D/g,'');
+            e.target.value = v;
+            if(v.length >= 4){ /* on laisse l'utilisateur cliquer, sauf si code pile 4 chiffres */
+                if(v === APP_LOCK_CODE) tryUnlock();
+            }
+        });
+    }
+
+    // ══ RESTE DE L'INIT ══
     document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
     document.getElementById('api-keys-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveKeysFromUI()}});
     document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
