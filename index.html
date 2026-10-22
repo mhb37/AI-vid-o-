@@ -140,8 +140,8 @@ select option{background:var(--bg2);color:var(--ink)}
 .hidden{display:none!important}
 
 /* ══ ÉCRAN DE VERROUILLAGE ══ */
-#lock-screen{position:fixed;inset:0;background:linear-gradient(160deg,#0a0a12 0%,#1a1a28 100%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;transition:opacity .4s ease, visibility .4s ease}
-#lock-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+#lock-screen{position:fixed;inset:0;background:linear-gradient(160deg,#0a0a12 0%,#1a1a28 100%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;transition:opacity .4s ease}
+#lock-screen.hidden{display:none!important}
 .lock-icon{font-size:3.2rem;margin-bottom:1.2rem;filter:drop-shadow(0 0 18px rgba(132,204,22,.4))}
 .lock-title{font-size:1.4rem;font-weight:300;letter-spacing:.02em;margin-bottom:.4rem;background:linear-gradient(135deg,var(--fruit1),var(--fruit2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
 .lock-subtitle{font-size:.75rem;color:var(--dim);margin-bottom:2rem;text-align:center;font-style:italic}
@@ -163,8 +163,8 @@ select option{background:var(--bg2);color:var(--ink)}
     <div class="lock-icon">🔒</div>
     <div class="lock-title">Fruit Tales Studio</div>
     <div class="lock-subtitle">Accès protégé</div>
-    <input type="password" id="lock-code" class="lock-input" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••" autocomplete="off" autofocus>
-    <button type="button" class="lock-btn" id="lock-btn">Déverrouiller</button>
+    <input type="password" id="lock-code" class="lock-input" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••" autocomplete="off">
+    <button type="button" id="lock-btn" class="lock-btn">Déverrouiller</button>
     <div class="lock-error" id="lock-error"></div>
 </div>
 
@@ -319,7 +319,7 @@ Style Wes Anderson pastel · Voix off française · Player avec sous-titres.
 
 <script>
 // ══════════════════════════════════════════════════════════════════
-// VERROUILLAGE PAR CODE
+// VERROUILLAGE PAR CODE — VERSION CORRIGÉE
 // ══════════════════════════════════════════════════════════════════
 const APP_LOCK_CODE = '1992';
 const LOCK_STORAGE_KEY = 'fruit_tales_unlocked_session';
@@ -332,13 +332,19 @@ function setAppUnlocked(){
 }
 function hideLockScreen(){
     const el = document.getElementById('lock-screen');
-    if(el) el.classList.add('hidden');
+    if(el){
+        el.classList.add('hidden');
+        el.style.display = 'none';
+    }
 }
 function showLockScreen(){
     const el = document.getElementById('lock-screen');
-    if(el) el.classList.remove('hidden');
+    if(el){
+        el.classList.remove('hidden');
+        el.style.display = 'flex';
+    }
     const input = document.getElementById('lock-code');
-    if(input){ input.value=''; setTimeout(()=>input.focus(), 100); }
+    if(input){ input.value=''; setTimeout(function(){ try{ input.focus(); }catch(e){} }, 120); }
     const err = document.getElementById('lock-error');
     if(err) err.textContent = '';
 }
@@ -347,17 +353,20 @@ function tryUnlock(){
     const err = document.getElementById('lock-error');
     if(!input) return;
     const code = (input.value || '').trim();
+    console.log('[Unlock] code saisi =', JSON.stringify(code));
     if(code === APP_LOCK_CODE){
         setAppUnlocked();
         if(err) err.textContent = '';
-        hideLockScreen();
         input.classList.remove('error');
+        hideLockScreen();
+        console.log('[Unlock] OK');
     } else {
         if(err) err.textContent = 'Code incorrect.';
         input.classList.add('error');
-        setTimeout(()=>input.classList.remove('error'), 500);
+        setTimeout(function(){ input.classList.remove('error'); }, 500);
         input.value = '';
-        input.focus();
+        try{ input.focus(); }catch(e){}
+        console.log('[Unlock] KO');
     }
 }
 
@@ -827,13 +836,13 @@ async function createStory(){
 
     try{
         // ÉTAPE 1 — Story
-        setStatus('Étape 1./4 — L\'IA invente',' l\'histoire et les personnages…');
-        journalLog('J\'successinvente l\'histoire');
- et les personnages-fruits…','story');
-               const story=await llmCreateStory(storyInput,state.sceneCount);
+        setStatus('Étape 1/4 — L\'IA invente l\'histoire et les personnages…');
+        journalLog('J\'invente l\'histoire et les personnages-fruits…','story');
+        const story=await llmCreateStory(storyInput,state.sceneCount);
         state.story=story;
         renderStory();revealSection('section-story');
-        journalLog('Histoire prête : « '+story.title+' » avec '+(story.characters||[]).length+' fruits await sleep(500);
+        journalLog('Histoire prête : « '+story.title+' » avec '+(story.characters||[]).length+' fruits.','success');
+        await sleep(500);
         if(state.stopRequested)throw new Error('Arrêt demandé');
 
         // ÉTAPE 2 — Images
@@ -1055,13 +1064,22 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     }
     const lockBtn = document.getElementById('lock-btn');
     const lockInput = document.getElementById('lock-code');
-    if(lockBtn) lockBtn.addEventListener('click', tryUnlock);
+    if(lockBtn){
+        lockBtn.type = 'button';
+        lockBtn.addEventListener('click', function(ev){
+            ev.preventDefault();
+            ev.stopPropagation();
+            tryUnlock();
+        });
+    }
     if(lockInput){
-        lockInput.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); } });
-        lockInput.addEventListener('input', e => {
+        lockInput.addEventListener('keydown', function(e){
+            if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }
+        });
+        lockInput.addEventListener('input', function(e){
             const v = e.target.value.replace(/\D/g,'');
             e.target.value = v;
-            if(v === APP_LOCK_CODE) tryUnlock();
+            if(v === APP_LOCK_CODE){ tryUnlock(); }
         });
     }
 
