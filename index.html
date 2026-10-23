@@ -1079,7 +1079,10 @@ async function preloadVideoBlob(index, url){
     state.videos[index]._blobLoading = true;
     renderVideos();
     try{
-        const res = await fetch(url);
+        // ⚠️ MODIFICATION ICI : Utilisation du proxy Cloudflare
+        const proxyUrl = 'https://videoproxy.bryan-37.workers.dev/?url=' + encodeURIComponent(url);
+        const res = await fetch(proxyUrl);
+        
         if(!res.ok) throw new Error('HTTP '+res.status);
         const blob = await res.blob();
         if(blob.size < 1000) throw new Error('Blob trop petit');
