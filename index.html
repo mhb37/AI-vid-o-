@@ -182,7 +182,7 @@ select option{background:var(--bg2);color:var(--ink)}
 <div class="banner">
 <strong>🔒 Verrouillage absolu.</strong> Visage ET habits décrits mot pour mot. Référence transmise à chaque image et vidéo.
 <strong>⚙️ Agnes 2.5 Flash.</strong> Modèle officiel <code>agnes-video-2.5-flash</code>, <code>seconds</code> string "4"-"12", <code>size: "720P"</code>, mode <code>reference</code>.
-<strong>📡 Polling adaptatif.</strong> Démarre à 5s, ralentit à 30s après un 429, accélère après plusieurs 200. La clé n'est plus bloquée en cooldown.
+<strong>📡 Polling adaptatif.</strong> Démarre à 5s, ralentit à 30s après un 429, accélère après plusieurs 200.
 </div>
 
 <div class="panel" id="api-panel">
@@ -319,18 +319,72 @@ select option{background:var(--bg2);color:var(--ink)}
 
 <script>
 // ══════════════════════════════════════════════════════════════════
-// VERROUILLAGE
-// ══════════════════════════════════════════════════════════════════const APP_LOCK_CODE = '1992';
+// VERROUILLAGE — VERSION STABLE
+// ══════════════════════════════════════════════════════════════════
+const APP_LOCK_CODE = '1992';
 const LOCK_STORAGE_KEY = 'fruit_tales_unlocked_session';
-function isAppUnlocked(){try{return sessionStorage.getItem(LOCK_STORAGE_KEY)==='1'}catch(e){return false}}
-function setAppUnlocked(){try{sessionStorage.setItem(LOCK_STORAGE_KEY,'1')}catch(e){}}
-function hideLockScreen(){var el=document.getElementById('lock-screen');if(el){el.style.display='none';el.style.visibility='hidden';el.style.pointerEvents='none';el.classList.add('hidden')}}
-function showLockScreen(){var el=document.getElementById('lock-screen');if(el){el.style.display='flex';el.style.visibility='visible';el.style.pointerEvents='auto';el.classList.remove('hidden')}var input=document.getElementById('lock-code');if(input){input.value='';setTimeout(function(){try{input.focus()}catch(e){}},150)}var err=document.getElementById('lock-error');if(err)err.textContent=''}
-function tryUnlock(){var input=document.getElementById('lock-code');var err=document.getElementById('lock-error');if(!input)return;var code=(input.value||'').trim();if(code===APP_LOCK_CODE){setAppUnlocked();if(err)err.textContent='';input.classList.remove('error');hideLockScreen()}else{if(err)err.textContent='Code incorrect';input.classList.add('error');setTimeout(function(){input.classList.remove('error')},500);input.value='';try{input.focus()}catch(e){}}}
+
+function isAppUnlocked(){
+    try { return sessionStorage.getItem(LOCK_STORAGE_KEY) === '1'; }
+    catch(e) { return false; }
+}
+function setAppUnlocked(){
+    try { sessionStorage.setItem(LOCK_STORAGE_KEY, '1'); } catch(e){}
+}
+function clearAppUnlock(){
+    try { sessionStorage.removeItem(LOCK_STORAGE_KEY); } catch(e){}
+}
+function hideLockScreen(){
+    var el = document.getElementById('lock-screen');
+    if(el){
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+        el.style.pointerEvents = 'none';
+        el.classList.add('hidden');
+    }
+}
+function showLockScreen(){
+    var el = document.getElementById('lock-screen');
+    if(el){
+        el.style.display = 'flex';
+        el.style.visibility = 'visible';
+        el.style.pointerEvents = 'auto';
+        el.classList.remove('hidden');
+    }
+    var input = document.getElementById('lock-code');
+    if(input){
+        input.value = '';
+        setTimeout(function(){ try{ input.focus(); }catch(e){} }, 150);
+    }
+    var err = document.getElementById('lock-error');
+    if(err) err.textContent = '';
+}
+function tryUnlock(){
+    var input = document.getElementById('lock-code');
+    var err = document.getElementById('lock-error');
+    if(!input){ console.log('[Unlock] input introuvable'); return; }
+    var code = (input.value || '').trim();
+    console.log('[Unlock] code saisi =', JSON.stringify(code));
+    if(code === APP_LOCK_CODE){
+        setAppUnlocked();
+        if(err) err.textContent = '';
+        input.classList.remove('error');
+        hideLockScreen();
+        console.log('[Unlock] OK');
+    } else {
+        if(err) err.textContent = 'Code incorrect (' + code.length + ' chiffres saisis)';
+        input.classList.add('error');
+        setTimeout(function(){ input.classList.remove('error'); }, 500);
+        input.value = '';
+        try{ input.focus(); }catch(e){}
+        console.log('[Unlock] KO');
+    }
+}
 window.tryUnlock = tryUnlock;
+window.clearAppUnlock = clearAppUnlock;
 
 // ══════════════════════════════════════════════════════════════════
-// CONFIG — AGNES 2.5 FLASH + POLLING ADAPTATIF
+// CONFIG
 // ══════════════════════════════════════════════════════════════════
 const API_BASE = 'https://apihub.agnes-ai.com/v1';
 const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
@@ -340,7 +394,6 @@ const MODEL_VIDEO = 'agnes-video-2.5-flash';
 const FRAME_RATE = 24;
 
 const VIDEO_FIRST_POLL_DELAY_SEC = 40;
-// Polling adaptatif
 const VIDEO_POLL_INTERVAL_START_MS = 5000;
 const VIDEO_POLL_INTERVAL_MAX_MS = 15000;
 const VIDEO_POLL_INTERVAL_BACKOFF_429_MS = 30000;
@@ -520,7 +573,6 @@ async function createVideoTask(prompt, imageUrl){
     return compositeId;
 }
 
-// Polling adaptatif : 5s start, 30s après 429, 15s max
 async function pollVideo(videoId, onProgress){
     let rem = VIDEO_FIRST_POLL_DELAY_SEC;
     while(rem > 0){
@@ -585,7 +637,7 @@ async function pollVideo(videoId, onProgress){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS — VERROUILLAGE VISAGE + HABITS
+// PROMPTS
 // ══════════════════════════════════════════════════════════════════
 function buildStoryPrompt(storyInput, sceneCount){
     return [
@@ -1093,11 +1145,36 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
 // INIT
 // ══════════════════════════════════════════════════════════════════
 (function init(){
-    if(isAppUnlocked()){hideLockScreen()}else{showLockScreen()}
+    // ══ VERROUILLAGE ══
+    // On force l'affichage de l'écran de verrouillage au démarrage
+    clearAppUnlock();
+    showLockScreen();
+
     var lockBtn = document.getElementById('lock-btn');
     var lockInput = document.getElementById('lock-code');
-    if(lockBtn){var newBtn=lockBtn.cloneNode(true);lockBtn.parentNode.replaceChild(newBtn,lockBtn);newBtn.type='button';newBtn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();tryUnlock();});}
-    if(lockInput){lockInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();tryUnlock();}});lockInput.addEventListener('input',function(e){var v=e.target.value.replace(/\D/g,'');e.target.value=v;if(v.length===4&&v===APP_LOCK_CODE){tryUnlock();}});}
+
+    if(lockBtn){
+        var newBtn = lockBtn.cloneNode(true);
+        lockBtn.parentNode.replaceChild(newBtn, lockBtn);
+        newBtn.type = 'button';
+        newBtn.addEventListener('click', function(ev){
+            ev.preventDefault();
+            ev.stopPropagation();
+            console.log('[Unlock] clic bouton');
+            tryUnlock();
+        });
+        console.log('[Unlock] bouton listener attaché');
+    }
+    if(lockInput){
+        lockInput.addEventListener('keydown', function(e){
+            if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }
+        });
+        lockInput.addEventListener('input', function(e){
+            var v = e.target.value.replace(/\D/g,'');
+            e.target.value = v;
+            if(v.length === 4 && v === APP_LOCK_CODE){ tryUnlock(); }
+        });
+    }
 
     document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
     document.getElementById('api-keys-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveKeysFromUI()}});
