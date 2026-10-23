@@ -316,28 +316,64 @@ Retry auto ×6 + retry manuel par scène.
 
 <script>
 // ══════════════════════════════════════════════════════════════════
-// VERROUILLAGE
+// VERROUILLAGE — VERSION ROBUSTE
 // ══════════════════════════════════════════════════════════════════
 const APP_LOCK_CODE = '1992';
 const LOCK_STORAGE_KEY = 'fruit_tales_unlocked_session';
 
-function isAppUnlocked(){try{return sessionStorage.getItem(LOCK_STORAGE_KEY)==='1'}catch(e){return false}}
-function setAppUnlocked(){try{sessionStorage.setItem(LOCK_STORAGE_KEY,'1')}catch(e){}}
-function hideLockScreen(){const el=document.getElementById('lock-screen');if(el){el.classList.add('hidden');el.style.display='none'}}
-function showLockScreen(){const el=document.getElementById('lock-screen');if(el){el.classList.remove('hidden');el.style.display='flex'}const input=document.getElementById('lock-code');if(input){input.value='';setTimeout(function(){try{input.focus()}catch(e){}},120)}const err=document.getElementById('lock-error');if(err)err.textContent=''}
-function tryUnlock(){
-    const input=document.getElementById('lock-code');const err=document.getElementById('lock-error');
-    if(!input)return;
-    const code=(input.value||'').trim();
-    console.log('[Unlock] code =',JSON.stringify(code));
-    if(code===APP_LOCK_CODE){
-        setAppUnlocked();if(err)err.textContent='';input.classList.remove('error');hideLockScreen();console.log('[Unlock] OK');
-    } else {
-        if(err)err.textContent='Code incorrect.';input.classList.add('error');
-        setTimeout(function(){input.classList.remove('error')},500);
-        input.value='';try{input.focus()}catch(e){};console.log('[Unlock] KO');
+function isAppUnlocked(){
+    try { return sessionStorage.getItem(LOCK_STORAGE_KEY) === '1'; } catch(e){ return false; }
+}
+function setAppUnlocked(){
+    try { sessionStorage.setItem(LOCK_STORAGE_KEY, '1'); } catch(e){}
+}
+function hideLockScreen(){
+    var el = document.getElementById('lock-screen');
+    if(el){
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+        el.style.pointerEvents = 'none';
+        el.classList.add('hidden');
     }
 }
+function showLockScreen(){
+    var el = document.getElementById('lock-screen');
+    if(el){
+        el.style.display = 'flex';
+        el.style.visibility = 'visible';
+        el.style.pointerEvents = 'auto';
+        el.classList.remove('hidden');
+    }
+    var input = document.getElementById('lock-code');
+    if(input){
+        input.value = '';
+        setTimeout(function(){ try{ input.focus(); }catch(e){} }, 150);
+    }
+    var err = document.getElementById('lock-error');
+    if(err) err.textContent = '';
+}
+function tryUnlock(){
+    var input = document.getElementById('lock-code');
+    var err = document.getElementById('lock-error');
+    if(!input){ console.log('[Unlock] input introuvable'); return; }
+    var code = (input.value || '').trim();
+    console.log('[Unlock] code saisi =', JSON.stringify(code), 'attendu =', APP_LOCK_CODE);
+    if(code === APP_LOCK_CODE){
+        setAppUnlocked();
+        if(err) err.textContent = '';
+        input.classList.remove('error');
+        hideLockScreen();
+        console.log('[Unlock] OK — écran masqué');
+    } else {
+        if(err) err.textContent = 'Code incorrect (' + code.length + ' chiffres saisis)';
+        input.classList.add('error');
+        setTimeout(function(){ input.classList.remove('error'); }, 500);
+        input.value = '';
+        try{ input.focus(); }catch(e){}
+        console.log('[Unlock] KO');
+    }
+}
+window.tryUnlock = tryUnlock;
 
 // ══════════════════════════════════════════════════════════════════
 // CONFIG
@@ -593,7 +629,7 @@ function buildStoryPrompt(storyInput, sceneCount){
         'Les VÊTEMENTS sont adultes (costume, jean, blouson de cuir, robe, survêtement, uniforme…).',
         'Seul le VISAGE est celui d\'un fruit (banane, orange, fraise, kiwi…) avec des yeux et une bouche HUMAINS expressifs.',
         'PAS de corps de fruit. PAS de style cartoon enfantin. PAS de kawaii.',
-        'Chaque personnage doit être décrit avec un maximum de détails physiques stables (taille, carrure, coiffure, cicatrices, accessoires) pour garantir la cohérence entre les scènes.',
+        'Chaque personnage doit être décrit avec un maximum de détails physiques stables pour garantir la cohérence entre les scènes.',
         '',
         'FORMAT JSON STRICT (retourne UNIQUEMENT ce JSON) :',
         '{',
@@ -607,7 +643,7 @@ function buildStoryPrompt(storyInput, sceneCount){
         '      "job": "ancien boxeur devenu videur",',
         '      "personality": "colérique mais loyal, blessé par son passé",',
         '      "outfit": "blouson de cuir noir, jean, bottes",',
-        '      "physical_description": "an adult human man with an orange for a face — orange peel skin texture only on the face, sharp human eyes, stubble on the fruit face, wearing a black leather jacket and jeans, tall athletic build, adult contemporary look"',
+        '      "physical_description": "an adult human man with an orange for a face — orange peel skin texture only on the face, sharp human eyes, stubble on the fruit face, wearing a black leather jacket and jeans, tall athletic build"',
         '    }',
         '  ],',
         '  "scenes": [',
@@ -1086,13 +1122,35 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
 // INIT
 // ══════════════════════════════════════════════════════════════════
 (function init(){
-    if(isAppUnlocked()){hideLockScreen()}else{showLockScreen()}
-    const lockBtn=document.getElementById('lock-btn');
-    const lockInput=document.getElementById('lock-code');
-    if(lockBtn){lockBtn.type='button';lockBtn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();tryUnlock()})}
+    // ══ VERROUILLAGE ══
+    if(isAppUnlocked()){
+        hideLockScreen();
+    } else {
+        showLockScreen();
+    }
+    var lockBtn = document.getElementById('lock-btn');
+    var lockInput = document.getElementById('lock-code');
+    if(lockBtn){
+        var newBtn = lockBtn.cloneNode(true);
+        lockBtn.parentNode.replaceChild(newBtn, lockBtn);
+        newBtn.type = 'button';
+        newBtn.addEventListener('click', function(ev){
+            ev.preventDefault();
+            ev.stopPropagation();
+            console.log('[Unlock] clic bouton');
+            tryUnlock();
+        });
+        console.log('[Unlock] bouton listener attaché');
+    }
     if(lockInput){
-        lockInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();tryUnlock()}});
-        lockInput.addEventListener('input',function(e){const v=e.target.value.replace(/\D/g,'');e.target.value=v;if(v===APP_LOCK_CODE)tryUnlock()});
+        lockInput.addEventListener('keydown', function(e){
+            if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }
+        });
+        lockInput.addEventListener('input', function(e){
+            var v = e.target.value.replace(/\D/g,'');
+            e.target.value = v;
+            if(v.length === 4 && v === APP_LOCK_CODE){ tryUnlock(); }
+        });
     }
 
     document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
@@ -1108,7 +1166,7 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     document.getElementById('player-overlay').addEventListener('click',stopFilmPlayback);
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.isPlayingFilm)stopFilmPlayback()});
     document.getElementById('voice-toggle').addEventListener('change',e=>{state.voiceEnabled=e.target.checked;if(!state.voiceEnabled)stopTTS()});
-    document.getElementById('tab-journal').add prompt vidEventListener('click',()=>switchTab('journal'));
+    document.getElementById('tab-journal').addEventListener('click',()=>switchTab('journal'));
     document.getElementById('tab-tech').addEventListener('click',()=>switchTab('tech'));
     document.getElementById('debug-clear-btn').addEventListener('click',e=>{e.stopPropagation();clearDebug()});
     document.getElementById('debug-copy-btn').addEventListener('click',e=>{e.stopPropagation();copyDebug()});
