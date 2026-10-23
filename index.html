@@ -96,11 +96,10 @@ select option{background:var(--bg2);color:var(--ink)}
 .scene-download:hover{background:rgba(232,123,53,.08);border-color:var(--acc2)}
 .scene-retry-btn{display:block;width:100%;margin-top:.4rem;font-size:.7rem;color:var(--warn);text-align:center;padding:.4rem;border:1px solid rgba(212,160,23,.4);border-radius:3px;background:rgba(212,160,23,.08);cursor:pointer;font-family:inherit;font-weight:600;letter-spacing:.05em}
 .scene-retry-btn:hover{background:rgba(212,160,23,.15);border-color:var(--warn)}
-.scene-retry-btn:active{transform:scale(.98)}
 .ref-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.15);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .queue-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,123,200,.15);color:#4a7bc8;font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
-.lock-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,157,106,.15);color:var(--ok);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .keyframe-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.2);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
+.dialogue-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(139,95,196,.2);color:#b8a0e0;font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .spinner-mini{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .player-overlay{position:fixed;inset:0;background:#000;z-index:2000;display:none;align-items:center;justify-content:center;cursor:pointer}
@@ -177,13 +176,12 @@ select option{background:var(--bg2);color:var(--ink)}
 
 <header>
 <h1>Fruit Tales Studio</h1>
-<p class="subtitle">Films adultes · Agnes Video 2.5 Flash · Keyframes + Partage iOS</p>
+<p class="subtitle">Films adultes · Scénario en 2 passes · Dialogues contextuels</p>
 </header>
 
 <div class="banner">
-<strong>🎬 Continuité parfaite.</strong> Mode <code>keyframe</code> : la dernière image de la scène N est le <strong>first_frame</strong> de la scène N+1. Flux visuel ininterrompu.
-<strong>📥 Partage iOS.</strong> Bouton "Enregistrer" qui ouvre le menu natif iOS → "Enregistrer la vidéo".
-<strong>💬 Dialogues contraints.</strong> Réactions directes à l'action, pas de phrases génériques.
+<strong>📖 Scénario en 2 passes.</strong> Passe 1 : structure narrative (résumé de chaque scène, sans dialogue). Passe 2 : génération des dialogues scène par scène, en fonction de l'action précédente.
+<strong>🎬 Keyframes.</strong> La dernière image de la scène N est le first_frame de la scène N+1. Continuité visuelle parfaite.
 </div>
 
 <div class="panel" id="api-panel">
@@ -320,17 +318,16 @@ select option{background:var(--bg2);color:var(--ink)}
 
 <script>
 // ══════════════════════════════════════════════════════════════════
-// VERROUILLAGE — VERSION STABLE
+// VERROUILLAGE
 // ══════════════════════════════════════════════════════════════════
 const APP_LOCK_CODE = '1992';
 const LOCK_STORAGE_KEY = 'fruit_tales_unlocked_session';
-
 function isAppUnlocked(){try{return sessionStorage.getItem(LOCK_STORAGE_KEY)==='1'}catch(e){return false}}
 function setAppUnlocked(){try{sessionStorage.setItem(LOCK_STORAGE_KEY,'1')}catch(e){}}
 function clearAppUnlock(){try{sessionStorage.removeItem(LOCK_STORAGE_KEY)}catch(e){}}
 function hideLockScreen(){var el=document.getElementById('lock-screen');if(el){el.style.display='none';el.style.visibility='hidden';el.style.pointerEvents='none';el.classList.add('hidden')}}
 function showLockScreen(){var el=document.getElementById('lock-screen');if(el){el.style.display='flex';el.style.visibility='visible';el.style.pointerEvents='auto';el.classList.remove('hidden')}var input=document.getElementById('lock-code');if(input){input.value='';setTimeout(function(){try{input.focus()}catch(e){}},150)}var err=document.getElementById('lock-error');if(err)err.textContent=''}
-function tryUnlock(){var input=document.getElementById('lock-code');var err=document.getElementById('lock-error');if(!input)return;var code=(input.value||'').trim();console.log('[Unlock] code saisi =',JSON.stringify(code));if(code===APP_LOCK_CODE){setAppUnlocked();if(err)err.textContent='';input.classList.remove('error');hideLockScreen();console.log('[Unlock] OK')}else{if(err)err.textContent='Code incorrect ('+code.length+' chiffres saisis)';input.classList.add('error');setTimeout(function(){input.classList.remove('error')},500);input.value='';try{input.focus()}catch(e){};console.log('[Unlock] KO')}}
+function tryUnlock(){var input=document.getElementById('lock-code');var err=document.getElementById('lock-error');if(!input)return;var code=(input.value||'').trim();if(code===APP_LOCK_CODE){setAppUnlocked();if(err)err.textContent='';input.classList.remove('error');hideLockScreen()}else{if(err)err.textContent='Code incorrect';input.classList.add('error');setTimeout(function(){input.classList.remove('error')},500);input.value='';try{input.focus()}catch(e){}}}
 window.tryUnlock = tryUnlock;
 window.clearAppUnlock = clearAppUnlock;
 
@@ -352,8 +349,8 @@ const VIDEO_MAX_POLL_ATTEMPTS = 150;
 const VIDEO_RETRY_DELAY_MS = 15000;
 const VIDEO_QUEUE_RETRY_INTERVAL_MS = 45000;
 
-const API_KEYS_STORAGE = 'fruit_tales_api_keys_v2';
-const QUOTA_STORAGE = 'fruit_tales_quota_v2';
+const API_KEYS_STORAGE = 'fruit_tales_api_keys_v3';
+const QUOTA_STORAGE = 'fruit_tales_quota_v3';
 const DEBUG_MAX = 600;
 
 const PASTEL_PALETTE = {
@@ -402,7 +399,7 @@ function showToast(message,type='success',duration=2500){const t=document.getEle
 function nowTime(){return new Date().toLocaleTimeString('fr-FR',{hour12:false})}
 function sanitizeForApi(text){if(text==null)return '';return String(text).replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/\u2013/g,'-').replace(/\u2014/g,'--').replace(/\u2026/g,'...').replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/\u00A0/g,' ')}
 
-function journalLog(msg, level){level=level||'info';const body=document.getElementById('journal-body');if(!body)return;const icons={info:'·',highlight:'▶',success:'✅',warn:'⚠️',error:'❌',story:'📖',image:'🎨',video:'🎥',play:'🎬',key:'🔑',voice:'🔊',retry:'↻',ref:'🔗',queue:'⏳',lock:'🔒',keyframe:'🔗'};const icon=icons[level]||'·';const entry=document.createElement('div');entry.className='j-entry '+level;entry.innerHTML='<span class="j-time">'+esc(nowTime())+'</span><span class="j-icon">'+icon+'</span><span class="j-msg">'+esc(msg)+'</span>';body.appendChild(entry);body.scrollTop=body.scrollHeight;while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild)}
+function journalLog(msg, level){level=level||'info';const body=document.getElementById('journal-body');if(!body)return;const icons={info:'·',highlight:'▶',success:'✅',warn:'⚠️',error:'❌',story:'📖',image:'🎨',video:'🎥',play:'🎬',key:'🔑',voice:'🔊',retry:'↻',ref:'🔗',queue:'⏳',lock:'🔒',keyframe:'🔗',dialogue:'💬'};const icon=icons[level]||'·';const entry=document.createElement('div');entry.className='j-entry '+level;entry.innerHTML='<span class="j-time">'+esc(nowTime())+'</span><span class="j-icon">'+icon+'</span><span class="j-msg">'+esc(msg)+'</span>';body.appendChild(entry);body.scrollTop=body.scrollHeight;while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild)}
 
 let debugCount=0,debugEntries=[],debugCollapsed=false,currentTab='journal';
 function debugLog(level,category,message,data){const body=document.getElementById('tech-body');if(!body)return;const time=nowTime();const entry=document.createElement('div');entry.className='debug-entry '+level;let html='<span class="debug-time">'+time+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';if(data!==undefined&&data!==null){let ds;if(typeof data==='string')ds=data;else{try{ds=JSON.stringify(data,null,2)}catch(e){ds=String(data)}}if(ds.length>2500)ds=ds.slice(0,2500)+'\n…[tronqué]';html+='<pre class="debug-data">'+esc(ds)+'</pre>'}entry.innerHTML=html;body.appendChild(entry);debugEntries.push({time,level,category,message});if(debugEntries.length>DEBUG_MAX)debugEntries.shift();while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild);body.scrollTop=body.scrollHeight;debugCount++;}
@@ -501,23 +498,22 @@ async function generateImage(prompt, referenceUrl){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// VIDEO — KEYFRAME MODE POUR LA CONTINUITÉ
+// VIDEO — KEYFRAME MODE
 // ══════════════════════════════════════════════════════════════════
 async function createVideoTask(prompt, firstFrameUrl, lastFrameUrl){
     const secondsStr = String(Math.min(12, Math.max(4, state.durationSeconds)));
     const body = {
         model: MODEL_VIDEO,
         prompt: sanitizeForApi(prompt),
-        mode: 'keyframe', // ← KEYFRAME pour la continuité
+        mode: 'keyframe',
         seconds: secondsStr,
         size: '720P',
         aspect_ratio: '9:16',
         n: 1
     };
-    // En mode keyframe, first_frame et last_frame sont les ancres visuelles
     if(firstFrameUrl) body.first_frame = firstFrameUrl;
     if(lastFrameUrl) body.last_frame = lastFrameUrl;
-    debugLog('ai','PROMPT VIDÉO','Mode KEYFRAME · '+body.seconds+'s · size '+body.size+' · first='+(firstFrameUrl?'oui':'non')+' · last='+(lastFrameUrl?'oui':'non'));
+    debugLog('ai','PROMPT VIDÉO','Mode KEYFRAME · '+body.seconds+'s · first='+(firstFrameUrl?'oui':'non')+' · last='+(lastFrameUrl?'oui':'non'));
     const res=await apiFetch(API_BASE+'/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Video Task',4);
     const data=await res.json();
     const compositeId=data.video_id||data.id||data.task_id;
@@ -590,65 +586,45 @@ async function pollVideo(videoId, onProgress){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS — DIALOGUES CONTRAINTS
+// PROMPTS — SCÉNARIO EN 2 PASSES
 // ══════════════════════════════════════════════════════════════════
-function buildStoryPrompt(storyInput, sceneCount){
+
+// PASSE 1 : Structure narrative (personnages + résumé de chaque scène, SANS dialogue)
+function buildStructurePrompt(storyInput, sceneCount){
     return [
-        'Tu es un scénariste de séries adultes (HBO / Netflix) spécialisé dans les drames urbains, le film noir et les histoires de séduction dangereuse.',
-        'Tu écris des histoires ADULTES, CRUES, TENDUES, avec des personnages CHARISMATIQUES et SEXY.',
+        'Tu es un scénariste de séries adultes (HBO / Netflix). Tu écris des drames urbains crus, violents, sensuels.',
         '',
         'HISTOIRE DEMANDÉE :',
         storyInput,
         '',
+        'MISSION : Génère UNIQUEMENT la structure narrative. PAS de dialogues pour l\'instant.',
+        '',
         'CONTRAINTES :',
         '- Crée 3 à 5 PERSONNAGES HUMAINS ADULTES : hommes charismatiques et femmes très sexy.',
-        '- Chaque personnage a : un prénom adulte, un âge (25-50), un métier, une personnalité complexe.',
-        '- Écris un scénario de '+sceneCount+' scènes qui forment une histoire ADULTE complète.',
-        '- Chaque scène dure 7 secondes.',
+        '- Chaque personnage a : un prénom, un genre, un âge (25-50), un métier, une personnalité complexe.',
+        '- Pour chaque personnage, fournis "face_lock" (description stable du visage) et "outfit_lock" (description stable des habits).',
+        '- Écris '+sceneCount+' scènes. Chaque scène a :',
+        '  * "scene_number"',
+        '  * "summary" : résumé de l\'action en 2-3 phrases (ce qui se passe, qui fait quoi, quelle est la conséquence)',
+        '  * "action" : description de l\'action physique en anglais (pour le prompt vidéo)',
+        '  * "emotion" : émotion dominante de la scène',
         '',
-        'RÈGLES DE DIALOGUE — TRÈS IMPORTANT :',
-        '- Chaque dialogue doit être une RÉACTION DIRECTE à ce qui se passe dans la scène.',
-        '- Chaque dialogue doit faire AVANCER l\'histoire (révéler une information, exprimer une émotion, créer un conflit).',
-        '- INTERDIT : les phrases génériques du type "Je ne sais pas quoi dire", "C\'est compliqué", "On doit parler".',
-        '- INTERDIT : les dialogues qui décrivent la scène ("Il fait beau aujourd\'hui", "Nous sommes dans un bar").',
-        '- Le dialogue doit être prononcé PAR le personnage, pas par un narrateur.',
-        '- Le dialogue doit être court (8-15 mots), CRU, DIRECT.',
-        '- Exemple de bon dialogue : "Tu m\'as menti, et je le savais depuis le début."',
-        '- Exemple de mauvais dialogue : "Je suis dans un bar et je regarde autour de moi."',
-        '',
-        'RENDU DES PERSONNAGES — RÈGLE ABSOLUE DE COHÉRENCE :',
-        'Ce sont des HUMAINS ADULTES NORMAUX. Pas de fruit, pas de costume, pas de cartoon.',
-        '',
-        '🔒 RÈGLE DE VERROUILLAGE — TRÈS IMPORTANT :',
-        'Pour chaque personnage, tu DOIS fournir :',
-        '- "face_lock" : description PRÉCISE et STABLE du visage.',
-        '- "outfit_lock" : description PRÉCISE et STABLE des habits.',
+        'STRUCTURE NARRATIVE OBLIGATOIRE :',
+        '- Scène 1 : Situation initiale + premier signe de tension.',
+        '- Scènes 2-3 : Montée de la tension, premiers conflits.',
+        '- Scènes 4-5 : Point de rupture (bagarre, trahison, révélation).',
+        '- Scènes 6-7 : Conséquences, tentatives de résolution.',
+        '- Scène 8 : Résolution (ouverte ou fermée).',
         '',
         'FORMAT JSON STRICT (retourne UNIQUEMENT ce JSON) :',
         '{',
         '  "title": "titre adulte",',
         '  "logline": "résumé en une phrase",',
         '  "characters": [',
-        '    {',
-        '      "name": "Prénom",',
-        '      "gender": "homme ou femme",',
-        '      "age": 34,',
-        '      "job": "métier",',
-        '      "personality": "trait de caractère",',
-        '      "face_lock": "sharp jawline, deep brown eyes, short dark hair, three-day stubble",',
-        '      "outfit_lock": "black tailored suit, open white shirt, silver chain",',
-        '      "physical_description": "a handsome charismatic adult man, around 34, athletic tall build, sharp jawline, deep brown eyes, short dark hair, three-day stubble, wearing a black tailored suit, open white shirt, silver chain"',
-        '    }',
+        '    { "name": "Prénom", "gender": "homme ou femme", "age": 34, "job": "métier", "personality": "trait", "face_lock": "...", "outfit_lock": "..." }',
         '  ],',
         '  "scenes": [',
-        '    {',
-        '      "scene_number": 1,',
-        '      "description": "description visuelle",',
-        '      "image_prompt": "english prompt for the image",',
-        '      "action": "english description of the action",',
-        '      "dialogue": { "speaker": "Prénom", "line_fr": "phrase courte ADULTE (8-15 mots)" },',
-        '      "emotion": "colère"',
-        '    }',
+        '    { "scene_number": 1, "summary": "résumé de l\'action", "action": "english action description", "emotion": "colère" }',
         '  ]',
         '}',
         '',
@@ -656,12 +632,51 @@ function buildStoryPrompt(storyInput, sceneCount){
     ].join('\n');
 }
 
-function buildIdentityLockBlock(story){
-    return (story.characters||[]).map(c => {
-        return `${c.name} (${c.gender}, ${c.age} ans) — FACE: ${c.face_lock||'stable adult face'} | OUTFIT: ${c.outfit_lock||c.outfit||'elegant adult clothing'}`;
-    }).join('\n');
+// PASSE 2 : Dialogue pour UNE scène, en fonction de l'action précédente
+function buildDialoguePrompt(scene, previousScene, story, sceneIndex){
+    const charList = (story.characters||[]).map(c => c.name + ' (' + c.gender + ', ' + c.age + ' ans, ' + c.job + ')').join(' | ');
+    const previousContext = previousScene 
+        ? 'SCÈNE PRÉCÉDENTE (ce qui vient de se passer) :\n' + previousScene.summary + '\n\n'
+        : 'C\'est la PREMIÈRE scène. Aucune scène précédente.\n\n';
+    const isLast = sceneIndex === (story.scenes||[]).length - 1;
+    
+    return [
+        'Tu es un scénariste de séries adultes (HBO / Netflix).',
+        '',
+        'PERSONNAGES :',
+        charList,
+        '',
+        previousContext,
+        'SCÈNE ACTUELLE (scène ' + (sceneIndex + 1) + ') :',
+        'Résumé : ' + (scene.summary || ''),
+        'Action : ' + (scene.action || ''),
+        'Émotion : ' + (scene.emotion || ''),
+        '',
+        'MISSION : Écris UN SEUL dialogue pour cette scène.',
+        '',
+        'RÈGLES ABSOLUES :',
+        '- Le dialogue doit être une RÉACTION DIRECTE à ce qui s\'est passé dans la scène précédente (ou à la situation initiale si c\'est la scène 1).',
+        '- Le dialogue doit faire AVANCER l\'histoire : révéler un secret, créer un conflit, sceller une alliance, trahir, etc.',
+        '- Le dialogue doit être PRÉCIS et lié à CE QUI VIENT DE SE PASSER.',
+        '- INTERDIT TOTAL : les phrases génériques ("Je ne sais pas", "On doit y aller", "C\'est compliqué").',
+        '- INTERDIT : les dialogues qui décrivent la scène ("Il fait beau", "Nous sommes dans un bar").',
+        '- Maximum 10 mots. Court, cru, direct.',
+        isLast ? '- C\'est la DERNIÈRE scène : le dialogue doit offrir une résolution (ouverte ou fermée).' : '',
+        '',
+        'EXEMPLES DE BONS DIALOGUES :',
+        '- "Tu m\'as menti, et je le savais depuis le début."',
+        '- "Rends-moi ce que tu m\'as pris. Maintenant."',
+        '- "Je t\'ai fait confiance. Tu m\'as trahi."',
+        '',
+        'FORMAT JSON (retourne UNIQUEMENT ce JSON) :',
+        '{',
+        '  "speaker": "Nom du personnage qui parle",',
+        '  "line_fr": "phrase de dialogue (max 10 mots)"',
+        '}'
+    ].filter(Boolean).join('\n');
 }
 
+// Construction du prompt IMAGE (avec verrouillage)
 function buildImagePrompt(scene, story, isFirstImage){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.age+' ans, '+c.job+', '+c.gender+'): '+c.physical_description).join(' | ');
     const identityLock = buildIdentityLockBlock(story);
@@ -682,19 +697,33 @@ function buildImagePrompt(scene, story, isFirstImage){
         charList,
         'NO fruit body. NO cartoon. NO kawaii. NO children.',
         '',
-        'SCENE : '+(scene.image_prompt||scene.description||''),
+        'SCENE : '+(scene.image_prompt||scene.summary||scene.description||''),
         'ACTION : '+(scene.action||''),
         '',
         'FORMAT : portrait 9:16 vertical. No text, no watermarks.'
     ].filter(Boolean).join('\n');
 }
 
-function buildVideoPrompt(scene, story, previousScene){
+function buildIdentityLockBlock(story){
+    return (story.characters||[]).map(c => {
+        return `${c.name} (${c.gender}, ${c.age} ans) — FACE: ${c.face_lock||'stable adult face'} | OUTFIT: ${c.outfit_lock||c.outfit||'elegant adult clothing'}`;
+    }).join('\n');
+}
+
+// Construction du prompt VIDÉO (avec dialogue contextuel + keyframe)
+function buildVideoPrompt(scene, story, previousScene, dialogue){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.gender+', '+c.age+'): '+c.physical_description).join(' | ');
     const identityLock = buildIdentityLockBlock(story);
-    const dialogue=scene.dialogue||{};
     const intensityMap={subtle:'very subtle and slow movement',moderate:'slow and elegant movement',strong:'dynamic yet controlled movement, tense, sensual energy'};
     const prevAction = previousScene ? ('The scene starts EXACTLY where the previous scene ended: '+(previousScene.action||'')+'. ') : '';
+    
+    let dialogueBlock = '';
+    if(dialogue && dialogue.line_fr){
+        const speakerChar = (story.characters||[]).find(c => c.name === dialogue.speaker);
+        const speakerIdentity = speakerChar ? (speakerChar.outfit_lock || speakerChar.face_lock || dialogue.speaker) : dialogue.speaker;
+        dialogueBlock = 'DIALOGUE — SPEAKER: ' + speakerIdentity + ' says: "' + dialogue.line_fr + '". Mouth moving naturally. ONLY this character speaks.';
+    }
+    
     return [
         'PASTEL CINEMATIC ADULT SHORT FILM — '+state.durationSeconds+'-SECOND SCENE. TIKTOK 9:16 VERTICAL.',
         '',
@@ -714,7 +743,7 @@ function buildVideoPrompt(scene, story, previousScene){
         'ACTION : '+(scene.action||''),
         'Movement intensity : '+(intensityMap[state.intensity]||intensityMap.strong)+'.',
         '',
-        dialogue.line_fr?('SPOKEN LINE (French, adult raw delivery) : "'+dialogue.line_fr+'"'):'',
+        dialogueBlock,
         '',
         'AUDIO : No music. Only tension ambience, footsteps, breathing, fabric.',
         '',
@@ -751,15 +780,13 @@ function renderStory(){
     html+='<div class="story-meta">🎬 '+((s.scenes||[]).length)+' scènes · '+(s.characters||[]).length+' personnages · '+Math.round(state.sceneCount*state.durationSeconds)+'s total</div>';
     (s.characters||[]).forEach(c=>{
         html+='<div class="character-card"><strong>'+esc(c.name||'')+'</strong> — '+esc(c.age||'')+' ans · '+esc(c.job||'')+' · '+esc(c.gender||'')+'</div>';
-        html+='<div class="character-card" style="font-size:.7rem;border-left-color:var(--ok);margin-left:.6rem;"><span class="lock-badge">🔒 FACE</span> '+esc(c.face_lock||'—')+'</div>';
-        html+='<div class="character-card" style="font-size:.7rem;border-left-color:var(--ok);margin-left:.6rem;"><span class="lock-badge">🔒 OUTFIT</span> '+esc(c.outfit_lock||c.outfit||'—')+'</div>';
     });
     (s.scenes||[]).forEach((sc,i)=>{
         html+='<div class="scene-block">';
         html+='<div class="sc-head">Scène '+(sc.scene_number||(i+1))+(sc.emotion?' · '+esc(sc.emotion):'')+'</div>';
-        html+='<div class="sc-line"><span class="sc-label">Description</span>'+esc(sc.description||'')+'</div>';
-        if(sc.action)html+='<div class="sc-line sc-action"><span class="sc-label">Action</span>'+esc(sc.action)+'</div>';
-        if(sc.dialogue&&sc.dialogue.line_fr)html+='<div class="sc-line sc-dialogue"><span class="sc-label">💬 Voix</span><strong>'+esc(sc.dialogue.speaker||'')+'</strong> — « '+esc(sc.dialogue.line_fr)+' »</div>';
+        html+='<div class="sc-line"><span class="sc-label">Résumé</span>'+esc(sc.summary||'')+'</div>';
+        if(sc.action)html+='<div class="sc-line"><span class="sc-label">Action</span>'+esc(sc.action)+'</div>';
+        if(sc.dialogue&&sc.dialogue.line_fr)html+='<div class="sc-line sc-dialogue"><span class="sc-label">💬</span><strong>'+esc(sc.dialogue.speaker||'')+'</strong> — « '+esc(sc.dialogue.line_fr)+' »</div>';
         html+='</div>';
     });
     view.innerHTML=html;
@@ -800,7 +827,6 @@ function renderVideos(){
             if(card.dataset.url!==v.url||!bodyEl.querySelector('video')){
                 statusEl.innerHTML='<span style="color:var(--ok);">✓</span>';bodyEl.innerHTML='';
                 const video=document.createElement('video');video.src=v.url;video.controls=true;video.preload='metadata';video.setAttribute('playsinline','');bodyEl.appendChild(video);
-                // Bouton de partage natif iOS
                 const dl=document.createElement('button');
                 dl.className='scene-download';
                 dl.textContent='📥 Enregistrer la vidéo';
@@ -814,16 +840,9 @@ function renderVideos(){
                             const file = new File([blob], 'scene-'+(i+1)+'.mp4', { type: 'video/mp4' });
                             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                                 await navigator.share({ files: [file], title: 'Scène '+(i+1) });
-                            } else {
-                                window.open(v.url, '_blank');
-                            }
-                        } else {
-                            window.open(v.url, '_blank');
-                        }
-                    } catch (err) {
-                        console.warn('Partage annulé ou échoué', err);
-                        window.open(v.url, '_blank');
-                    }
+                            } else { window.open(v.url, '_blank'); }
+                        } else { window.open(v.url, '_blank'); }
+                    } catch (err) { window.open(v.url, '_blank'); }
                 });
                 bodyEl.appendChild(dl);
                 card.dataset.url=v.url;
@@ -880,28 +899,37 @@ async function createStory(){
     document.getElementById('images-grid').innerHTML='';
     document.getElementById('videos-grid').innerHTML='';
     renderStory();renderImages();renderVideos();updateButtons();
-    journalLog('Création lancée. '+state.sceneCount+' scènes × '+state.durationSeconds+'s = '+Math.round(state.sceneCount*state.durationSeconds)+'s. Mode KEYFRAME activé.','lock');
+    journalLog('Création lancée. '+state.sceneCount+' scènes × '+state.durationSeconds+'s = '+Math.round(state.sceneCount*state.durationSeconds)+'s. Scénario en 2 passes.','lock');
 
     try{
-        setStatus('Étape 1/4 — L\'IA écrit l\'histoire…');
-        const story=await llmCreateStory(storyInput,state.sceneCount);
-        state.story=story;
+        setStatus('Étape 1/5 — Structure narrative (personnages + scènes)…');
+        journalLog('PASSE 1 : Structure narrative…','story');
+        const structure = await llmCreateStructure(storyInput, state.sceneCount);
+        state.story = structure;
         renderStory();revealSection('section-story');
-        journalLog('Histoire prête : « '+story.title+' »','success');
+        journalLog('Structure prête : « '+structure.title+' »','success');
         await sleep(500);
         if(state.stopRequested)throw new Error('Arrêt demandé');
 
-        setStatus('Étape 2/4 — Génération des images (visage+habits verrouillés)…');
-        revealSection('section-images');
-        await generateAllImages(story);
+        setStatus('Étape 2/5 — Dialogues contextuels (scène par scène)…');
+        journalLog('PASSE 2 : Génération des dialogues…','dialogue');
+        await generateAllDialogues(structure);
+        renderStory();
+        journalLog('Dialogues générés.','success');
+        await sleep(500);
         if(state.stopRequested)throw new Error('Arrêt demandé');
 
-        setStatus('Étape 3/4 — Génération des vidéos (séquentiel keyframe)…');
-        journalLog('Génération séquentielle KEYFRAME : la fin de la scène N est le début de la scène N+1.','keyframe');
-        revealSection('section-videos');
-        await generateAllVideos(story);
+        setStatus('Étape 3/5 — Génération des images…');
+        revealSection('section-images');
+        await generateAllImages(structure);
+        if(state.stopRequested)throw new Error('Arrêt demandé');
 
-        setStatus('Étape 4/4 — Film prêt ✦');
+        setStatus('Étape 4/5 — Génération des vidéos (keyframe)…');
+        journalLog('Génération séquentielle KEYFRAME.','keyframe');
+        revealSection('section-videos');
+        await generateAllVideos(structure);
+
+        setStatus('Étape 5/5 — Film prêt ✦');
         document.getElementById('section-player').classList.remove('hidden');
         document.getElementById('section-player').classList.add('open');
         revealSection('section-player');
@@ -913,30 +941,65 @@ async function createStory(){
     state.isRunning=false;state.stopRequested=false;updateButtons();
 }
 
-async function llmCreateStory(storyInput,sceneCount){
-    const prompt=buildStoryPrompt(storyInput,sceneCount);
-    const systemPrompt='Tu es un scénariste de séries adultes (HBO/Netflix). Tu écris des drames urbains crus, violents, sensuels, adultes. Les personnages sont des HUMAINS ADULTES : hommes charismatiques et femmes très sexy. Les dialogues doivent être des réactions directes à l\'action, jamais des descriptions. Pour chaque personnage, tu DOIS fournir face_lock et outfit_lock. Tu retournes TOUJOURS un JSON valide, sans markdown.';
+async function llmCreateStructure(storyInput, sceneCount){
+    const prompt = buildStructurePrompt(storyInput, sceneCount);
+    const systemPrompt = 'Tu es un scénariste de séries adultes (HBO/Netflix). Tu génères UNIQUEMENT la structure narrative : personnages avec face_lock et outfit_lock, et résumés de scènes SANS dialogue. Tu retournes TOUJOURS un JSON valide, sans markdown.';
     for(let attempt=1;attempt<=3;attempt++){
         try{
-            const content=await callChatCompletion(systemPrompt,prompt,'Histoire (essai '+attempt+')',8000,attempt===1?0.85:0.5);
+            const content = await callChatCompletion(systemPrompt, prompt, 'Structure (essai '+attempt+')', 8000, attempt===1?0.85:0.5);
             if(!content)continue;
-            const story=extractJson(content);
-            if(story&&story.scenes&&Array.isArray(story.scenes)){
-                if(!story.characters||!story.characters.length)story.characters=[{name:'Marco',gender:'homme',age:34,job:'videur',personality:'colérique',face_lock:'sharp jawline, dark eyes, short dark hair, stubble',outfit_lock:'black tailored suit, open white shirt',physical_description:'handsome charismatic adult man, black suit'}];
-                story.characters.forEach(c=>{
-                    if(!c.face_lock)c.face_lock='stable adult face';
-                    if(!c.outfit_lock)c.outfit_lock=c.outfit||'elegant adult clothing';
+            const structure = extractJson(content);
+            if(structure && structure.scenes && Array.isArray(structure.scenes)){
+                if(!structure.characters || !structure.characters.length){
+                    structure.characters = [{name:'Marco', gender:'homme', age:34, job:'videur', personality:'colérique', face_lock:'sharp jawline, dark eyes, short dark hair, stubble', outfit_lock:'black tailored suit, open white shirt', physical_description:'handsome charismatic adult man, black suit'}];
+                }
+                structure.characters.forEach(c => {
+                    if(!c.face_lock) c.face_lock = 'stable adult face';
+                    if(!c.outfit_lock) c.outfit_lock = c.outfit || 'elegant adult clothing';
+                    if(!c.physical_description) c.physical_description = c.name + ', ' + (c.gender||'adult') + ', ' + (c.age||30) + ' ans, ' + (c.outfit_lock||'');
                 });
-                story.scenes.forEach((sc,i)=>{
-                    if(!sc.dialogue||!sc.dialogue.line_fr)sc.dialogue={speaker:story.characters[0].name,line_fr:'...'};
-                    if(!sc.scene_number)sc.scene_number=i+1;
-                });
-                if(story.scenes.length>sceneCount)story.scenes=story.scenes.slice(0,sceneCount);
-                return story;
+                if(structure.scenes.length > sceneCount) structure.scenes = structure.scenes.slice(0, sceneCount);
+                while(structure.scenes.length < sceneCount){
+                    structure.scenes.push({ scene_number: structure.scenes.length+1, summary: '...', action: '...', emotion: 'neutre' });
+                }
+                return structure;
             }
-        }catch(e){debugLog('warn','HISTOIRE','Essai '+attempt+' échoué : '+e.message)}
+        }catch(e){ debugLog('warn','STRUCTURE','Essai '+attempt+' échoué : '+e.message); }
     }
-    throw new Error('Impossible de générer l\'histoire après 3 tentatives');
+    throw new Error('Impossible de générer la structure après 3 tentatives');
+}
+
+async function generateAllDialogues(story){
+    const scenes = story.scenes || [];
+    for(let i=0; i<scenes.length; i++){
+        if(state.stopRequested) break;
+        const scene = scenes[i];
+        const previousScene = i > 0 ? scenes[i-1] : null;
+        
+        try {
+            const prompt = buildDialoguePrompt(scene, previousScene, story, i);
+            const content = await callChatCompletion(
+                'Tu es un scénariste de séries adultes. Tu écris UN SEUL dialogue court, cru, qui réagit DIRECTEMENT à l\'action précédente. Tu retournes UNIQUEMENT {"speaker":"...","line_fr":"..."}.',
+                prompt, 'Dialogue scène '+(i+1), 500, 0.7
+            );
+            if(content){
+                const parsed = extractJson(content);
+                if(parsed && parsed.line_fr){
+                    scene.dialogue = { speaker: parsed.speaker || story.characters[0].name, line_fr: parsed.line_fr };
+                }
+            }
+        } catch(e) {
+            debugLog('warn','DIALOGUE','Scène '+(i+1)+' : '+e.message);
+            if(!scene.dialogue) scene.dialogue = { speaker: story.characters[0].name, line_fr: '...' };
+        }
+        await sleep(300);
+    }
+    // Fallback pour les scènes sans dialogue
+    scenes.forEach(sc => {
+        if(!sc.dialogue || !sc.dialogue.line_fr){
+            sc.dialogue = { speaker: story.characters[0].name, line_fr: '...' };
+        }
+    });
 }
 
 async function generateAllImages(story){
@@ -975,7 +1038,7 @@ async function generateAllVideos(story){
     renderVideos();
     for(let i=0;i<scenes.length;i++){
         if(state.stopRequested)break;
-        journalLog('▶ Scène '+(i+1)+'/'+scenes.length+' — KEYFRAME (début = fin scène '+(i>0?i:'référence')+')','highlight');
+        journalLog('▶ Scène '+(i+1)+'/'+scenes.length+' — KEYFRAME','highlight');
         await generateOneVideoKeyframe(scenes[i],i,story);
         if(state.videos[i].status!=='done'){
             journalLog('Scène '+(i+1)+' non générée — on arrête pour ne pas casser le film.','error');
@@ -989,15 +1052,10 @@ async function generateAllVideos(story){
 
 async function generateOneVideoKeyframe(scene,index,story){
     if(state.stopRequested)return;
-    // KEYFRAME : first_frame = image de la scène précédente (ou référence pour scène 0)
-    //            last_frame  = image de la scène actuelle
-    const firstFrameUrl = (index === 0)
-        ? state.characterReferenceUrl
-        : (state.images[index - 1] && state.images[index - 1].url);
+    const firstFrameUrl = (index === 0) ? state.characterReferenceUrl : (state.images[index-1] && state.images[index-1].url);
     const lastFrameUrl = state.images[index] && state.images[index].url;
-    
-    const previousScene = index > 0 ? story.scenes[index - 1] : null;
-    const prompt=buildVideoPrompt(scene,story,previousScene);
+    const previousScene = index > 0 ? story.scenes[index-1] : null;
+    const prompt=buildVideoPrompt(scene,story,previousScene,scene.dialogue);
     
     state.videos[index].status='loading';
     state.videos[index].prompt=prompt;
@@ -1140,20 +1198,10 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
 (function init(){
     clearAppUnlock();
     showLockScreen();
-
     var lockBtn = document.getElementById('lock-btn');
     var lockInput = document.getElementById('lock-code');
-    if(lockBtn){
-        var newBtn = lockBtn.cloneNode(true);
-        lockBtn.parentNode.replaceChild(newBtn, lockBtn);
-        newBtn.type = 'button';
-        newBtn.addEventListener('click', function(ev){ev.preventDefault();ev.stopPropagation();tryUnlock();});
-        console.log('[Unlock] bouton listener attaché');
-    }
-    if(lockInput){
-        lockInput.addEventListener('keydown', function(e){if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }});
-        lockInput.addEventListener('input', function(e){var v = e.target.value.replace(/\D/g,'');e.target.value = v;if(v.length === 4 && v === APP_LOCK_CODE){ tryUnlock(); }});
-    }
+    if(lockBtn){var newBtn=lockBtn.cloneNode(true);lockBtn.parentNode.replaceChild(newBtn,lockBtn);newBtn.type='button';newBtn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();tryUnlock();});}
+    if(lockInput){lockInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();tryUnlock();}});lockInput.addEventListener('input',function(e){var v=e.target.value.replace(/\D/g,'');e.target.value=v;if(v.length===4&&v===APP_LOCK_CODE){tryUnlock();}});}
 
     document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
     document.getElementById('api-keys-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveKeysFromUI()}});
@@ -1175,7 +1223,7 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse()});
     refreshKeyPool();updateApiPanel();updateButtons();initTTS();updateQuotaDisplay();
     setInterval(renderKeysStatus,1000);
-    journalLog('Prêt. Mode KEYFRAME activé · Partage iOS natif · Dialogues contraints.','lock');
+    journalLog('Prêt. Scénario en 2 passes : Structure → Dialogues contextuels.','lock');
 })();
 </script>
 </body>
