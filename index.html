@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Fruit Tales Studio — Histoires adultes</title>
+<title>Fruit Tales Studio — Histoires adultes cohérentes</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -96,6 +96,7 @@ select option{background:var(--bg2);color:var(--ink)}
 .scene-retry-btn{display:block;width:100%;margin-top:.4rem;font-size:.7rem;color:var(--warn);text-align:center;padding:.4rem;border:1px solid rgba(212,160,23,.4);border-radius:3px;background:rgba(212,160,23,.08);cursor:pointer;font-family:inherit;font-weight:600;letter-spacing:.05em}
 .scene-retry-btn:hover{background:rgba(212,160,23,.15);border-color:var(--warn)}
 .scene-retry-btn:active{transform:scale(.98)}
+.ref-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.15);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .spinner-mini{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .player-overlay{position:fixed;inset:0;background:#000;z-index:2000;display:none;align-items:center;justify-content:center;cursor:pointer}
@@ -175,14 +176,14 @@ select option{background:var(--bg2);color:var(--ink)}
 
 <header>
 <h1>Fruit Tales Studio</h1>
-<p class="subtitle">Des histoires adultes de fruits · 60 à 90 secondes · Voix off française</p>
+<p class="subtitle">Histoires adultes de fruits · Cohérence des personnages · Format TikTok 9:16</p>
 </header>
 
 <div class="banner">
-<strong>Rendu adulte.</strong> Des personnages <span class="hl">humains adultes avec un visage de fruit</span> — corps humain, vêtements adultes, expressions complexes.
-Histoires crues : conflits, tensions, insultes stylisées, bagarres, ironie noire.
-L'IA invente les personnages, écrit un scénario de 6 à 10 scènes, génère les images pastel et les vidéos.
-<strong>Retry automatique</strong> (3 tentatives) + <strong>retry manuel</strong> par scène.
+<strong>Cohérence des personnages.</strong> La première image générée sert de <span class="hl">référence visuelle</span> pour toutes les scènes vidéo suivantes.
+Chaque scène utilise cette image comme point d'ancrage pour garder le même visage et la même identité.
+<strong>Format TikTok 9:16 · Durée 60 à 70 secondes.</strong>
+Retry auto ×6 + retry manuel par scène.
 </div>
 
 <div class="panel" id="api-panel">
@@ -211,15 +212,14 @@ L'IA invente les personnages, écrit un scénario de 6 à 10 scènes, génère l
 <div class="control-row">
 <label class="control-label">Nombre de scènes</label>
 <select id="scene-count-select">
-<option value="6">6 scènes — 60 secondes</option>
-<option value="8" selected>8 scènes — 80 secondes</option>
-<option value="10">10 scènes — 100 secondes</option>
+<option value="8" selected>8 scènes — 64 secondes (recommandé)</option>
+<option value="9">9 scènes — 72 secondes</option>
+<option value="10">10 scènes — 80 secondes</option>
 </select>
 </div>
 <div class="control-row">
 <label class="control-label">Durée de chaque vidéo</label>
 <select id="duration-select">
-<option value="145">6 secondes</option>
 <option value="169" selected>7 secondes</option>
 <option value="193">8 secondes</option>
 <option value="241">10 secondes</option>
@@ -352,8 +352,8 @@ const FRAME_RATE = 24;
 const VIDEO_FIRST_POLL_DELAY_SEC = 60;
 const VIDEO_POLL_INTERVALS = [8, 8, 12, 12, 20, 20, 25];
 const VIDEO_MAX_POLL_ATTEMPTS = 100;
-const VIDEO_AUTO_RETRY_MAX = 3;
-const VIDEO_RETRY_DELAY_MS = 4000;
+const VIDEO_AUTO_RETRY_MAX = 6;
+const VIDEO_RETRY_DELAY_MS = 15000;
 
 const API_KEYS_STORAGE = 'fruit_tales_api_keys';
 const DEBUG_MAX = 600;
@@ -385,6 +385,7 @@ const state = {
     story: null,
     images: [],
     videos: [],
+    characterReferenceUrl: null,
     isGeneratingVideos: false,
     isPlayingFilm: false,
     playRAF: null,
@@ -414,7 +415,7 @@ function journalLog(msg, level){
     level = level || 'info';
     const body = document.getElementById('journal-body');
     if(!body) return;
-    const icons = { info:'·', highlight:'▶', success:'✅', warn:'⚠️', error:'❌', fruit:'🍊', story:'📖', image:'🎨', video:'🎥', play:'🎬', key:'🔑', voice:'🔊', retry:'↻' };
+    const icons = { info:'·', highlight:'▶', success:'✅', warn:'⚠️', error:'❌', fruit:'🍊', story:'📖', image:'🎨', video:'🎥', play:'🎬', key:'🔑', voice:'🔊', retry:'↻', ref:'🔗' };
     const icon = icons[level] || '·';
     const entry = document.createElement('div');
     entry.className = 'j-entry ' + level;
@@ -458,7 +459,6 @@ function saveKeysFromUI(){
     setStoredKeys(keys);refreshKeyPool();updateApiPanel();renderKeysStatus();
     showToast(keys.length+' clé(s) enregistrée(s) ✓','success');
     journalLog(keys.length+' clé(s) API active(s). Parallélisme : '+keys.length+'.','key');
-    debugLog('success','CLÉS',keys.length+' enregistrée(s)');
 }
 
 function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');if(!panel||!input||!line||!text)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s) · parallélisme : '+n;input.value=state.keyPool.map(k=>k.key).join('\n');input.placeholder=''}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';input.placeholder='Collez votre clé API — une par ligne'}renderKeysStatus();updateButtons()}
@@ -485,8 +485,8 @@ async function apiFetch(url, options, label, maxAttempts){
                 if(res.status===401||res.status===403){keyObj.errorCount=(keyObj.errorCount||0)+1;if(keyObj.errorCount>=3){keyObj.active=false;debugLog('error','CLÉ','Clé désactivée')}}
                 const err=new Error('HTTP '+res.status+' — '+errorText.slice(0,300));err.status=res.status;throw err;
             }
-            if(res.status===429){const wait=retryAfter>0?retryAfter:Math.min(120,20+attempt*15);keyObj.cooldownUntil=Date.now()+wait*1000;debugLog('warn','RATELIMIT','Clé '+keyObj.key.slice(-4)+' → cooldown '+wait+'s');renderKeysStatus();const{key:next}=getReadyKey();if(next&&next!==keyObj)continue;setStatus('Limite API — attente '+wait+'s');await sleep(Math.min(wait*1000,3000));continue}
-            if([500,502,503,504,520,522,524].includes(res.status)){const wait=Math.min(60,8+attempt*6);debugLog('warn','SERVICE','HTTP '+res.status+' — attente '+wait+'s');await sleep(wait*1000);continue}
+            if(res.status===429){const wait=retryAfter>0?retryAfter:Math.min(120,20+attempt*15);keyObj.cooldownUntil=Date.now()+wait*1000;debugLog('warn','RATELIMIT','Clé → cooldown '+wait+'s');renderKeysStatus();const{key:next}=getReadyKey();if(next&&next!==keyObj)continue;setStatus('Limite API — attente '+wait+'s');await sleep(Math.min(wait*1000,3000));continue}
+            if([500,502,503,504,520,522,524].includes(res.status)){const isQueueFull=res.status===503;const wait=isQueueFull?Math.min(120,30+attempt*20):Math.min(60,8+attempt*6);debugLog('warn','SERVICE','HTTP '+res.status+(isQueueFull?' (queue pleine)':'')+' — attente '+wait+'s');setStatus(isQueueFull?'File Agnes pleine — reprise dans '+wait+'s':'Service occupé — reprise dans '+wait+'s');await sleep(wait*1000);continue}
             const wait=Math.min(60,6+attempt*5);debugLog('warn','HTTP','HTTP '+res.status+' — retry '+wait+'s');await sleep(wait*1000);
         }catch(e){
             if(e.message==='Arrêt demandé')throw e;if(e.status&&[400,401,403,404].includes(e.status))throw e;lastErr=e;
@@ -533,9 +533,8 @@ async function createVideoTask(prompt,imageUrl,duration){
 function buildIdCandidates(videoIdObj){const ids=[];if(typeof videoIdObj==='string'){ids.push({label:'composite',value:videoIdObj});const inner=decodeCompositeId(videoIdObj);if(inner&&inner!==videoIdObj)ids.push({label:'inner',value:inner})}else if(videoIdObj&&typeof videoIdObj==='object'){if(videoIdObj.compositeId)ids.push({label:'composite',value:videoIdObj.compositeId});if(videoIdObj.innerId)ids.push({label:'inner',value:videoIdObj.innerId});const raw=videoIdObj.raw||{};for(const f of ['id','task_id','request_id']){if(raw[f]&&!ids.some(x=>x.value===raw[f]))ids.push({label:'raw.'+f,value:raw[f]})}}const seen=new Set();return ids.filter(x=>{if(seen.has(x.value))return false;seen.add(x.value);return true})}
 const POLL_URL_BUILDERS=[
     {name:'agnesapi-composite',build:(id)=>POLL_BASE+'?video_id='+encodeURIComponent(id)+'&model_name='+encodeURIComponent(MODEL_VIDEO)},
-    {name:'v1-rest',build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)},
-    {name:'v1-rest-status',build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)+'/status'},
-    {name:'v1-rest-model',build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)+'?model_name='+encodeURIComponent(MODEL_VIDEO)},
+    {name:'v1-rest',build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)+'?model_name='+encodeURIComponent(MODEL_VIDEO)},
+    {name:'v1-rest-status',build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)+'/status?model_name='+encodeURIComponent(MODEL_VIDEO)},
 ];
 async function pollVideo(videoIdObj,onProgress){
     const candidates=buildIdCandidates(videoIdObj);if(candidates.length===0)throw new Error('Aucun ID exploitable');
@@ -569,32 +568,32 @@ async function pollVideo(videoIdObj,onProgress){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS — RENDU ADULTE
+// PROMPTS — COHÉRENCE PERSONNAGE + ADULTE
 // ══════════════════════════════════════════════════════════════════
 function buildStoryPrompt(storyInput, sceneCount){
     return [
-        'Tu es un scénariste de séries adultes (style HBO / Netflix) spécialisé dans les drames urbains et les conflits de quartier.',
+        'Tu es un scénariste de séries adultes (HBO / Netflix) spécialisé dans les drames urbains et les conflits de quartier.',
         'Tu écris des histoires CRUES, TENDUES, VIOLENTES, avec des personnages ADULTES complexes.',
         '',
         'HISTOIRE DEMANDÉE :',
         storyInput,
         '',
         'CONTRAINTES :',
-        '- Crée 3 à 5 PERSONNAGES ADULTES avec un VISAGE DE FRUIT (corps humain, peau humaine, vêtements adultes modernes, visage de fruit uniquement).',
-        '- Chaque personnage a : un prénom adulte, un fruit-visage, un âge, un métier, un trait de caractère complexe (faille, colère, désir, trahison).',
+        '- Crée 3 à 5 PERSONNAGES ADULTES avec un VISAGE DE FRUIT (corps humain adulte, peau humaine, vêtements adultes modernes, visage de fruit uniquement).',
+        '- Chaque personnage a : un prénom adulte, un fruit-visage, un âge, un métier, un trait de caractère complexe.',
         '- Écris un scénario de '+sceneCount+' scènes qui forment une histoire ADULTE complète : tension, montée en puissance, affrontement, résolution.',
         '- Chaque scène dure 7 à 8 secondes.',
         '- Chaque scène contient UN SEUL dialogue court (8-15 mots), CRU, DIRECT, avec des insultes stylisées si l\'histoire s\'y prête.',
-        '- Registre : adulte, sans filtre enfantin, sans niaiserie. Tu peux utiliser des insultes françaises réalistes mais stylisées.',
+        '- Registre : adulte, sans filtre enfantin. Insultes françaises réalistes mais stylisées.',
         '- Style visuel : pastel cinéma, symétrie Wes Anderson, pellicule 35mm, décors rétrofuturistes ou urbains sombres.',
-        '- Ambiance : tension, conflit, bagarre, trahison, règlement de comptes, corruption, vengeance.',
         '',
-        'IMPORTANT — RENDU DES PERSONNAGES :',
+        'RENDU DES PERSONNAGES — RÈGLE ABSOLUE DE COHÉRENCE :',
         'Ce sont des êtres HUMAINS ADULTES avec un VISAGE DE FRUIT.',
         'Le CORPS est humain (peau humaine, mains humaines, morphologie adulte).',
-        'Les VÊTEMENTS sont adultes (costume, jean, blouson de cuir, robe de soirée, survêtement, uniforme…).',
+        'Les VÊTEMENTS sont adultes (costume, jean, blouson de cuir, robe, survêtement, uniforme…).',
         'Seul le VISAGE est celui d\'un fruit (banane, orange, fraise, kiwi…) avec des yeux et une bouche HUMAINS expressifs.',
-        'PAS de corps de fruit. PAS de style cartoon enfantin. PAS de style kawaii.',
+        'PAS de corps de fruit. PAS de style cartoon enfantin. PAS de kawaii.',
+        'Chaque personnage doit être décrit avec un maximum de détails physiques stables (taille, carrure, coiffure, cicatrices, accessoires) pour garantir la cohérence entre les scènes.',
         '',
         'FORMAT JSON STRICT (retourne UNIQUEMENT ce JSON) :',
         '{',
@@ -627,41 +626,49 @@ function buildStoryPrompt(storyInput, sceneCount){
     ].join('\n');
 }
 
-function buildImagePrompt(scene, story){
+function buildImagePrompt(scene, story, isFirstImage){
     const charList=(story.characters||[]).map(c=>{
         return c.name+' ('+c.age+' ans, '+c.job+'): '+c.physical_description;
     }).join(' | ');
+    const refBlock = (state.characterReferenceUrl && !isFirstImage)
+        ? 'REFERENCE IMAGE — USE THE PROVIDED CHARACTER REFERENCE IMAGE: the characters must look EXACTLY like the ones in the reference image. Same faces, same outfits, same proportions, same age. Maintain perfect visual consistency.\n'
+        : '';
     return [
         'PASTEL CINEMATIC KEYFRAME — 35MM FILM, ADULT CINEMA, ABSOLUTELY NOT CARTOON.',
         '',
-        'STYLE : pastel cinematic, perfect bilateral symmetry, dead-center framing, 35mm film grain, warm halation, soft contrast, adult cinema aesthetic (Wes Anderson meets Nicolas Winding Refn).',
+        'STYLE : pastel cinematic, perfect bilateral symmetry, dead-center framing, 35mm film grain, warm halation, soft contrast, adult cinema aesthetic.',
         'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'. No neon, no fluorescent.',
         '',
+        refBlock,
         'CHARACTERS — ADULT HUMANS WITH A FRUIT FOR A FACE :',
         charList,
-        'CRITICAL : the BODY must be HUMAN ADULT (human skin, human hands, adult human proportions, adult clothes).',
-        'ONLY THE FACE is a fruit (banana, orange, strawberry, kiwi…). The fruit has HUMAN eyes and a HUMAN mouth.',
-        'NO fruit body. NO cartoon body. NO kawaii. NO chibi. NO child proportions.',
+        'CRITICAL : the BODY must be HUMAN ADULT (human skin, human hands, adult proportions, adult clothes).',
+        'ONLY THE FACE is a fruit. The fruit has HUMAN eyes and a HUMAN mouth.',
+        'NO fruit body. NO cartoon. NO kawaii. NO chibi.',
         '',
         'SCENE : '+(scene.image_prompt||scene.description||''),
         'ACTION : '+(scene.action||''),
         '',
         'FORMAT : portrait 9:16 vertical. No text, no subtitles, no watermarks.',
         'The characters are adult, tense, expressive, dangerous, tired, angry or wounded. NOT cute.'
-    ].join('\n');
+    ].filter(Boolean).join('\n');
 }
 
 function buildVideoPrompt(scene, story){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.fruit_face+'): '+c.physical_description).join(' | ');
     const dialogue=scene.dialogue||{};
     const intensityMap={subtle:'very subtle and slow movement, meditative',moderate:'slow and elegant movement',strong:'dynamic yet controlled movement, tense, theatrical, violent energy'};
+    const refBlock = state.characterReferenceUrl
+        ? 'USE THE PROVIDED REFERENCE IMAGE AS THE VISUAL ANCHOR: the characters in the video must look EXACTLY like the ones in the reference image. Same faces, same fruit faces, same outfits, same body proportions. Perfect consistency.\n'
+        : '';
     return [
-        'PASTEL CINEMATIC ADULT SHORT FILM — '+Math.round(state.durationFrames/24)+'-SECOND SCENE.',
+        'PASTEL CINEMATIC ADULT SHORT FILM — '+Math.round(state.durationFrames/24)+'-SECOND SCENE. TIKTOK 9:16 VERTICAL.',
         '',
         'STYLE : Wes Anderson meets Nicolas Winding Refn. Pastel cinematic, perfect symmetry, 35mm film grain, warm halation, adult cinema.',
         'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'. No neon.',
         '',
-        'ADULT HUMANS WITH FRUIT FACES (must remain visually identical):',
+        refBlock,
+        'ADULT HUMANS WITH FRUIT FACES (must remain visually identical to the reference image):',
         charList,
         'CRITICAL : human adult bodies, human adult clothes, human adult proportions. ONLY THE FACE is a fruit with human eyes and human mouth. NOT cartoon. NOT kawaii.',
         '',
@@ -674,7 +681,7 @@ function buildVideoPrompt(scene, story){
         'AUDIO : No music. Only tension ambience, footsteps, breathing, fabric, urban sounds.',
         'The characters are adult, tense, expressive. NOT cute.',
         '',
-        'CONSTRAINTS : vertical 9:16, '+Math.round(state.durationFrames/24)+' seconds, no text, no subtitles, no watermarks. Perfect symmetry. The characters face camera and speak.'
+        'CONSTRAINTS : vertical 9:16 TikTok, '+Math.round(state.durationFrames/24)+' seconds, no text, no subtitles, no watermarks. Perfect symmetry. The characters face camera and speak.'
     ].filter(Boolean).join('\n');
 }
 
@@ -704,7 +711,7 @@ function renderStory(){
     const s=state.story;let html='';
     html+='<div class="story-title">📖 '+esc(s.title||'Sans titre')+'</div>';
     html+='<div class="story-logline">'+esc(s.logline||'')+'</div>';
-    html+='<div class="story-meta">🎬 '+((s.scenes||[]).length)+' scènes · '+(s.characters||[]).length+' personnages</div>';
+    html+='<div class="story-meta">🎬 '+((s.scenes||[]).length)+' scènes · '+(s.characters||[]).length+' personnages · '+Math.round(state.sceneCount*state.durationFrames/24)+'s total</div>';
     (s.characters||[]).forEach(c=>{
         html+='<div class="character-card"><span class="fruit-emoji">🍊</span><strong>'+esc(c.name||'')+'</strong> — '+esc(c.age||'')+' ans · '+esc(c.job||'')+' · visage '+esc(c.fruit_face||'')+'</div>';
     });
@@ -717,7 +724,7 @@ function renderStory(){
         html+='</div>';
     });
     view.innerHTML=html;
-    const badge=document.getElementById('story-badge');if(badge)badge.textContent=(s.scenes||[]).length+' scènes';
+    const badge=document.getElementById('story-badge');if(badge)badge.textContent=(s.scenes||[]).length+' scènes · '+Math.round(state.sceneCount*state.durationFrames/24)+'s';
 }
 
 function renderImages(){
@@ -726,7 +733,8 @@ function renderImages(){
     grid.innerHTML=state.images.map((img,i)=>{
         if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
         if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
-        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""><div class="scene-download" style="margin-top:.4rem;">Scène '+(i+1)+'</div></div></div>';
+        const isRef = i===0 && state.characterReferenceUrl;
+        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(isRef?' <span class="ref-badge">RÉFÉRENCE</span>':'')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""><div class="scene-download" style="margin-top:.4rem;">Scène '+(i+1)+'</div></div></div>';
     }).join('');
     const c=document.getElementById('images-badge');if(c)c.textContent=state.images.filter(i=>i.status==='done').length+'/'+state.images.length;
 }
@@ -797,7 +805,7 @@ async function createStory(){
     state.sceneCount=parseInt(document.getElementById('scene-count-select').value,10);
     state.durationFrames=parseInt(document.getElementById('duration-select').value,10);
     state.intensity=document.getElementById('intensity-select').value;
-    state.story=null;state.images=[];state.videos=[];state.workingPollUrlBuilder=null;
+    state.story=null;state.images=[];state.videos=[];state.characterReferenceUrl=null;state.workingPollUrlBuilder=null;
     document.getElementById('section-story').classList.add('hidden');
     document.getElementById('section-images').classList.add('hidden');
     document.getElementById('section-videos').classList.add('hidden');
@@ -807,10 +815,11 @@ async function createStory(){
     document.getElementById('videos-grid').innerHTML='';
     renderStory();renderImages();renderVideos();updateButtons();
     const nKeys=state.keyPool.filter(k=>k.active).length;
-    journalLog('Création lancée. '+nKeys+' clé(s), '+state.sceneCount+' scènes.','highlight');
+    const totalSec=Math.round(state.sceneCount*state.durationFrames/24);
+    journalLog('Création lancée. '+nKeys+' clé(s), '+state.sceneCount+' scènes, ~'+totalSec+'s.','highlight');
 
     try{
-        setStatus('Étape 1/4 — L\'IA écrit l\'histoire adulte…');
+        setStatus('Étape 1/5 — L\'IA écrit l\'histoire adulte…');
         journalLog('L\'IA invente l\'histoire et les personnages adultes…','story');
         const story=await llmCreateStory(storyInput,state.sceneCount);
         state.story=story;
@@ -819,18 +828,27 @@ async function createStory(){
         await sleep(500);
         if(state.stopRequested)throw new Error('Arrêt demandé');
 
-        setStatus('Étape 2/4 — Génération des images…');
+        setStatus('Étape 2/5 — Génération des images (référence personnage)…');
         journalLog('Génération des '+(story.scenes||[]).length+' images…','image');
         revealSection('section-images');
         await generateAllImages(story);
         if(state.stopRequested)throw new Error('Arrêt demandé');
 
-        setStatus('Étape 3/4 — Génération des vidéos…');
-        journalLog('Génération des vidéos (retry auto ×'+VIDEO_AUTO_RETRY_MAX+')…','video');
+        setStatus('Étape 3/5 — Cohérence des personnages…');
+        if(state.images.length>0&&state.images[0].status==='done'&&state.images[0].url){
+            state.characterReferenceUrl=state.images[0].url;
+            journalLog('Image de référence définie (Scène 1) — utilisée pour toutes les vidéos.','ref');
+        } else {
+            journalLog('Aucune image de référence disponible — les vidéos seront générées sans ancrage.','warn');
+        }
+        renderImages();
+
+        setStatus('Étape 4/5 — Génération des vidéos (retry auto ×'+VIDEO_AUTO_RETRY_MAX+')…');
+        journalLog('Génération des vidéos avec référence de personnage…','video');
         revealSection('section-videos');
         await generateAllVideos(story);
 
-        setStatus('Étape 4/4 — Film prêt ✦');
+        setStatus('Étape 5/5 — Film prêt ✦');
         journalLog('Film complet prêt.','success');
         document.getElementById('section-player').classList.remove('hidden');
         document.getElementById('section-player').classList.add('open');
@@ -877,9 +895,10 @@ async function generateAllImages(story){
         tasks.push(queue.add(async()=>{
             if(state.stopRequested)return;
             try{
-                const prompt=buildImagePrompt(scene,story);
+                const prompt=buildImagePrompt(scene,story,idx===0);
                 const url=await generateImage(prompt);
                 state.images[idx]={status:'done',url:url,prompt:prompt};renderImages();
+                if(idx===0){state.characterReferenceUrl=url;debugLog('success','REF','Image de référence définie : Scène 1')}
             }catch(e){if(e.message==='Arrêt demandé')return;state.images[idx]={status:'error',url:null,prompt:null};renderImages();debugLog('error','IMAGE '+(idx+1),e.message)}
         }));
     }
@@ -894,7 +913,7 @@ async function generateAllVideos(story){
     state.videos=scenes.map(()=>({status:'pending',url:null,prompt:'',progress:'En attente…',retryCount:0,error:null}));
     renderVideos();
     const workerCount=Math.max(1,state.keyPool.filter(k=>k.active).length);
-    journalLog('Lancement de '+workerCount+' worker(s) sur '+scenes.length+' scènes.','video');
+    journalLog('Lancement de '+workerCount+' worker(s) sur '+scenes.length+' scènes. Référence : '+(state.characterReferenceUrl?'Scène 1':'aucune')+'.','video');
     const queue=scenes.map((sc,index)=>({sc,index}));
     const workers=[];
     for(let w=0;w<workerCount;w++)workers.push(videoWorker(w,queue,story));
@@ -902,7 +921,7 @@ async function generateAllVideos(story){
     state.isGeneratingVideos=false;updateButtons();
     const done=state.videos.filter(v=>v.status==='done').length;
     const failed=state.videos.filter(v=>v.status==='error').length;
-    journalLog('Vidéos : '+done+'/'+scenes.length+' prêtes'+(failed?' ('+failed+' échec(s) — utilisez le bouton Retry)':''),done===scenes.length?'success':'warn');
+    journalLog('Vidéos : '+done+'/'+scenes.length+' prêtes'+(failed?' ('+failed+' échec(s) — bouton Retry disponible)':''),done===scenes.length?'success':'warn');
 }
 
 async function videoWorker(workerId,queue,story){
@@ -920,7 +939,7 @@ async function generateOneVideo(scene,index,story,workerId,isManualRetry){
 
     try{
         const img=state.images[index];
-        const imageUrl=img&&img.url?img.url:null;
+        const imageUrl=img&&img.url?img.url:(state.characterReferenceUrl||null);
         const videoIdObj=await createVideoTask(prompt,imageUrl,state.durationFrames);
         const videoUrl=await pollVideo(videoIdObj,(prog)=>{state.videos[index].progress=prog;renderVideos()});
         state.videos[index]={status:'done',url:videoUrl,prompt,retryCount:state.videos[index].retryCount||0,error:null};
@@ -1089,15 +1108,15 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     document.getElementById('player-overlay').addEventListener('click',stopFilmPlayback);
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.isPlayingFilm)stopFilmPlayback()});
     document.getElementById('voice-toggle').addEventListener('change',e=>{state.voiceEnabled=e.target.checked;if(!state.voiceEnabled)stopTTS()});
-    document.getElementById('tab-journal').addEventListener('click',()=>switchTab('journal'));
+    document.getElementById('tab-journal').add prompt vidEventListener('click',()=>switchTab('journal'));
     document.getElementById('tab-tech').addEventListener('click',()=>switchTab('tech'));
     document.getElementById('debug-clear-btn').addEventListener('click',e=>{e.stopPropagation();clearDebug()});
     document.getElementById('debug-copy-btn').addEventListener('click',e=>{e.stopPropagation();copyDebug()});
     document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse()});
     refreshKeyPool();updateApiPanel();updateButtons();initTTS();
     setInterval(renderKeysStatus,1000);
-    debugLog('success','INIT','Fruit Tales Studio (adulte) prêt');
-    journalLog('Prêt. Décrivez votre histoire adulte puis cliquez sur « Créer l\'histoire animée ».','highlight');
+    debugLog('success','INIT','Fruit Tales Studio (adulte + cohérence) prêt');
+    journalLog('Prêt. La Scène 1 servira de référence visuelle pour toutes les vidéos.','highlight');
 })();
 </script>
 </body>
