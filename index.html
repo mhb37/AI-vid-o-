@@ -31,24 +31,15 @@ input:focus,textarea:focus{outline:none;border-color:var(--acc2)}
 .btn:hover:not(:disabled){background:var(--bg3);border-color:var(--acc2)}
 .btn:disabled{opacity:.35;cursor:not-allowed}
 .btn-primary{border-color:var(--acc2);background:linear-gradient(135deg,rgba(232,123,53,.18),rgba(229,193,90,.12));color:var(--acc2);font-size:.95rem;padding:1.2rem;letter-spacing:.15em}
+.btn-secondary{border-color:var(--warn);color:var(--warn);background:rgba(212,160,23,.08);font-size:.75rem}
 .btn-stop{border-color:var(--err);color:var(--err);background:transparent;display:none}
 .btn-stop.visible{display:block}
-.btn-retry-all{border-color:var(--warn);color:var(--warn);background:rgba(212,160,23,.08);font-size:.78rem;padding:.7rem;display:none}
-.btn-retry-all.visible{display:block}
 .status{font-size:.72rem;padding:.5rem .8rem;border-radius:var(--r);margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;background:var(--bg2);color:var(--dim);border:1px solid var(--border)}
 .status.ok{background:rgba(74,157,106,.08);color:var(--ok);border-color:rgba(74,157,106,.3)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0}
 .status.ok .dot{background:var(--ok);box-shadow:0 0 8px var(--ok)}
 .hint{font-size:.68rem;color:var(--dim);margin-top:.4rem}
 .hint a{color:var(--acc2);text-decoration:none}
-.keys-list{margin-top:.6rem}
-.key-row{padding:.35rem .6rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.3rem;display:flex;justify-content:space-between;align-items:center;gap:.4rem;font-family:var(--fm);font-size:.7rem}
-.key-row .key-id{color:var(--acc2);font-weight:600}
-.key-row .key-state{font-size:.6rem;padding:.12rem .45rem;border-radius:2px;background:rgba(74,157,106,.15);color:var(--ok);border:1px solid rgba(74,157,106,.3);text-transform:uppercase;font-weight:700}
-.key-row .key-state.cool{background:rgba(212,160,23,.15);color:var(--warn);border-color:rgba(212,160,23,.3)}
-.key-row .key-state.dead{background:rgba(200,90,74,.15);color:var(--err);border-color:rgba(200,90,74,.3)}
-.quota-line{font-size:.7rem;padding:.5rem .7rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-top:.4rem;color:var(--dim);font-family:var(--fm);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
-.quota-line .q-val{color:var(--acc2);font-weight:600}
 .section{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.8rem;overflow:hidden}
 .section.hidden{display:none!important}
 .section-header{padding:.8rem 1rem;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center}
@@ -63,18 +54,16 @@ input:focus,textarea:focus{outline:none;border-color:var(--acc2)}
 .control-label{display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600}
 select{width:100%;padding:.75rem .9rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--ink);font-size:.85rem;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23e87b35' d='M0 0l5 6 5-6z'/></svg>");background-repeat:no-repeat;background-position:right .9rem center;background-size:10px;font-family:inherit}
 select:focus{outline:none;border-color:var(--acc2)}
-select option{background:var(--bg2);color:var(--ink)}
 .preset-chips{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem}
 .preset-chip{padding:.35rem .7rem;border-radius:999px;border:1px solid var(--border);background:var(--bg2);color:var(--dim);font-size:.68rem;cursor:pointer;transition:all .15s}
 .preset-chip:hover{color:var(--acc2);border-color:var(--acc2);background:rgba(232,123,53,.05)}
 .story-view{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.8rem;margin-top:.4rem;font-size:.8rem;line-height:1.6;color:var(--ink);max-height:420px;overflow-y:auto}
 .story-title{font-size:1rem;font-weight:500;color:var(--acc2);margin-bottom:.3rem}
 .story-logline{font-style:italic;color:var(--dim);margin-bottom:.8rem;font-size:.78rem}
-.story-meta{font-size:.68rem;color:var(--faint);font-family:var(--fm);margin-bottom:.8rem;padding-bottom:.6rem;border-bottom:1px dashed var(--border)}
-.character-card{background:var(--bg3);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.4rem;font-size:.75rem;border-left:2px solid var(--acc2)}
-.character-card strong{color:var(--acc2)}
 .env-card{background:rgba(232,123,53,.06);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.6rem;font-size:.72rem;border-left:2px solid var(--acc2);color:var(--dim);font-family:var(--fm)}
 .env-card strong{color:var(--acc2)}
+.character-card{background:var(--bg3);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.4rem;font-size:.75rem;border-left:2px solid var(--acc2)}
+.character-card strong{color:var(--acc2)}
 .scene-block{margin-bottom:.8rem;padding-left:.7rem;border-left:2px solid var(--border)}
 .scene-block .sc-head{font-size:.7rem;color:var(--acc2);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.25rem}
 .scene-block .sc-line{margin-bottom:.2rem;font-size:.76rem}
@@ -85,40 +74,15 @@ select option{background:var(--bg2);color:var(--ink)}
 .scene-card.generating{border-color:var(--acc2)}
 .scene-card.done{border-color:var(--ok)}
 .scene-card.error{border-color:var(--err)}
-.scene-card.retrying{border-color:var(--warn);animation:pulseWarn 1.5s ease infinite}
-.scene-card.queued{border-color:#4a7bc8;animation:pulseBlue 1.5s ease infinite}
-@keyframes pulseWarn{0%,100%{border-color:var(--warn)}50%{border-color:rgba(212,160,23,.4)}}
-@keyframes pulseBlue{0%,100%{border-color:#4a7bc8}50%{border-color:rgba(74,123,200,.4)}}
-.scene-card-header{padding:.45rem .6rem;font-size:.64rem;font-family:var(--fm);color:var(--dim);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);gap:.4rem}
-.scene-card-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
-.scene-card-body{padding:.55rem}
-.scene-card-body video{width:100%;border-radius:2px;background:#000;display:block;aspect-ratio:9/16;object-fit:cover}
 .scene-placeholder{width:100%;aspect-ratio:9/16;background:#0a0a12;border-radius:2px;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.68rem;font-family:var(--fm);flex-direction:column;gap:.4rem;text-align:center;padding:.4rem}
+.scene-card-body video{width:100%;border-radius:2px;background:#000;display:block;aspect-ratio:9/16;object-fit:cover}
 .scene-download{display:block;width:100%;margin-top:.4rem;font-size:.72rem;color:#0a0a12;text-decoration:none;text-align:center;padding:.55rem;border:1px solid var(--acc2);border-radius:3px;background:var(--acc2);cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:.05em;transition:all .15s}
 .scene-download:hover{background:var(--acc);border-color:var(--acc)}
-.scene-download:disabled{opacity:.5;cursor:wait}
-.scene-download.preparing{background:var(--bg3);color:var(--warn);border-color:var(--warn)}
-.scene-retry-btn{display:block;width:100%;margin-top:.4rem;font-size:.7rem;color:var(--warn);text-align:center;padding:.4rem;border:1px solid rgba(212,160,23,.4);border-radius:3px;background:rgba(212,160,23,.08);cursor:pointer;font-family:inherit;font-weight:600;letter-spacing:.05em}
-.scene-retry-btn:hover{background:rgba(212,160,23,.15);border-color:var(--warn)}
 .ref-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.15);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
-.queue-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,123,200,.15);color:#4a7bc8;font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
-.keyframe-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.2);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
-.blob-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,157,106,.15);color:var(--ok);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .spinner-mini{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.player-overlay{position:fixed;inset:0;background:#000;z-index:2000;display:none;align-items:center;justify-content:center;cursor:pointer}
-.player-overlay.visible{display:flex}
-#player-canvas{display:block;max-width:100vw;max-height:100vh;background:#000}
-.player-hint{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.55);font-size:.72rem;font-family:var(--fm);letter-spacing:.12em;text-transform:uppercase;pointer-events:none;opacity:1;transition:opacity .5s;text-align:center;background:rgba(0,0,0,.4);padding:.3rem .7rem;border-radius:3px}
-.player-hint.hidden{opacity:0}
-.player-controls{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1rem;margin-top:.4rem}
-.player-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
-.player-row .btn{margin-bottom:0;flex:1;min-width:120px}
-.voice-toggle{display:flex;align-items:center;gap:.5rem;margin-top:.5rem;font-size:.72rem;color:var(--dim)}
-.voice-toggle input{width:auto;margin:0;accent-color:var(--acc2)}
 .status-bar{position:fixed;bottom:200px;left:0;right:0;background:var(--bg3);border-top:1px solid var(--border);color:var(--ink);padding:.65rem 1rem;font-size:.72rem;display:flex;align-items:center;gap:.6rem;transform:translateY(200%);transition:transform .35s cubic-bezier(.2,.9,.3,1);z-index:150;font-family:var(--fm);box-shadow:0 -4px 20px rgba(0,0,0,.4)}
 .status-bar.visible{transform:translateY(0)}
-.spinner{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 .debug-panel{position:fixed;bottom:0;left:0;right:0;height:190px;background:#05050a;border-top:2px solid var(--acc2);z-index:200;display:flex;flex-direction:column;font-family:var(--fm);box-shadow:0 -8px 32px rgba(0,0,0,.7);transition:height .3s ease}
 .debug-panel.collapsed{height:36px}
 .debug-header{display:flex;justify-content:space-between;align-items:center;padding:.35rem .6rem;background:linear-gradient(90deg,#0f0f18,#1a1a28);border-bottom:1px solid var(--border);flex-shrink:0;user-select:none}
@@ -132,39 +96,24 @@ select option{background:var(--bg2);color:var(--ink)}
 .debug-body.hidden{display:none}
 .journal-body{font-size:.74rem;line-height:1.55}
 .journal-body .j-entry{display:flex;gap:.5rem;padding:.2rem 0;align-items:flex-start;border-bottom:1px dashed rgba(255,255,255,.04)}
-.journal-body .j-entry:last-child{border-bottom:none}
 .journal-body .j-time{font-family:var(--fm);font-size:.66rem;color:var(--faint);flex-shrink:0;min-width:58px;padding-top:.12rem}
-.journal-body .j-icon{flex-shrink:0}
 .journal-body .j-msg{color:#d8d8e0;flex:1;word-break:break-word}
-.journal-body .j-entry.highlight .j-msg{color:var(--acc2);font-weight:600}
 .journal-body .j-entry.success .j-msg{color:var(--ok)}
-.journal-body .j-entry.warn .j-msg{color:var(--warn)}
 .journal-body .j-entry.error .j-msg{color:var(--err)}
-.debug-entry{margin-bottom:.25rem;padding:.2rem .35rem;border-left:2px solid transparent;border-radius:2px;word-break:break-word}
-.debug-entry.info{border-left-color:var(--faint)}
-.debug-entry.success{border-left-color:var(--ok);background:rgba(74,157,106,.04)}
-.debug-entry.warn{border-left-color:var(--warn);background:rgba(212,160,23,.04)}
-.debug-entry.error{border-left-color:var(--err);background:rgba(200,90,74,.06);color:#f0a0a0}
-.debug-time{color:var(--faint);margin-right:.4rem;font-size:.6rem}
-.debug-cat{color:var(--acc2);font-weight:600;margin-right:.35rem;font-size:.6rem}
-.debug-msg{color:#d8d8e0}
-.debug-data{margin-top:.25rem;padding:.35rem .45rem;background:#0a0a12;border:1px solid var(--border);border-radius:2px;font-size:.64rem;color:#a8d8b0;max-height:140px;overflow:auto;white-space:pre-wrap;word-break:break-all;line-height:1.4}
 .hidden{display:none!important}
-
 #lock-screen{position:fixed;inset:0;background:linear-gradient(160deg,#0a0a12 0%,#1a1a28 100%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;transition:opacity .4s ease}
-#lock-screen.hidden{display:none!important}
 .lock-icon{font-size:3.2rem;margin-bottom:1.2rem;filter:drop-shadow(0 0 18px rgba(232,123,53,.4))}
-.lock-title{font-size:1.4rem;font-weight:300;letter-spacing:.02em;margin-bottom:.4rem;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
-.lock-subtitle{font-size:.75rem;color:var(--dim);margin-bottom:2rem;text-align:center;font-style:italic}
-.lock-input{width:100%;max-width:280px;padding:1rem;border-radius:10px;border:1px solid var(--border);background:rgba(10,10,18,.6);color:var(--ink);font-family:var(--fm);font-size:1.4rem;text-align:center;letter-spacing:.8em;outline:none;transition:border-color .2s,box-shadow .2s}
-.lock-input:focus{border-color:var(--acc2);box-shadow:0 0 0 3px rgba(232,123,53,.15)}
-.lock-input.error{border-color:var(--err);box-shadow:0 0 0 3px rgba(200,90,74,.2);animation:lockShake .4s}
-@keyframes lockShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-.lock-btn{width:100%;max-width:280px;margin-top:1rem;padding:.9rem;border-radius:10px;border:1px solid var(--acc2);background:linear-gradient(135deg,rgba(232,123,53,.15),rgba(229,193,90,.12));color:var(--acc2);font-size:.9rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:all .2s}
-.lock-btn:hover{background:linear-gradient(135deg,rgba(232,123,53,.25),rgba(229,193,90,.22))}
-.lock-error{font-size:.72rem;color:var(--err);margin-top:.8rem;min-height:1.2em;font-family:var(--fm);text-align:center}
-
-@media(max-width:480px){h1{font-size:1.3rem}.scenes-grid{grid-template-columns:1fr}body{padding-bottom:22rem}.debug-panel{height:170px}.status-bar{bottom:180px}}
+.lock-title{font-size:1.4rem;font-weight:300;margin-bottom:.4rem;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lock-subtitle{font-size:.75rem;color:var(--dim);margin-bottom:2rem;font-style:italic}
+.lock-input{width:100%;max-width:280px;padding:1rem;border-radius:10px;border:1px solid var(--border);background:rgba(10,10,18,.6);color:var(--ink);font-family:var(--fm);font-size:1.4rem;text-align:center;letter-spacing:.8em;outline:none}
+.lock-input:focus{border-color:var(--acc2)}
+.lock-btn{width:100%;max-width:280px;margin-top:1rem;padding:.9rem;border-radius:10px;border:1px solid var(--acc2);background:linear-gradient(135deg,rgba(232,123,53,.15),rgba(229,193,90,.12));color:var(--acc2);font-size:.9rem;font-weight:600;text-transform:uppercase;cursor:pointer;font-family:inherit}
+.lock-error{font-size:.72rem;color:var(--err);margin-top:.8rem;min-height:1.2em;font-family:var(--fm)}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--panel);border:1px solid var(--border);padding:.8rem 1.2rem;border-radius:8px;color:var(--ink);font-size:.8rem;z-index:10000;transition:transform .3s;display:flex;align-items:center;gap:.5rem;box-shadow:0 4px 12px rgba(0,0,0,.5);opacity:0}
+#toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+#toast.success{border-color:var(--ok);color:var(--ok)}
+#toast.error{border-color:var(--err);color:var(--err)}
+#toast.warn{border-color:var(--warn);color:var(--warn)}
 </style>
 </head>
 <body>
@@ -173,33 +122,23 @@ select option{background:var(--bg2);color:var(--ink)}
     <div class="lock-icon">🔒</div>
     <div class="lock-title">Fruit Tales Studio</div>
     <div class="lock-subtitle">Accès protégé</div>
-    <input type="password" id="lock-code" class="lock-input" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••" autocomplete="off">
+    <input type="password" id="lock-code" class="lock-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" autocomplete="off">
     <button type="button" id="lock-btn" class="lock-btn">Déverrouiller</button>
     <div class="lock-error" id="lock-error"></div>
 </div>
+
+<div id="toast"><span id="toast-icon">✓</span><span id="toast-text">Message</span></div>
 
 <header>
 <h1>Fruit Tales Studio</h1>
 <p class="subtitle">Tes répliques · L'IA invente l'histoire autour</p>
 </header>
 
-<div class="banner">
-<strong>💬 Tes répliques d'abord.</strong> Colle tes dialogues (un par ligne). L'IA construit une histoire cohérente où chaque réplique trouve sa place.
-<strong>🎬 Décor verrouillé.</strong> La 1ère image devient la référence décor + personnage pour toutes les scènes.
-<strong>📥 Partage iOS.</strong> Bouton "Enregistrer" qui ouvre le menu natif.
-</div>
-
 <div class="panel" id="api-panel">
 <label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600;">Clés API Agnes — une par ligne</label>
-<textarea id="api-keys-input" placeholder="Collez votre clé API ici — une par ligne" rows="3" spellcheck="false" autocomplete="off"></textarea>
+<textarea id="api-keys-input" placeholder="Collez votre clé API ici — une par ligne" rows="2" spellcheck="false" autocomplete="off"></textarea>
 <button type="button" class="btn" id="api-save-btn">Enregistrer les clés</button>
 <div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé API enregistrée</span></div>
-<div class="keys-list" id="api-keys-status"></div>
-<div class="quota-line">
-    <span>📊 Vidéo générée aujourd'hui : <span class="q-val" id="video-quota-used">0</span>s</span>
-    <span>Modèle : agnes-video-2.5-flash</span>
-</div>
-<div class="hint">Clés gratuites sur <a href="https://platform.agnes-ai.com" target="_blank">platform.agnes-ai.com</a></div>
 </div>
 
 <div class="section open" id="section-dialogues">
@@ -210,24 +149,23 @@ select option{background:var(--bg2);color:var(--ink)}
 <div class="section-body"><div class="section-content">
 <div class="control-row">
 <label class="control-label">Colle tes répliques (une par ligne)</label>
-<textarea id="dialogue-input" placeholder="Tu m'as menti.&#10;Et je le savais depuis le début.&#10;Rends-moi ce que tu m'as pris.&#10;Je t'ai fait confiance.&#10;Tu m'as trahi." style="min-height:140px;">Tu m'as menti.
+<textarea id="dialogue-input" placeholder="Tu m'as menti.&#10;Et je le savais depuis le début.&#10;Rends-moi ce que tu m'as pris." style="min-height:120px;">Tu m'as menti.
 Et je le savais depuis le début.
 Rends-moi ce que tu m'as pris.
 Je t'ai fait confiance.
 Tu m'as trahi.
 Maintenant tu vas payer.</textarea>
-<div class="hint" style="margin-top:.4rem;">💡 Chaque ligne = une réplique = une scène. Maximum 10 mots par ligne.</div>
 </div>
 <div class="control-row">
 <label class="control-label">Contexte de l'histoire (optionnel)</label>
-<textarea id="context-input" placeholder="Ex : Deux anciens amis dans un bar de nuit. L'un a trahi l'autre pour de l'argent." style="min-height:70px;"></textarea>
+<textarea id="context-input" placeholder="Ex : Deux anciens amis dans un bar de nuit. L'un a trahi l'autre pour de l'argent." style="min-height:60px;"></textarea>
 </div>
 </div></div>
 </div>
 
 <div class="section open" id="section-idea">
 <div class="section-header" data-toggle="section-idea">
-<span class="section-title">🎬 Ambiance <span class="badge">obligatoire</span></span>
+<span class="section-title">🎬 Ambiance</span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
@@ -243,34 +181,41 @@ Maintenant tu vas payer.</textarea>
 <option value="9">9 secondes</option>
 </select>
 </div>
-<div class="control-row">
-<label class="control-label">Intensité du mouvement</label>
-<select id="intensity-select">
-<option value="subtle">Subtile — contemplatif</option>
-<option value="moderate">Modérée — élégante</option>
-<option value="strong" selected>Forte — théâtrale</option>
-</select>
-</div>
 </div></div>
 </div>
 
-<button type="button" class="btn btn-primary" id="launch-btn" disabled>▶ Créer le film</button>
+<!-- ÉTAPE 1 : PRÉPARATION -->
+<button type="button" class="btn btn-primary" id="prepare-btn" disabled>1. Préparer l'histoire et les images</button>
 <button type="button" class="btn btn-stop" id="stop-btn">⏹ Arrêter</button>
-<button type="button" class="btn btn-retry-all" id="retry-all-btn">↻ Relancer toutes les scènes échouées</button>
+
+<!-- ÉTAPE 2 : VALIDATION (Cachée par défaut) -->
+<div class="section hidden" id="section-validation" style="border-color:var(--acc2);box-shadow:0 0 15px rgba(232,123,53,.1)">
+    <div class="section-header" style="background:rgba(232,123,53,.05)">
+        <span class="section-title">👀 Vérification & Validation <span class="badge" style="color:var(--acc2);border-color:var(--acc2)">Action requise</span></span>
+    </div>
+    <div class="section-content" style="padding-top:1rem">
+        <p class="hint" style="margin-bottom:1rem;color:var(--ink)">Vérifiez le scénario et la photo de référence ci-dessous. S'ils ne vous plaisent pas, régénérez-les.</p>
+        
+        <button type="button" class="btn btn-secondary" id="regen-story-btn">🔄 Régénérer le scénario</button>
+        <button type="button" class="btn btn-secondary" id="regen-image-btn" style="margin-bottom:1.5rem;">🔄 Régénérer la photo de référence</button>
+
+        <button type="button" class="btn btn-primary" id="generate-video-btn" style="letter-spacing:.1em;padding:1rem;">🎬 Lancer la génération des vidéos</button>
+    </div>
+</div>
 
 <div class="section hidden" id="section-story">
 <div class="section-header" data-toggle="section-story">
-<span class="section-title">📖 Histoire construite <span class="badge" id="story-badge">—</span></span>
+<span class="section-title">📖 Scénario <span class="badge" id="story-badge">—</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
-<div class="story-view" id="story-view">L'histoire apparaîtra ici…</div>
+<div class="story-view" id="story-view"></div>
 </div></div>
 </div>
 
 <div class="section hidden" id="section-images">
 <div class="section-header" data-toggle="section-images">
-<span class="section-title">🎨 Images des scènes <span class="badge" id="images-badge">0</span></span>
+<span class="section-title">🎨 Image de référence <span class="badge" id="images-badge">0</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
@@ -288,28 +233,7 @@ Maintenant tu vas payer.</textarea>
 </div></div>
 </div>
 
-<div class="section hidden" id="section-player">
-<div class="section-header" data-toggle="section-player">
-<span class="section-title">▶ Lire le film <span class="badge" id="player-badge">0</span></span>
-<span class="chevron">▼</span>
-</div>
-<div class="section-body"><div class="section-content">
-<div class="player-controls">
-<div class="player-row">
-<button type="button" class="btn" id="play-film-btn" disabled>▶ Diffuser le film</button>
-<button type="button" class="btn" id="replay-btn" disabled>🔁 Rejouer</button>
-</div>
-<div class="voice-toggle">
-<input type="checkbox" id="voice-toggle" checked>
-<label for="voice-toggle">Narration vocale française</label>
-</div>
-<div class="hint">Lecture séquentielle verticale avec sous-titres. Échap ou clic pour quitter.</div>
-</div>
-</div></div>
-</div>
-
 <div class="status-bar" id="status-bar"><div class="spinner"></div><span id="status-text">Préparation…</span></div>
-<div class="toast" id="toast"><span id="toast-icon">✓</span><span id="toast-text">Message</span></div>
 
 <div class="debug-panel" id="debug-panel">
 <div class="debug-header" id="debug-header">
@@ -318,8 +242,6 @@ Maintenant tu vas payer.</textarea>
 <button type="button" class="debug-tab" data-tab="tech" id="tab-tech">🖥️ Technique</button>
 </div>
 <div class="debug-actions">
-<button type="button" id="debug-copy-btn">Copier</button>
-<button type="button" id="debug-clear-btn">Effacer</button>
 <button type="button" id="debug-collapse-btn">−</button>
 </div>
 </div>
@@ -327,88 +249,30 @@ Maintenant tu vas payer.</textarea>
 <div class="debug-body hidden" id="tech-body"></div>
 </div>
 
-<div class="player-overlay" id="player-overlay">
-<canvas id="player-canvas"></canvas>
-<div class="player-hint" id="player-hint-overlay">Échap ou clic pour quitter</div>
-</div>
-
 <script>
 // ══════════════════════════════════════════════════════════════════
-// VERROUILLAGE
+// CONFIGURATION & VARIABLES
 // ══════════════════════════════════════════════════════════════════
 const APP_LOCK_CODE = '1992';
-const LOCK_STORAGE_KEY = 'fruit_tales_unlocked_session';
-function isAppUnlocked(){try{return sessionStorage.getItem(LOCK_STORAGE_KEY)==='1'}catch(e){return false}}
-function setAppUnlocked(){try{sessionStorage.setItem(LOCK_STORAGE_KEY,'1')}catch(e){}}
-function clearAppUnlock(){try{sessionStorage.removeItem(LOCK_STORAGE_KEY)}catch(e){}}
-function hideLockScreen(){var el=document.getElementById('lock-screen');if(el){el.style.display='none';el.style.visibility='hidden';el.style.pointerEvents='none';el.classList.add('hidden')}}
-function showLockScreen(){var el=document.getElementById('lock-screen');if(el){el.style.display='flex';el.style.visibility='visible';el.style.pointerEvents='auto';el.classList.remove('hidden')}var input=document.getElementById('lock-code');if(input){input.value='';setTimeout(function(){try{input.focus()}catch(e){}},150)}var err=document.getElementById('lock-error');if(err)err.textContent=''}
-function tryUnlock(){var input=document.getElementById('lock-code');var err=document.getElementById('lock-error');if(!input)return;var code=(input.value||'').trim();if(code===APP_LOCK_CODE){setAppUnlocked();if(err)err.textContent='';input.classList.remove('error');hideLockScreen()}else{if(err)err.textContent='Code incorrect';input.classList.add('error');setTimeout(function(){input.classList.remove('error')},500);input.value='';try{input.focus()}catch(e){}}}
-window.tryUnlock = tryUnlock;
-window.clearAppUnlock = clearAppUnlock;
-
-// ══════════════════════════════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════════════════════════════
 const API_BASE = 'https://apihub.agnes-ai.com/v1';
 const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
 const MODEL_TEXT = 'agnes-2.5-flash';
 const MODEL_IMAGE = 'agnes-image-2.1-flash';
 const MODEL_VIDEO = 'agnes-video-2.5-flash';
-const FRAME_RATE = 24;
-
-const VIDEO_FIRST_POLL_DELAY_SEC = 40;
-const VIDEO_POLL_INTERVAL_START_MS = 5000;
-const VIDEO_POLL_INTERVAL_MAX_MS = 15000;
-const VIDEO_POLL_INTERVAL_BACKOFF_429_MS = 30000;
-const VIDEO_MAX_POLL_ATTEMPTS = 150;
-const VIDEO_RETRY_DELAY_MS = 15000;
-const VIDEO_QUEUE_RETRY_INTERVAL_MS = 45000;
+// URL DE VOTRE CLOUDFLARE WORKER
+const PROXY_URL = 'https://videoproxy.bryan-37.workers.dev/?url=';
 
 const API_KEYS_STORAGE = 'fruit_tales_api_keys_v4';
-const QUOTA_STORAGE = 'fruit_tales_quota_v4';
 const DEBUG_MAX = 600;
 
-const PASTEL_PALETTE = {
-    colors: ['#F4C2C2', '#A8D8B9', '#E5B95A', '#F5F0E1', '#C8B0E0', '#FB923C'],
-    label: 'Pastel cinéma'
-};
-
-const THEME_PRESETS = [
-    { emoji: '💋', label: 'Femme fatale', prompt: 'Une femme fatale et un homme charismatique se rencontrent dans un bar de nuit.' },
-    { emoji: '🥃', label: 'Trahison', prompt: 'Un homme élégant découvre que sa meilleure amie l\'a trahi.' },
-    { emoji: '🌹', label: 'Vengeance', prompt: 'Une femme mystérieuse prépare une vengeance froide.' },
-    { emoji: '🚬', label: 'Rupture', prompt: 'Une femme annonce à son amant qu\'elle le quitte.' },
-    { emoji: '🎲', label: 'Dette', prompt: 'Un homme endetté face à un caïd de la pègre.' },
-    { emoji: '🖤', label: 'Rivalité', prompt: 'Deux sœurs se déchirent pour un héritage.' },
-    { emoji: '🔓', label: 'Rédemption', prompt: 'Un homme sort de prison et cherche sa place.' },
-    { emoji: '💼', label: 'Corruption', prompt: 'Un flic ripou confronté à ses crimes.' }
-];
-
 const state = {
-    keyPool: [],
-    isRunning: false,
-    stopRequested: false,
-    dialogues: [],
-    context: '',
-    themePrompt: '',
-    sceneCount: 0,
-    durationSeconds: 7,
-    intensity: 'strong',
-    story: null,
-    images: [],
-    videos: [],
-    characterReferenceUrl: null,
-    environmentReferenceUrl: null,
-    isGeneratingVideos: false,
-    isPlayingFilm: false,
-    playRAF: null,
-    voiceEnabled: true,
-    currentUtterance: null
+    keyPool: [], isRunning: false, stopRequested: false, dialogues: [],
+    context: '', sceneCount: 0, durationSeconds: 7, story: null,
+    images: [], videos: [], characterReferenceUrl: null, currentUtterance: null
 };
 
 // ══════════════════════════════════════════════════════════════════
-// UTILS
+// UTILS & LOGGER
 // ══════════════════════════════════════════════════════════════════
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
@@ -418,946 +282,345 @@ function showToast(message,type='success',duration=2500){const t=document.getEle
 function nowTime(){return new Date().toLocaleTimeString('fr-FR',{hour12:false})}
 function sanitizeForApi(text){if(text==null)return '';return String(text).replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/\u2013/g,'-').replace(/\u2014/g,'--').replace(/\u2026/g,'...').replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/\u00A0/g,' ')}
 
-function journalLog(msg, level){level=level||'info';const body=document.getElementById('journal-body');if(!body)return;const icons={info:'·',highlight:'▶',success:'✅',warn:'⚠️',error:'❌',story:'📖',image:'🎨',video:'🎥',play:'🎬',key:'🔑',voice:'🔊',retry:'↻',ref:'🔗',queue:'⏳',lock:'🔒',keyframe:'🔗',dialogue:'💬',download:'📥'};const icon=icons[level]||'·';const entry=document.createElement('div');entry.className='j-entry '+level;entry.innerHTML='<span class="j-time">'+esc(nowTime())+'</span><span class="j-icon">'+icon+'</span><span class="j-msg">'+esc(msg)+'</span>';body.appendChild(entry);body.scrollTop=body.scrollHeight;while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild)}
-
-let debugCount=0,debugEntries=[],debugCollapsed=false,currentTab='journal';
-function debugLog(level,category,message,data){const body=document.getElementById('tech-body');if(!body)return;const time=nowTime();const entry=document.createElement('div');entry.className='debug-entry '+level;let html='<span class="debug-time">'+time+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';if(data!==undefined&&data!==null){let ds;if(typeof data==='string')ds=data;else{try{ds=JSON.stringify(data,null,2)}catch(e){ds=String(data)}}if(ds.length>2500)ds=ds.slice(0,2500)+'\n…[tronqué]';html+='<pre class="debug-data">'+esc(ds)+'</pre>'}entry.innerHTML=html;body.appendChild(entry);debugEntries.push({time,level,category,message});if(debugEntries.length>DEBUG_MAX)debugEntries.shift();while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild);body.scrollTop=body.scrollHeight;debugCount++;}
-function clearDebug(){const b=document.getElementById('tech-body');const j=document.getElementById('journal-body');if(b)b.innerHTML='';if(j)j.innerHTML='';debugEntries=[];debugCount=0;}
-function copyDebug(){const lines=debugEntries.map(e=>e.time+' ['+e.category+'] '+e.message).join('\n');const finish=(ok)=>showToast(ok?'Console copiée':'Copie impossible',ok?'success':'error');try{if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(lines).then(()=>finish(true)).catch(()=>legacyCopy(lines,finish));return}}catch(e){}legacyCopy(lines,finish)}
-function legacyCopy(text,cb){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);cb(ok)}
-function toggleDebugCollapse(){const p=document.getElementById('debug-panel');const b=document.getElementById('debug-collapse-btn');if(!p||!b)return;debugCollapsed=!debugCollapsed;p.classList.toggle('collapsed',debugCollapsed);b.textContent=debugCollapsed?'+':'−'}
-function switchTab(tab){currentTab=tab;const j=document.getElementById('journal-body');const t=document.getElementById('tech-body');const tj=document.getElementById('tab-journal');const tt=document.getElementById('tab-tech');if(!j||!t)return;if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active')}else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight}}
-function userIsReadingConsole(){const sy=window.scrollY,vh=window.innerHeight,dh=document.documentElement.scrollHeight;return(sy+vh)>=dh-240}
-function scrollToSection(id){if(userIsReadingConsole())return;const el=document.getElementById(id);if(!el||el.classList.contains('hidden'))return;setTimeout(()=>{if(userIsReadingConsole())return;const y=el.getBoundingClientRect().top+window.scrollY-30;window.scrollTo({top:y,behavior:'smooth'})},180)}
-function revealSection(id){const el=document.getElementById(id);if(!el)return;el.classList.remove('hidden');el.classList.add('open');scrollToSection(id)}
+function journalLog(msg, level){level=level||'info';const body=document.getElementById('journal-body');if(!body)return;const icons={info:'·',success:'✅',warn:'⚠️',error:'❌',story:'📖',image:'🎨',video:'🎥',download:'📥',key:'🔑'};const icon=icons[level]||'·';const entry=document.createElement('div');entry.className='j-entry '+level;entry.innerHTML='<span class="j-time">'+esc(nowTime())+'</span><span class="j-icon">'+icon+'</span><span class="j-msg">'+esc(msg)+'</span>';body.appendChild(entry);body.scrollTop=body.scrollHeight;while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild)}
+function debugLog(level,category,message,data){const body=document.getElementById('tech-body');if(!body)return;const entry=document.createElement('div');entry.className='debug-entry '+level;let html='<span class="debug-time">'+nowTime()+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';if(data!==undefined&&data!==null){let ds=typeof data==='string'?data:JSON.stringify(data,null,2);if(ds.length>2500)ds=ds.slice(0,2500)+'…';html+='<pre class="debug-data">'+esc(ds)+'</pre>'}entry.innerHTML=html;body.appendChild(entry);body.scrollTop=body.scrollHeight;}
 
 // ══════════════════════════════════════════════════════════════════
-// QUOTA
+// MULTI-CLÉS API & FETCH
 // ══════════════════════════════════════════════════════════════════
-function getQuota(){try{const raw=localStorage.getItem(QUOTA_STORAGE);if(!raw)return{date:'',seconds:0};const q=JSON.parse(raw);const today=new Date().toISOString().slice(0,10);if(q.date!==today)return{date:today,seconds:0};return q}catch(e){return{date:new Date().toISOString().slice(0,10),seconds:0}}}
-function setQuota(q){try{localStorage.setItem(QUOTA_STORAGE,JSON.stringify(q))}catch(e){}}
-function addVideoSeconds(sec){const q=getQuota();q.seconds=(q.seconds||0)+sec;setQuota(q);updateQuotaDisplay()}
-function updateQuotaDisplay(){const el=document.getElementById('video-quota-used');if(!el)return;const q=getQuota();el.textContent=Math.round(q.seconds||0)}
-
-// ══════════════════════════════════════════════════════════════════
-// MULTI-CLÉS API
-// ══════════════════════════════════════════════════════════════════
-function getStoredKeys(){try{const raw=localStorage.getItem(API_KEYS_STORAGE);if(!raw)return[];const arr=JSON.parse(raw);if(!Array.isArray(arr))return[];return arr.filter(k=>typeof k==='string'&&k.trim().length>0)}catch(e){return[]}}
+function getStoredKeys(){try{const raw=localStorage.getItem(API_KEYS_STORAGE);if(!raw)return[];return JSON.parse(raw).filter(k=>k.trim().length>0)}catch(e){return[]}}
 function setStoredKeys(keys){try{localStorage.setItem(API_KEYS_STORAGE,JSON.stringify(keys))}catch(e){}}
 function refreshKeyPool(){const stored=getStoredKeys();const old=state.keyPool||[];state.keyPool=stored.map(k=>{const existing=old.find(p=>p.key===k);return existing||{key:k,lastUsed:0,cooldownUntil:0,active:true,errorCount:0}})}
 function hasActiveKey(){return state.keyPool.some(k=>k.active)}
 function getReadyKey(){const now=Date.now();const active=state.keyPool.filter(k=>k.active);if(active.length===0)return{key:null,waitMs:0};const ready=active.filter(k=>!k.cooldownUntil||k.cooldownUntil<=now);if(ready.length===0){const soonest=active.reduce((a,b)=>(a.cooldownUntil||0)<(b.cooldownUntil||0)?a:b);return{key:null,waitMs:Math.max(1000,(soonest.cooldownUntil||0)-now)}}ready.sort((a,b)=>(a.lastUsed||0)-(b.lastUsed||0));return{key:ready[0],waitMs:0}}
-async function acquireKey(label){while(true){if(state.stopRequested)throw new Error('Arrêt demandé');const{key,waitMs}=getReadyKey();if(key){key.lastUsed=Date.now();return key}if(waitMs===0)throw new Error('Aucune clé API active');debugLog('warn',label,'Toutes les clés en cooldown — attente '+Math.round(waitMs/1000)+'s');setStatus('Clés en cooldown — attente '+Math.round(waitMs/1000)+'s');await sleep(waitMs)}}
-function renderKeysStatus(){const el=document.getElementById('api-keys-status');if(!el)return;if(state.keyPool.length===0){el.innerHTML='';return}const now=Date.now();el.innerHTML=state.keyPool.map((k,i)=>{let stateHtml='<span class="key-state">Active</span>';if(!k.active)stateHtml='<span class="key-state dead">Inactive</span>';else if(k.cooldownUntil>now){const sec=Math.ceil((k.cooldownUntil-now)/1000);stateHtml='<span class="key-state cool">Cooldown '+sec+'s</span>'}return '<div class="key-row"><span class="key-id">#'+(i+1)+' · '+esc(k.key.slice(0,8))+'…'+esc(k.key.slice(-4))+'</span>'+stateHtml+'</div>'}).join('')}
-function saveKeysFromUI(){const input=document.getElementById('api-keys-input');if(!input)return;const raw=input.value||'';const keys=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);if(keys.length===0){setStoredKeys([]);refreshKeyPool();updateApiPanel();renderKeysStatus();showToast('Aucune clé saisie','warn');return}setStoredKeys(keys);refreshKeyPool();updateApiPanel();renderKeysStatus();showToast(keys.length+' clé(s) enregistrée(s) ✓','success');journalLog(keys.length+' clé(s) API active(s).','key')}
-function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');if(!panel||!input||!line||!text)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s)';input.value=state.keyPool.map(k=>k.key).join('\n');input.placeholder=''}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';input.placeholder='Collez votre clé API — une par ligne'}renderKeysStatus();updateButtons();updateQuotaDisplay()}
+async function acquireKey(label){while(true){if(state.stopRequested)throw new Error('Arrêt demandé');const{key,waitMs}=getReadyKey();if(key){key.lastUsed=Date.now();return key}if(waitMs===0)throw new Error('Aucune clé API active');await sleep(waitMs)}}
 
-// ══════════════════════════════════════════════════════════════════
-// API FETCH
-// ══════════════════════════════════════════════════════════════════
 async function apiFetch(url, options, label, maxAttempts){
-    options=options||{};label=label||'API';maxAttempts=(typeof maxAttempts==='number'&&maxAttempts>0)?maxAttempts:6;let lastErr=null;
+    options=options||{};label=label||'API';maxAttempts=maxAttempts||6;let lastErr=null;
     for(let attempt=0;attempt<maxAttempts;attempt++){
         if(state.stopRequested)throw new Error('Arrêt demandé');
-        let keyObj=null;try{keyObj=await acquireKey(label)}catch(e){throw e}
-        const method=options.method||'GET';
+        let keyObj=await acquireKey(label);
         const headers=Object.assign({},options.headers||{},{'Authorization':'Bearer '+keyObj.key});
-        const finalOptions=Object.assign({},options,{headers});
-        debugLog('api','REQ '+label,method+' '+url+' · clé '+keyObj.key.slice(-4));
         try{
-            const t0=Date.now();const res=await fetch(url,finalOptions);const dt=Date.now()-t0;
-            let retryAfter=0;try{retryAfter=parseInt(res.headers.get('Retry-After')||'0',10)||0}catch(e){}
-            let errorText='';if(!res.ok){try{errorText=(await res.clone().text()).slice(0,1000)}catch(e){}}
-            debugLog('response','RÉP '+label,'HTTP '+res.status+' en '+dt+'ms',errorText||undefined);
+            const res=await fetch(url,Object.assign({},options,{headers}));
             if(res.ok){keyObj.errorCount=0;return res}
-            if([400,401,403,404].includes(res.status)){
-                if(res.status===401||res.status===403){keyObj.errorCount=(keyObj.errorCount||0)+1;if(keyObj.errorCount>=3){keyObj.active=false;debugLog('error','CLÉ','Clé désactivée')}}
-                const err=new Error('HTTP '+res.status+' — '+errorText.slice(0,300));err.status=res.status;throw err;
-            }
-            if(res.status===429){const wait=retryAfter>0?retryAfter:Math.min(120,20+attempt*15);keyObj.cooldownUntil=Date.now()+wait*1000;debugLog('warn','RATELIMIT','Clé → cooldown '+wait+'s');renderKeysStatus();const{key:next}=getReadyKey();if(next&&next!==keyObj)continue;setStatus('Limite API — attente '+wait+'s');await sleep(Math.min(wait*1000,3000));continue}
-            if([500,502,503,504,520,522,524].includes(res.status)){
-                const isQueueFull=res.status===503&&(errorText.toLowerCase().includes('queue')||errorText.toLowerCase().includes('video_queue_full'));
-                if(isQueueFull){const err=new Error('QUEUE_FULL');err.isQueueFull=true;err.status=503;throw err}
-                const wait=Math.min(60,8+attempt*6);
-                debugLog('warn','SERVICE','HTTP '+res.status+' — attente '+wait+'s');
-                setStatus('Service occupé — reprise dans '+wait+'s');
-                await sleep(wait*1000);continue;
-            }
-            const wait=Math.min(60,6+attempt*5);debugLog('warn','HTTP','HTTP '+res.status+' — retry '+wait+'s');await sleep(wait*1000);
+            let errorText='';try{errorText=(await res.clone().text()).slice(0,1000)}catch(e){}
+            if([400,401,403,404].includes(res.status)){throw new Error('HTTP '+res.status+' — '+errorText.slice(0,300))}
+            if(res.status===429){keyObj.cooldownUntil=Date.now()+20000;continue}
+            await sleep(5000);
         }catch(e){
             if(e.message==='Arrêt demandé')throw e;
-            if(e.isQueueFull)throw e;
-            if(e.status&&[400,401,403,404].includes(e.status))throw e;
-            lastErr=e;
-            const wait=Math.min(45,4+attempt*4);debugLog('warn','NETWORK',e.message+' — retry '+wait+'s');await sleep(wait*1000);
+            lastErr=e; await sleep(4000);
         }
     }
-    throw lastErr||new Error('Tentatives épuisées pour '+label);
+    throw lastErr||new Error('Échec API '+label);
 }
 
 // ══════════════════════════════════════════════════════════════════
-// JSON PARSER
+// APPELS API IA
 // ══════════════════════════════════════════════════════════════════
-function escapeControlCharsInStrings(text){let result='';let inString=false;let escape=false;for(let i=0;i<text.length;i++){const ch=text[i];if(escape){result+=ch;escape=false;continue}if(ch==='\\'){result+=ch;escape=true;continue}if(ch==='"'){inString=!inString;result+=ch;continue}if(inString){if(ch==='\n'){result+='\\n';continue}if(ch==='\r'){result+='\\r';continue}if(ch==='\t'){result+='\\t';continue}const code=ch.charCodeAt(0);if(code<32){result+='\\u'+code.toString(16).padStart(4,'0');continue}}result+=ch}return result}
-function balanceJson(text){let ob=0,ok=0,inString=false,escape=false;for(let i=0;i<text.length;i++){const ch=text[i];if(escape){escape=false;continue}if(ch==='\\'){escape=true;continue}if(ch==='"'){inString=!inString;continue}if(inString)continue;if(ch==='{')ob++;else if(ch==='}')ob--;else if(ch==='[')ok++;else if(ch===']')ok--}let r=text;if(inString)r+='"';while(ok>0){r+=']';ok--}while(ob>0){r+='}';ob--}return r}
-function extractJson(text){if(!text)return null;let c=text.trim();const fm=c.match(/```(?:json)?\s*([\s\S]*?)```/);if(fm)c=fm[1].trim();const fb=c.indexOf('{');if(fb<0)return null;c=c.slice(fb);try{return JSON.parse(c)}catch(e1){}try{return JSON.parse(escapeControlCharsInStrings(c))}catch(e2){}try{const lb=c.lastIndexOf('}');if(lb>0)return JSON.parse(escapeControlCharsInStrings(c.slice(0,lb+1)))}catch(e3){}try{return JSON.parse(balanceJson(escapeControlCharsInStrings(c)))}catch(e4){}debugLog('error','PARSE','Aucune stratégie OK');return null}
+async function callChatCompletion(systemPrompt,userPrompt,label,maxTokens,temperature){
+    const body={model:MODEL_TEXT,messages:[{role:'system',content:sanitizeForApi(systemPrompt)},{role:'user',content:sanitizeForApi(userPrompt)}],temperature:temperature||0.8,max_tokens:maxTokens||8000};
+    const res=await apiFetch(API_BASE+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},label,4);
+    const data=await res.json();return data.choices[0].message.content;
+}
 
-// ══════════════════════════════════════════════════════════════════
-// IMAGE
-// ══════════════════════════════════════════════════════════════════
-async function generateImage(prompt, referenceUrls){
+async function generateImage(prompt){
     const body={model:MODEL_IMAGE,prompt:sanitizeForApi(prompt),n:1,size:'1K',ratio:'9:16'};
-    if(referenceUrls){
-        const arr = Array.isArray(referenceUrls) ? referenceUrls.filter(Boolean) : [referenceUrls];
-        if(arr.length > 0) body.extra_body = { image: arr };
-    }
     const res=await apiFetch(API_BASE+'/images/generations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Image',4);
-    const data=await res.json();const item=data.data&&data.data[0];
-    if(!item)throw new Error('Pas d\'image');
-    if(item.url)return item.url;
-    if(item.b64_json)return 'data:image/png;base64,'+item.b64_json;
-    throw new Error('Format inconnu');
+    const data=await res.json();return data.data[0].url;
 }
 
-// ══════════════════════════════════════════════════════════════════
-// VIDEO — KEYFRAME
-// ══════════════════════════════════════════════════════════════════
-async function createVideoTask(prompt, firstFrameUrl, lastFrameUrl){
-    const secondsStr = String(Math.min(12, Math.max(4, state.durationSeconds)));
-    const body = {model: MODEL_VIDEO, prompt: sanitizeForApi(prompt), mode: 'keyframe', seconds: secondsStr, size: '720P', aspect_ratio: '9:16', n: 1};
-    if(firstFrameUrl) body.first_frame = firstFrameUrl;
-    if(lastFrameUrl) body.last_frame = lastFrameUrl;
-    debugLog('ai','PROMPT VIDÉO','KEYFRAME · '+body.seconds+'s · first='+(firstFrameUrl?'oui':'non')+' · last='+(lastFrameUrl?'oui':'non'));
-    const res=await apiFetch(API_BASE+'/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Video Task',4);
-    const data=await res.json();
-    const compositeId=data.video_id||data.id||data.task_id;
-    if(!compositeId)throw new Error('Pas de video_id');
-    return compositeId;
+async function createVideoTask(prompt, firstFrame, lastFrame){
+    const body = {model: MODEL_VIDEO, prompt: sanitizeForApi(prompt), mode: 'keyframe', seconds: String(state.durationSeconds), size: '720P', aspect_ratio: '9:16', n: 1, first_frame: firstFrame, last_frame: lastFrame};
+    const res=await apiFetch(API_BASE+'/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Video',4);
+    const data=await res.json(); return data.video_id||data.id;
 }
 
 async function pollVideo(videoId, onProgress){
-    let rem = VIDEO_FIRST_POLL_DELAY_SEC;
-    while(rem > 0){
+    await sleep(40000); // Attente initiale
+    for(let i=0;i<100;i++){
         if(state.stopRequested) throw new Error('Arrêt demandé');
-        onProgress('Préparation — '+rem+'s');
-        await sleep(1000); rem--;
-    }
-    let pollInterval = VIDEO_POLL_INTERVAL_START_MS;
-    let consecutiveOk = 0;
-    for(let attempt = 0; attempt < VIDEO_MAX_POLL_ATTEMPTS; attempt++){
-        if(state.stopRequested) throw new Error('Arrêt demandé');
-        let r = Math.ceil(pollInterval / 1000);
-        while(r > 0){
-            if(state.stopRequested) throw new Error('Arrêt demandé');
-            onProgress('Création — '+r+'s');
-            await sleep(1000); r--;
-        }
-        const url = POLL_BASE + '?video_id=' + encodeURIComponent(videoId) + '&model_name=' + encodeURIComponent(MODEL_VIDEO);
-        try {
-            const keyObj = getReadyKey().key;
-            if(!keyObj){ await sleep(5000); continue; }
-            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + keyObj.key } });
-            if(res.status === 429){
-                pollInterval = VIDEO_POLL_INTERVAL_BACKOFF_429_MS;
-                onProgress('Limite API — pause '+(pollInterval/1000)+'s');
-                continue;
-            }
-            if(!res.ok){
-                pollInterval = Math.min(pollInterval * 1.5, VIDEO_POLL_INTERVAL_MAX_MS);
-                continue;
-            }
-            consecutiveOk++;
-            if(consecutiveOk >= 3){
-                pollInterval = Math.max(pollInterval * 0.8, VIDEO_POLL_INTERVAL_START_MS);
-                consecutiveOk = 0;
-            }
+        onProgress('Création — '+(i*5)+'s');
+        await sleep(5000);
+        const res = await fetch(POLL_BASE + '?video_id=' + videoId + '&model_name=' + MODEL_VIDEO, { headers: { 'Authorization': 'Bearer ' + getReadyKey().key.key } });
+        if(res.ok){
             const d = await res.json();
-            const status = d.status || 'unknown';
-            const progress = d.progress || 0;
-            onProgress('Création — '+progress+'%');
-            if(status === 'completed' || status === 'succeeded' || status === 'done'){
-                const videoUrl = d.url || (d.metadata && d.metadata.url) || (d.output && d.output.url);
-                if(!videoUrl) throw new Error('Terminé mais pas d\'url');
-                return videoUrl;
-            }
-            if(status === 'failed' || status === 'error' || status === 'cancelled') throw new Error('Échec ('+status+')');
-        } catch(e){
-            if(e.message === 'Arrêt demandé') throw e;
-            if(e.message.startsWith('Échec') || e.message === 'Terminé mais pas d\'url') throw e;
-            pollInterval = Math.min(pollInterval * 1.5, VIDEO_POLL_INTERVAL_MAX_MS);
+            if(d.status === 'completed') return d.url || d.metadata.url;
+            if(d.status === 'failed') throw new Error('Échec');
         }
     }
-    throw new Error('Délai maximal dépassé');
+    throw new Error('Timeout');
 }
 
 // ══════════════════════════════════════════════════════════════════
 // PROMPTS
 // ══════════════════════════════════════════════════════════════════
-function buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount){
-    const dialogueList = dialogues.map((d, i) => (i+1) + '. "' + d + '"').join('\n');
-    return [
-        'Tu es un scénariste de séries adultes (HBO / Netflix). Tu écris des drames urbains crus, violents, sensuels.',
-        '',
-        'L\'UTILISATEUR A FOURNI CES RÉPLIQUES (dans cet ordre, une par scène) :',
-        dialogueList,
-        '',
-        context ? ('CONTEXTE FOURNI PAR L\'UTILISATEUR :\n' + context + '\n') : '',
-        'MISSION : Construis une histoire COHÉRENTE où chaque réplique trouve sa place naturelle.',
-        '',
-        'RÈGLES ABSOLUES :',
-        '- Il y a exactement ' + sceneCount + ' scènes, une par réplique.',
-        '- La scène N utilise EXACTEMENT la réplique N (mot pour mot, sans la modifier).',
-        '- Tu dois inventer les personnages, le LIEU UNIQUE, les actions et les événements qui justifient chaque réplique.',
-        '- L\'histoire doit avoir une progression logique : situation initiale → montée de tension → point de rupture → résolution.',
-        '- Chaque scène doit avoir un "summary" (résumé) et une "action" (description physique en anglais pour le prompt vidéo).',
-        '- Chaque personnage a : prénom, genre, âge, métier, personnalité, "face_lock" (visage stable), "outfit_lock" (habits stables).',
-        '',
-        '⚠️ LIEU UNIQUE — RÈGLE CRITIQUE :',
-        '- Toutes les scènes se déroulent dans LE MÊME LIEU PHYSIQUE (même pièce, même décor).',
-        '- Tu dois décrire ce lieu une seule fois dans le champ "environment_lock" à la racine du JSON.',
-        '- Le "environment_lock" doit être une description ANGLAISE TRÈS PRÉCISE et VISUELLE : type de pièce, murs, couleurs dominantes, mobilier, éclairage, objets visibles au premier plan et à l\'arrière-plan.',
-        '- Exemple : "dark night bar interior, deep red velvet booths, black marble counter on the left, hanging brass lamps, smoky haze, warm amber light from the right, art deco wallpaper with gold patterns, a large mirror behind the bar".',
-        '- NE change PAS ce lieu d\'une scène à l\'autre. La caméra peut bouger, mais le décor reste identique.',
-        '',
-        'FORMAT JSON STRICT (retourne UNIQUEMENT ce JSON) :',
-        '{',
-        '  "title": "titre adulte",',
-        '  "logline": "résumé en une phrase",',
-        '  "environment_lock": "english very detailed description of the single location — walls, colors, furniture, lighting direction, foreground and background objects",',
-        '  "characters": [',
-        '    { "name": "Prénom", "gender": "homme ou femme", "age": 34, "job": "métier", "personality": "trait", "face_lock": "...", "outfit_lock": "..." }',
-        '  ],',
-        '  "scenes": [',
-        '    { "scene_number": 1, "summary": "ce qui se passe", "action": "english action description — camera movement only, NO change of location", "emotion": "colère", "speaker": "Nom du personnage qui dit la réplique 1" }',
-        '  ]',
-        '}',
-        '',
-        'RÈGLES JSON : clés entre guillemets, virgules sauf dernière, pas de markdown.'
-    ].filter(Boolean).join('\n');
+function buildStoryPrompt(dialogues, context, sceneCount){
+    return `Tu es un scénariste. Voici les répliques imposées (dans l'ordre) :\n${dialogues.join('\n')}\n\nContexte : ${context||'Aucun'}.\n\nConstruis une histoire de ${sceneCount} scènes. Chaque scène utilise une réplique. Invente un lieu unique (environment_lock) et des personnages. Retourne UNIQUEMENT un JSON valide avec la structure :\n{"title":"...", "logline":"...", "environment_lock":"english description of the room...", "characters":[{"name":"...", "gender":"...", "age":30, "job":"...", "face_lock":"...", "outfit_lock":"..."}], "scenes":[{"scene_number":1 for, "summary":"ce qui se passe en français", "action":"english action video", "speaker":"Nom"}]}. Ne mets pas de markdown.`;
 }
 
-function buildIdentityLockBlock(story){
-    return (story.characters||[]).map(c => {
-        return `${c.name} (${c.gender}, ${c.age} ans) — FACE: ${c.face_lock||'stable adult face'} | OUTFIT: ${c.outfit_lock||c.outfit||'elegant adult clothing'}`;
-    }).join('\n');
+function buildImagePrompt(story, isRef){
+    const chars = story.characters.map(c=>`${c.name}: ${c.face_lock}, ${c.outfit_lock}`).join(' | ');
+    return `PASTEL CINEMATIC 35MM. REFERENCE SCENE.\nENVIRONMENT: ${story.environment_lock}\nCHARACTERS: ${chars}\nACTION: ${story.scenes[0].action}\nFORMAT: 9:16 portrait. No text.`;
 }
 
-function buildEnvironmentLockBlock(story){
-    const env = story.environment_lock || 'consistent single location across all scenes';
-    return [
-        '🔒 LOCKED ENVIRONMENT — SAME PLACE IN EVERY SCENE:',
-        env,
-        '',
-        'CONSTRAINTS: The room, walls, colors, furniture, background objects and lighting direction MUST be identical to the reference image and to all other scenes. Camera can move (dolly, pan, tilt) but the location does NOT change. Do not invent new rooms. Do not change wall color. Do not change lighting temperature.'
-    ].join('\n');
-}
-
-function buildImagePrompt(scene, story, isFirstImage){
-    const charList=(story.characters||[]).map(c=>c.name+' ('+c.age+' ans, '+c.job+', '+c.gender+'): '+c.physical_description).join(' | ');
-    const identityLock = buildIdentityLockBlock(story);
-    const envLock = buildEnvironmentLockBlock(story);
-    const refBlock = (state.characterReferenceUrl && !isFirstImage)
-        ? 'REFERENCE IMAGES — The characters AND the environment MUST look EXACTLY like the provided reference. Same room, same walls, same furniture, same lighting.'
-        : '';
-    return [
-        'PASTEL CINEMATIC KEYFRAME — 35MM FILM, ADULT CINEMA.',
-        'STYLE : pastel cinematic, 35mm film grain.',
-        'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'.',
-        '',
-        refBlock,
-        envLock,
-        '',
-        '🔒 LOCKED IDENTITY:',
-        identityLock,
-        '',
-        'CHARACTERS — ADULT HUMANS:',
-        charList,
-        'NO fruit body. NO cartoon. NO kawaii.',
-        '',
-        'SCENE : '+(scene.summary||''),
-        'ACTION : '+(scene.action||''),
-        '',
-        'FORMAT : portrait 9:16 vertical. No text, no watermarks.'
-    ].filter(Boolean).join('\n');
-}
-
-function buildVideoPrompt(scene, story, previousScene, dialogue){
-    const charList=(story.characters||[]).map(c=>c.name+' ('+c.gender+', '+c.age+'): '+c.physical_description).join(' | ');
-    const identityLock = buildIdentityLockBlock(story);
-    const envLock = buildEnvironmentLockBlock(story);
-    const intensityMap={subtle:'very subtle and slow movement',moderate:'slow and elegant movement',strong:'dynamic yet controlled movement, tense'};
-    const prevAction = previousScene ? ('Starts exactly where previous scene ended: '+(previousScene.action||'')+'. ') : '';
-    
-    let dialogueBlock = '';
-    if(dialogue){
-        const speakerChar = (story.characters||[]).find(c => c.name === dialogue.speaker);
-        const speakerIdentity = speakerChar ? (speakerChar.outfit_lock || speakerChar.face_lock || dialogue.speaker) : dialogue.speaker;
-        dialogueBlock = 'DIALOGUE — SPEAKER: ' + speakerIdentity + ' says: "' + dialogue.line_fr + '". Mouth moving naturally. ONLY this character speaks.';
-    }
-    
-    return [
-        'PASTEL CINEMATIC ADULT SHORT FILM — '+state.durationSeconds+'-SECOND SCENE. TIKTOK 9:16.',
-        '',
-        'STYLE : Wes Anderson meets Nicolas Winding Refn. Pastel cinematic, 35mm film grain.',
-        'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'.',
-        '',
-        prevAction,
-        envLock,
-        '',
-        '🔒 LOCKED IDENTITY:',
-        identityLock,
-        '',
-        'ADULT HUMANS:',
-        charList,
-        '',
-        'CAMERA : one continuous shot, no cuts. Slow dolly-in OR pan OR tilt. Camera CAN move.',
-        'ACTION : '+(scene.action||''),
-        'Movement intensity : '+(intensityMap[state.intensity]||intensityMap.strong)+'.',
-        '',
-        dialogueBlock,
-        '',
-        'AUDIO : No music. Only tension ambience, footsteps, breathing.',
-        '',
-        'CONSTRAINTS : vertical 9:16, '+state.durationSeconds+' seconds, no text. The room does NOT change.'
-    ].filter(Boolean).join('\n');
+function buildVideoPrompt(scene, story, prev){
+    const chars = story.characters.map(c=>`${c.name}: ${c.face_lock}, ${c.outfit_lock}`).join(' | ');
+    const prevAct = prev ? `Starts where previous ended: ${prev.action}.` : '';
+    return `PASTEL CINEMATIC 35MM. SCENE ${scene.scene_number}.\n${prevAct}\nENVIRONMENT LOCK (DO NOT CHANGE): ${story.environment_lock}\nCHARACTERS LOCK: ${chars}\nACTION: ${scene.action}\nCAMERA: slow movement. 9:16 format.`;
 }
 
 // ══════════════════════════════════════════════════════════════════
-// RENDU UI
+// LOGIQUE UI & PIPELINE
 // ══════════════════════════════════════════════════════════════════
-function updateButtons(){
-    const launch=document.getElementById('launch-btn');
-    const stop=document.getElementById('stop-btn');
-    const play=document.getElementById('play-film-btn');
-    const replay=document.getElementById('replay-btn');
-    const retryAll=document.getElementById('retry-all-btn');
+function updateUI(){
     const hasKey=hasActiveKey();
-    const hasVideos=state.videos.filter(v=>v.status==='done').length>0;
-    const failedCount=state.videos.filter(v=>v.status==='error').length;
-    if(launch){launch.disabled=!hasKey||state.isRunning;if(!hasKey)launch.innerHTML='🔑 Ajoutez une clé API';else if(state.isRunning)launch.innerHTML='⏳ Création en cours…';else launch.innerHTML='▶ Créer le film'}
-    if(stop)stop.classList.toggle('visible',state.isRunning);
-    if(play)play.disabled=!hasVideos||state.isPlayingFilm||state.isRunning;
-    if(replay)replay.disabled=!hasVideos||state.isPlayingFilm||state.isRunning;
-    if(retryAll)retryAll.classList.toggle('visible',failedCount>0&&!state.isRunning);
-    const pb=document.getElementById('player-badge');if(pb)pb.textContent=state.videos.filter(v=>v.status==='done').length;
+    document.getElementById('prepare-btn').disabled = !hasKey || state.isRunning;
+    document.getElementById('generate-video-btn').disabled = state.isRunning;
 }
 
 function renderStory(){
-    const view=document.getElementById('story-view');if(!view)return;
-    if(!state.story){view.textContent='L\'histoire apparaîtra ici…';return}
-    const s=state.story;let html='';
-    html+='<div class="story-title">📖 '+esc(s.title||'Sans titre')+'</div>';
-    html+='<div class="story-logline">'+esc(s.logline||'')+'</div>';
-    html+='<div class="story-meta">🎬 '+((s.scenes||[]).length)+' scènes · '+(s.characters||[]).length+' personnages · '+Math.round(state.sceneCount*state.durationSeconds)+'s total</div>';
-    if(s.environment_lock){
-        html+='<div class="env-card"><strong>🔒 Décor verrouillé :</strong> '+esc(s.environment_lock)+'</div>';
-    }
-    (s.characters||[]).forEach(c=>{
-        html+='<div class="character-card"><strong>'+esc(c.name||'')+'</strong> — '+esc(c.age||'')+' ans · '+esc(c.job||'')+' · '+esc(c.gender||'')+'</div>';
-    });
-    (s.scenes||[]).forEach((sc,i)=>{
-        html+='<div class="scene-block">';
-        html+='<div class="sc-head">Scène '+(sc.scene_number||(i+1))+(sc.emotion?' · '+esc(sc.emotion):'')+'</div>';
-        html+='<div class="sc-line"><span class="sc-label">Résumé</span>'+esc(sc.summary||'')+'</div>';
-        if(sc.action)html+='<div class="sc-line"><span class="sc-label">Action</span>'+esc(sc.action)+'</div>';
-        if(sc.dialogue&&sc.dialogue.line_fr)html+='<div class="sc-line sc-dialogue"><span class="sc-label">💬</span><strong>'+esc(sc.dialogue.speaker||'')+'</strong> — « '+esc(sc.dialogue.line_fr)+' »</div>';
-        html+='</div>';
+    const view=document.getElementById('story-view');
+    if(!state.story)return;
+    const s=state.story;
+    let html=`<div class="story-title">📖 ${esc(s.title)}</div>`;
+    html+=`<div class="story-logline">${esc(s.logline)}</div>`;
+    html+=`<div class="env-card"><strong>🔒 Décor :</strong> ${esc(s.environment_lock)}</div>`;
+    s.scenes.forEach(sc=>{
+        html+=`<div class="scene-block"><div class="sc-head">Scène ${sc.scene_number}</div>`;
+        html+=`<div class="sc-line"><strong>${esc(sc.speaker)} :</strong> « ${esc(state.dialogues[sc.scene_number-1])} »</div>`;
+        html+=`<div class="sc-line" style="font-size:.65rem;color:var(--dim)">Action : ${esc(sc.summary)}</div></div>`;
     });
     view.innerHTML=html;
-    const badge=document.getElementById('story-badge');if(badge)badge.textContent=(s.scenes||[]).length+' scènes · '+Math.round(state.sceneCount*state.durationSeconds)+'s';
+    document.getElementById('section-story').classList.remove('hidden');
+    document.getElementById('section-story').classList.add('open');
 }
 
 function renderImages(){
-    const grid=document.getElementById('images-grid');if(!grid)return;
-    if(!state.images.length){grid.innerHTML='';return}
-    grid.innerHTML=state.images.map((img,i)=>{
-        if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
-        if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
-        const isRef = i===0 && state.characterReferenceUrl;
-        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(isRef?' <span class="ref-badge">🔒 DÉCOR+REF</span>':'')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
+    const grid=document.getElementById('images-grid');
+    grid.innerHTML = state.images.map(img => {
+        if(img.status==='loading') return `<div class="scene-card generating"><div class="scene-placeholder"><div class="spinner-mini"></div>Génération…</div></div>`;
+        return `<div class="scene-card done"><div class="scene-card-body"><img src="${img.url}" style="width:100%;border-radius:2px;"></div></div>`;
     }).join('');
-    const c=document.getElementById('images-badge');if(c)c.textContent=state.images.filter(i=>i.status==='done').length+'/'+state.images.length;
+    document.getElementById('section-images').classList.remove('hidden');
+    document.getElementById('section-images').classList.add('open');
 }
 
-function buildDownloadButton(videoObj, index){
-    const btn=document.createElement('button');
-    btn.type='button';
-    btn.className='scene-download';
+// ÉTAPE 1 : PRÉPARATION
+async function prepareProject(){
+    if(state.isRunning) return;
     
-    if(videoObj._blob){
-        btn.textContent='📥 Enregistrer la vidéo';
-    } else if(videoObj._blobLoading){
-        btn.textContent='⏳ Préparation…';
-        btn.classList.add('preparing');
-        btn.disabled=true;
-    } else {
-        btn.textContent='📥 Enregistrer la vidéo';
-    }
-    
-    btn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // CAS 1 : blob prêt → partage synchrone (iOS natif)
-        if(videoObj._blob && navigator.share && navigator.canShare){
-            try{
-                const file = new File([videoObj._blob], 'scene-'+(index+1)+'.mp4', { type:'video/mp4' });
-                if(navigator.canShare({ files: [file] })){
-                    // ⚠️ iOS : passer UNIQUEMENT files
-                    await navigator.share({ files: [file] });
-                    journalLog('Scène '+(index+1)+' partagée via menu natif.','download');
-                    return;
-                }
-            }catch(err){
-                if(err.name === 'AbortError'){ return; }
-                debugLog('warn','SHARE','Échec share : '+err.message);
-            }
-        }
-        
-        // CAS 2 : blob pas encore prêt → attendre
-        if(!videoObj._blob && videoObj._blobLoading){
-            showToast('Préparation en cours, réessayez dans quelques secondes','warn',3000);
-            return;
-        }
-        
-        // CAS 3 : fallback téléchargement direct
-        try{
-            if(videoObj._blob){
-                const a = document.createElement('a');
-                const objectUrl = URL.createObjectURL(videoObj._blob);
-                a.href = objectUrl;
-                a.download = 'scene-'+(index+1)+'.mp4';
-                a.rel = 'noopener';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(() => URL.revokeObjectURL(objectUrl), 30000);
-                journalLog('Scène '+(index+1)+' téléchargée.','download');
-            } else {
-                // dernier recours : ouvrir dans un onglet
-                window.open(videoObj.url, '_blank', 'noopener');
-            }
-        }catch(err){
-            debugLog('error','DOWNLOAD',err.message);
-            window.open(videoObj.url, '_blank', 'noopener');
-        }
-    });
-    return btn;
-}
-
-function renderVideos(){
-    const grid=document.getElementById('videos-grid');if(!grid)return;
-    while(grid.children.length>state.videos.length)grid.removeChild(grid.lastChild);
-    for(let i=grid.children.length;i<state.videos.length;i++){
-        const card=document.createElement('div');card.className='scene-card';card.dataset.index=String(i);card.dataset.status='';card.dataset.url='';
-        card.innerHTML='<div class="scene-card-header"><span class="scene-card-title">🎬 Scène '+(i+1)+'</span><span class="scene-card-status"></span></div><div class="scene-card-body"></div>';
-        grid.appendChild(card);
-    }
-    state.videos.forEach((v,i)=>{
-        const card=grid.children[i];if(!card)return;
-        const titleEl=card.querySelector('.scene-card-title');const statusEl=card.querySelector('.scene-card-status');const bodyEl=card.querySelector('.scene-card-body');
-        let titleText='🎬 Scène '+(i+1);
-        if(v.retryCount)titleText+=' · retry '+v.retryCount;
-        if(v.inQueue)titleText+=' <span class="queue-badge">QUEUE</span>';
-        if(i>0)titleText+=' <span class="keyframe-badge">🔗</span>';
-        if(v._blob)titleText+=' <span class="blob-badge">📥 PRÊT</span>';
-        if(titleEl.innerHTML!==titleText)titleEl.innerHTML=titleText;
-        const newClass='scene-card '+(v.status==='done'?'done':v.status==='error'?'error':v.status==='queued'?'queued':v.status==='retrying'?'retrying':(v.status==='loading'||v.status==='pending')?'generating':'');
-        if(card.className!==newClass)card.className=newClass;
-        if(v.status==='done'&&v.url){
-            const needsRender = (card.dataset.url!==v.url) || !bodyEl.querySelector('video') || (v._blob && !bodyEl.querySelector('.scene-download:not(.preparing)'));
-            if(needsRender){
-                statusEl.innerHTML='<span style="color:var(--ok);">✓</span>';bodyEl.innerHTML='';
-                const video=document.createElement('video');video.src=v.url;video.controls=true;video.preload='metadata';video.setAttribute('playsinline','');bodyEl.appendChild(video);
-                const dl = buildDownloadButton(v, i);
-                bodyEl.appendChild(dl);
-                card.dataset.url=v.url;
-            } else {
-                // mettre à jour le bouton si son état a changé
-                const existingBtn = bodyEl.querySelector('.scene-download');
-                if(existingBtn){
-                    if(v._blob && existingBtn.classList.contains('preparing')){
-                        const newBtn = buildDownloadButton(v, i);
-                        existingBtn.replaceWith(newBtn);
-                    }
-                }
-            }
-        } else if(v.status==='error'||v.status==='retrying'||v.status==='queued'){
-            if(card.dataset.status!==v.status||card.dataset.progress!==(v.progress||'')){
-                let color = v.status==='error' ? 'var(--err)' : (v.status==='queued' ? '#4a7bc8' : 'var(--warn)');
-                let label = v.status==='queued' ? v.progress : (v.status==='retrying' ? 'Retry en cours…' : 'Échec : '+esc((v.error||'').slice(0,80)));
-                statusEl.innerHTML = v.status==='error' ? '<span style="color:var(--err);">✕</span>' : '<span class="spinner-mini"></span>';
-                bodyEl.innerHTML='<div class="scene-placeholder" style="color:'+color+';">'+label+'</div>'+
-                    '<button type="button" class="scene-retry-btn" data-retry="'+i+'">↻ Réessayer</button>';
-                const btn=bodyEl.querySelector('[data-retry]');
-                if(btn)btn.addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();manualRetryScene(i)});
-            }
-        } else {
-            statusEl.innerHTML='<span class="spinner-mini"></span>';
-            const progressTxt=v.progress||'En attente…';
-            if(card.dataset.progress!==progressTxt||card.dataset.status!==v.status){bodyEl.innerHTML='<div class="scene-placeholder"><div class="spinner-mini"></div><span>'+esc(progressTxt)+'</span></div>'}
-        }
-        card.dataset.status=v.status||'';card.dataset.progress=v.progress||'';
-    });
-    const c=document.getElementById('videos-badge');if(c)c.textContent=state.videos.filter(v=>v.status==='done').length+'/'+state.videos.length;
-    updateButtons();
-}
-
-// ══════════════════════════════════════════════════════════════════
-// APPEL TEXTE
-// ══════════════════════════════════════════════════════════════════
-async function callChatCompletion(systemPrompt,userPrompt,label,maxTokens,temperature){
-    const body={model:MODEL_TEXT,messages:[{role:'system',content:sanitizeForApi(systemPrompt)},{role:'user',content:sanitizeForApi(userPrompt)}],temperature:typeof temperature==='number'?temperature:0.8,max_tokens:maxTokens||8000,reasoning_effort:'none',chat_template_kwargs:{enable_thinking:false}};
-    const res=await apiFetch(API_BASE+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},label,4);
-    const data=await res.json();const choice=data.choices&&data.choices[0];const msg=choice&&choice.message;
-    let content=msg&&msg.content;if(!content&&msg&&msg.reasoning_content)content=msg.reasoning_content;
-    return content;
-}
-
-// ══════════════════════════════════════════════════════════════════
-// PIPELINE
-// ══════════════════════════════════════════════════════════════════
-async function createStory(){
-    if(state.isRunning)return;if(!hasActiveKey()){showToast('Ajoutez au moins une clé API','error');return}
-    
-    const dialogueInput = document.getElementById('dialogue-input').value.trim();
-    if(dialogueInput.length < 5){showToast('Collez au moins une réplique','error');return}
-    
-    const dialogues = dialogueInput.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-    if(dialogues.length === 0){showToast('Aucune réplique valide','error');return}
+    const dialogues = document.getElementById('dialogue-input').value.split('\n').map(l=>l.trim()).filter(l=>l);
+    if(!dialogues.length) return showToast('Ajoutez des répliques','error');
     
     state.dialogues = dialogues;
     state.sceneCount = dialogues.length;
     state.context = document.getElementById('context-input').value.trim();
-    state.durationSeconds = parseInt(document.getElementById('duration-select').value,10);
-    state.intensity = document.getElementById('intensity-select').value;
-    state.story = null;
-    state.images = [];
-    state.videos = [];
-    state.characterReferenceUrl = null;
-    state.environmentReferenceUrl = null;
+    state.durationSeconds = parseInt(document.getElementById('duration-select').value);
     
-    document.getElementById('section-story').classList.add('hidden');
-    document.getElementById('section-images').classList.add('hidden');
+    state.isRunning = true; state.stopRequested = false; updateUI();
+    document.getElementById('section-validation').classList.add('hidden');
     document.getElementById('section-videos').classList.add('hidden');
-    document.getElementById('section-player').classList.add('hidden');
-    document.getElementById('story-view').innerHTML = '';
-    document.getElementById('images-grid').innerHTML = '';
     document.getElementById('videos-grid').innerHTML = '';
-    renderStory(); renderImages(); renderVideos(); updateButtons();
-    
-    state.isRunning = true;
-    state.stopRequested = false;
-    
-    journalLog('Création lancée. ' + state.sceneCount + ' répliques → ' + state.sceneCount + ' scènes × ' + state.durationSeconds + 's.', 'lock');
+    state.videos = [];
 
-    try{
-        setStatus('Étape 1/4 — L\'IA construit l\'histoire autour de tes répliques…');
-        journalLog('Construction de l\'histoire à partir de ' + state.sceneCount + ' répliques...', 'story');
-        const story = await llmBuildStoryAroundDialogues(state.dialogues, state.context, state.sceneCount);
-        state.story = story;
-        renderStory(); revealSection('section-story');
-        journalLog('Histoire prête : « ' + story.title + ' »', 'success');
-        await sleep(500);
-        if(state.stopRequested) throw new Error('Arrêt demandé');
+    try {
+        // 1. Scénario
+        setStatus('Génération du scénario en français…');
+        const prompt = buildStoryPrompt(state.dialogues, state.context, state.sceneCount);
+        const jsonStr = await callChatCompletion('Tu es un scénariste. Réponds UNIQUEMENT en JSON.', prompt, 'Scénario', 4000, 0.7);
+        const cleanJson = jsonStr.replace(/```json/g,'').replace(/```/g,'').trim();
+        state.story = JSON.parse(cleanJson);
+        renderStory();
+        journalLog('Scénario généré.','story');
 
-        setStatus('Étape 2/4 — Génération des images (décor verrouillé)…');
-        revealSection('section-images');
-        await generateAllImages(story);
-        if(state.stopRequested) throw new Error('Arrêt demandé');
-
-        setStatus('Étape 3/4 — Génération des vidéos (keyframe + décor)…');
-        journalLog('Génération séquentielle KEYFRAME avec décor verrouillé...', 'keyframe');
-        revealSection('section-videos');
-        await generateAllVideos(story);
-
-        setStatus('Étape 4/4 — Film prêt ✦');
-        document.getElementById('section-player').classList.remove('hidden');
-        document.getElementById('section-player').classList.add('open');
-        revealSection('section-player');
-        await sleep(1200); setStatus(null);
-    }catch(e){
-        if(e.message==='Arrêt demandé'){journalLog('Arrêt demandé.','warn');setStatus('Arrêté.');await sleep(1000);setStatus(null)}
-        else{journalLog('Erreur : '+e.message,'error');debugLog('error','PIPELINE',e.message);setStatus('Erreur — voir console.');await sleep(2000);setStatus(null)}
-    }
-    state.isRunning = false;
-    state.stopRequested = false;
-    updateButtons();
-}
-
-async function llmBuildStoryAroundDialogues(dialogues, context, sceneCount){
-    const prompt = buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount);
-    const systemPrompt = 'Tu es un scénariste de séries adultes (HBO/Netflix). On te donne des répliques. Tu construis une histoire cohérente AUTOUR d\'elles, dans UN SEUL lieu physique décrit dans environment_lock. Chaque réplique trouve sa place naturelle dans une scène. Tu retournes TOUJOURS un JSON valide, sans markdown.';
-    
-    for(let attempt=1; attempt<=3; attempt++){
-        try{
-            const content = await callChatCompletion(systemPrompt, prompt, 'Histoire (essai '+attempt+')', 8000, attempt===1?0.85:0.5);
-            if(!content) continue;
-            const story = extractJson(content);
-            if(story && story.scenes && Array.isArray(story.scenes)){
-                if(!story.characters || !story.characters.length){
-                    story.characters = [{name:'Marco', gender:'homme', age:34, job:'videur', personality:'colérique', face_lock:'sharp jawline, dark eyes, short dark hair, stubble', outfit_lock:'black tailored suit, open white shirt', physical_description:'handsome charismatic adult man, black suit'}];
-                }
-                story.characters.forEach(c => {
-                    if(!c.face_lock) c.face_lock = 'stable adult face';
-                    if(!c.outfit_lock) c.outfit_lock = c.outfit || 'elegant adult clothing';
-                    if(!c.physical_description) c.physical_description = c.name + ', ' + (c.gender||'adult') + ', ' + (c.age||30) + ' ans, ' + (c.outfit_lock||'');
-                });
-                
-                if(!story.environment_lock){
-                    story.environment_lock = 'dark night bar interior, deep red velvet booths, black marble counter, hanging brass lamps, smoky haze, warm amber light, art deco wallpaper';
-                }
-                
-                if(story.scenes.length > sceneCount) story.scenes = story.scenes.slice(0, sceneCount);
-                while(story.scenes.length < sceneCount){
-                    story.scenes.push({ scene_number: story.scenes.length+1, summary: '...', action: '...', emotion: 'neutre' });
-                }
-                
-                story.scenes.forEach((sc, i) => {
-                    sc.scene_number = i+1;
-                    sc.dialogue = {
-                        speaker: sc.speaker || story.characters[0].name,
-                        line_fr: dialogues[i] || '...'
-                    };
-                });
-                
-                return story;
-            }
-        }catch(e){ debugLog('warn','HISTOIRE','Essai '+attempt+' échoué : '+e.message); }
-    }
-    throw new Error('Impossible de construire l\'histoire après 3 tentatives');
-}
-
-async function generateAllImages(story){
-    const scenes = story.scenes || [];
-    state.images = scenes.map(() => ({status:'pending', url:null, prompt:null}));
-    renderImages();
-    for(let i=0; i<scenes.length; i++){
-        if(state.stopRequested) break;
-        const idx = i;
-        const scene = scenes[idx];
-        state.images[idx].status = 'loading';
+        // 2. Image
+        setStatus('Génération de l\'image de référence…');
+        const imgUrl = await generateImage(buildImagePrompt(state.story, true));
+        state.characterReferenceUrl = imgUrl;
+        state.images = [{status:'done', url:imgUrl}];
         renderImages();
-        let success = false;
-        for(let attempt=1; attempt<=3 && !success; attempt++){
-            try{
-                // Scène 1 : pas de référence. Scènes suivantes : image 0 = référence DÉCOR + PERSONNAGE
-                let refUrls = null;
-                if(idx > 0 && state.environmentReferenceUrl){
-                    refUrls = [state.environmentReferenceUrl];
-                    if(state.characterReferenceUrl && state.characterReferenceUrl !== state.environmentReferenceUrl){
-                        refUrls.push(state.characterReferenceUrl);
-                    }
-                }
-                const prompt = buildImagePrompt(scene, story, idx === 0);
-                const url = await generateImage(prompt, refUrls);
-                state.images[idx] = {status:'done', url:url, prompt:prompt};
-                renderImages();
-                if(idx === 0){
-                    state.characterReferenceUrl = url;
-                    state.environmentReferenceUrl = url;
-                    journalLog('Image 1 générée — DÉCOR + PERSONNAGES verrouillés pour toutes les scènes suivantes.','ref');
-                }
-                success = true;
-            }catch(e){
-                if(e.message === 'Arrêt demandé') break;
-                if(attempt < 3) await sleep(3000);
-                else { state.images[idx] = {status:'error', url:null, prompt:null}; renderImages(); }
-            }
-        }
-        // Si la 1ère image échoue, on ne peut pas verrouiller le décor → on arrête
-        if(idx === 0 && state.images[0].status !== 'done'){
-            throw new Error('La première image a échoué — impossible de verrouiller le décor.');
-        }
+        journalLog('Image de référence générée.','image');
+
+        // Afficher le bloc de validation
+        document.getElementById('section-validation').classList.remove('hidden');
+        document.getElementById('section-validation').classList.add('open');
+        setStatus(null);
+
+    } catch(e) {
+        journalLog('Erreur : '+e.message,'error'); setStatus('Erreur');
+        setTimeout(()=>setStatus(null), 2000);
     }
-    const ok = state.images.filter(i => i.status === 'done').length;
-    journalLog('Images : ' + ok + '/' + scenes.length + ' prêtes.', ok === scenes.length ? 'success' : 'warn');
+    state.isRunning = false; updateUI();
 }
 
-async function preloadVideoBlob(index, url){
-    if(state.videos[index]._blob || state.videos[index]._blobLoading) return;
-    state.videos[index]._blobLoading = true;
-    renderVideos();
-    try{
-        // ⚠️ MODIFICATION ICI : Utilisation du proxy Cloudflare
-        const proxyUrl = 'https://videoproxy.bryan-37.workers.dev/?url=' + encodeURIComponent(url);
-        const res = await fetch(proxyUrl);
-        
-        if(!res.ok) throw new Error('HTTP '+res.status);
-        const blob = await res.blob();
-        if(blob.size < 1000) throw new Error('Blob trop petit');
-        state.videos[index]._blob = blob;
-        state.videos[index]._blobLoading = false;
-        journalLog('Scène '+(index+1)+' prête à télécharger.','download');
-        renderVideos();
-    }catch(e){
-        state.videos[index]._blobLoading = false;
-        debugLog('warn','BLOB','Échec pré-chargement scène '+(index+1)+' : '+e.message);
-        renderVideos();
-    }
-}
+// BOUTONS DE RÉGÉNÉRATION
+document.getElementById('regen-story-btn').onclick = async () => {
+    if(state.isRunning) return;
+    state.isRunning = true; updateUI(); setStatus('Nouveau scénario…');
+    try {
+        const prompt = buildStoryPrompt(state.dialogues, state.context, state.sceneCount);
+        const jsonStr = await callChatCompletion('Tu es un scénariste. Réponds UNIQUEMENT en JSON.', prompt, 'Scénario', 4000, 0.8);
+        state.story = JSON.parse(jsonStr.replace(/```json/g,'').replace(/```/g,'').trim());
+        renderStory(); journalLog('Scénario régénéré.','story');
+    } catch(e) { journalLog('Erreur scénario','error'); }
+    state.isRunning = false; updateUI(); setStatus(null);
+};
 
-async function generateAllVideos(story){
-    state.isGeneratingVideos = true;
-    const scenes = story.scenes || [];
-    state.videos = scenes.map(() => ({status:'pending', url:null, prompt:'', progress:'En attente…', retryCount:0, error:null, inQueue:false, _blob:null, _blobLoading:false}));
-    renderVideos();
-    for(let i=0; i<scenes.length; i++){
-        if(state.stopRequested) break;
-        journalLog('▶ Scène ' + (i+1) + '/' + scenes.length + ' — KEYFRAME + DÉCOR', 'highlight');
-        await generateOneVideoKeyframe(scenes[i], i, story);
-        if(state.videos[i].status !== 'done'){
-            journalLog('Scène ' + (i+1) + ' non générée — on arrête.', 'error');
-            break;
-        }
-    }
-    state.isGeneratingVideos = false;
-    updateButtons();
-    const done = state.videos.filter(v => v.status === 'done').length;
-    journalLog('Vidéos : ' + done + '/' + scenes.length, done === scenes.length ? 'success' : 'warn');
-}
+document.getElementById('regen-image-btn').onclick = async () => {
+    if(state.isRunning) return;
+    state.isRunning = true; updateUI(); setStatus('Nouvelle image…');
+    state.images = [{status:'loading'}]; renderImages();
+    try {
+        const imgUrl = await generateImage(buildImagePrompt(state.story, true));
+        state.characterReferenceUrl = imgUrl;
+        state.images = [{status:'done', url:imgUrl}];
+        renderImages(); journalLog('Image régénérée.','image');
+    } catch(e) { journalLog('Erreur image','error'); }
+    state.isRunning = false; updateUI(); setStatus(null);
+};
 
-async function generateOneVideoKeyframe(scene, index, story){
-    if(state.stopRequested) return;
-    const firstFrameUrl = (index === 0) ? state.characterReferenceUrl : (state.images[index-1] && state.images[index-1].url);
-    const lastFrameUrl = state.images[index] && state.images[index].url;
-    const previousScene = index > 0 ? story.scenes[index-1] : null;
-    const prompt = buildVideoPrompt(scene, story, previousScene, scene.dialogue);
+// ÉTAPE 2 : GÉNÉRATION VIDÉO
+document.getElementById('generate-video-btn').onclick = async () => {
+    if(state.isRunning) return;
+    state.isRunning = true; updateUI();
+    document.getElementById('section-validation').classList.add('hidden');
     
-    state.videos[index].status = 'loading';
-    state.videos[index].prompt = prompt;
-    state.videos[index].progress = 'Initialisation…';
-    state.videos[index]._blob = null;
-    state.videos[index]._blobLoading = false;
+    state.videos = state.story.scenes.map(()=>({status:'pending', url:null, progress:'Attente…'}));
+    document.getElementById('section-videos').classList.remove('hidden');
+    document.getElementById('section-videos').classList.add('open');
     renderVideos();
 
-    let attempt = 0;
-    while(true){
-        if(state.stopRequested) return false;
-        attempt++;
-        state.videos[index].retryCount = attempt-1;
-        try{
-            const videoId = await createVideoTask(prompt, firstFrameUrl, lastFrameUrl);
-            const videoUrl = await pollVideo(videoId, (prog) => { state.videos[index].progress = prog; renderVideos(); });
-            state.videos[index] = {status:'done', url:videoUrl, prompt, retryCount:attempt-1, error:null, inQueue:false, _blob:null, _blobLoading:false};
-            addVideoSeconds(state.durationSeconds);
+    for(let i=0; i<state.story.scenes.length; i++){
+        if(state.stopRequested) break;
+        const scene = state.story.scenes[i];
+        const prev = i>0 ? state.story.scenes[i-1] : null;
+        
+        state.videos[i].status = 'loading'; renderVideos();
+        setStatus(`Scène ${i+1}/${state.sceneCount} en cours…`);
+        
+        try {
+            // On utilise l'image de référence pour la scène 1, et on suppose que les autres s'en inspirent
+            const taskId = await createVideoTask(buildVideoPrompt(scene, state.story, prev), state.characterReferenceUrl, state.characterReferenceUrl);
+            const vUrl = await pollVideo(taskId, prog => { state.videos[i].progress = prog; renderVideos(); });
+            state.videos[i] = {status:'done', url:vUrl, progress:''};
+            journalLog(`Scène ${i+1} prête.`,'video');
             renderVideos();
-            journalLog('Scène ' + (index+1) + ' prête ✓', 'success');
-            // Pré-chargement du blob pour le bouton "Enregistrer" (iOS)
-            preloadVideoBlob(index, videoUrl);
-            return true;
-        }catch(e){
-            if(e.message === 'Arrêt demandé') return false;
-            if(e.isQueueFull){
-                state.videos[index].status = 'queued';
-                state.videos[index].inQueue = true;
-                state.videos[index].progress = 'File Agnes pleine — retry dans 45s';
-                renderVideos();
-                await sleep(VIDEO_QUEUE_RETRY_INTERVAL_MS);
-                continue;
-            }
-            state.videos[index].status = 'retrying';
-            state.videos[index].progress = 'Retry ' + (attempt+1) + ' dans 15s…';
-            renderVideos();
-            await sleep(VIDEO_RETRY_DELAY_MS);
+            
+            // Téléchargement du Blob pour iOS
+            fetchVideoBlob(i, vUrl);
+
+        } catch(e) {
+            state.videos[i] = {status:'error', error:e.message};
+            renderVideos(); journalLog(`Erreur scène ${i+1}`,'error');
         }
     }
-}
+    state.isRunning = false; updateUI(); setStatus(null);
+};
 
-async function manualRetryScene(index){
-    if(state.isRunning) return;
-    if(!state.story || !state.story.scenes || !state.story.scenes[index]) return;
-    if(!hasActiveKey()) return;
-    state.isRunning = true;
-    state.stopRequested = false;
-    updateButtons();
-    await generateOneVideoKeyframe(state.story.scenes[index], index, state.story);
-    state.isRunning = false;
-    updateButtons();
-}
-
-async function manualRetryAllFailed(){
-    if(state.isRunning) return;
-    if(!state.story || !state.story.scenes) return;
-    const failedIndices = state.videos.map((v,i) => v.status === 'error' ? i : -1).filter(i => i >= 0);
-    if(failedIndices.length === 0) return;
-    if(!hasActiveKey()) return;
-    state.isRunning = true;
-    state.stopRequested = false;
-    updateButtons();
-    for(const idx of failedIndices){
-        if(state.stopRequested) break;
-        await generateOneVideoKeyframe(state.story.scenes[idx], idx, state.story);
+// TÉLÉCHARGEMENT VIA PROXY
+async function fetchVideoBlob(index, url){
+    try {
+        const res = await fetch(PROXY_URL + encodeURIComponent(url));
+        if(!res.ok) throw new Error('Erreur Proxy '+res.status);
+        const blob = await res.blob();
+        state.videos[index].blob = blob;
+        renderVideos(); // Met à jour le bouton
+        journalLog(`Scène ${index+1} prête à télécharger.`,'download');
+    } catch(e) {
+        journalLog(`Échec du proxy scène ${index+1} : ${e.message}`,'error');
     }
-    state.isRunning = false;
-    updateButtons();
 }
 
-// ══════════════════════════════════════════════════════════════════
-// PLAYER + TTS
-// ══════════════════════════════════════════════════════════════════
-let ttsVoice=null;
-function pickFrenchVoice(){if(!('speechSynthesis' in window))return null;const voices=window.speechSynthesis.getVoices();if(!voices||voices.length===0)return null;const fr=voices.filter(v=>v.lang&&v.lang.toLowerCase().startsWith('fr'));if(fr.length===0)return null;const preferred=fr.find(v=>/premium|enhanced|amelie|thomas|audrey|marie/i.test(v.name));return preferred||fr[0]}
-function initTTS(){if(!('speechSynthesis' in window))return;const update=()=>{ttsVoice=pickFrenchVoice()};update();window.speechSynthesis.onvoiceschanged=update}
-function speakFR(text){if(!state.voiceEnabled)return;if(!('speechSynthesis' in window))return;if(!text)return;try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=1.0;u.pitch=1.0;if(ttsVoice)u.voice=ttsVoice;window.speechSynthesis.speak(u);state.currentUtterance=u;journalLog('🔊 « '+text.slice(0,80)+(text.length>80?'…':'')+' »','voice')}catch(e){}}
-function stopTTS(){try{if('speechSynthesis' in window)window.speechSynthesis.cancel()}catch(e){}state.currentUtterance=null}
-function getSceneSpeechLine(scene){if(scene.dialogue&&scene.dialogue.line_fr)return scene.dialogue.line_fr;return ''}
-
-async function playFilm(){
-    const ready = state.videos.filter(v => v.status === 'done' && v.url);
-    if(ready.length === 0) return;
-    if(state.isPlayingFilm) return;
-    state.isPlayingFilm = true;
-    updateButtons();
-    const overlay = document.getElementById('player-overlay');
-    const canvas = document.getElementById('player-canvas');
-    const hint = document.getElementById('player-hint-overlay');
-    if(!overlay || !canvas) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(window.innerWidth * dpr);
-    canvas.height = Math.round(window.innerHeight * dpr);
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-    const ctx = canvas.getContext('2d');
-    overlay.classList.add('visible');
-    hint.classList.remove('hidden');
-    setTimeout(() => hint.classList.add('hidden'), 3000);
-    try{if('speechSynthesis' in window){const u0=new SpeechSynthesisUtterance(' ');u0.volume=0;window.speechSynthesis.speak(u0)}}catch(e){}
-    const story = state.story || {scenes:[]};
-    const scenes = story.scenes || [];
-    const readyWithScene = ready.map(v => {
-        const origIndex = state.videos.indexOf(v);
-        return { video: v, scene: scenes[origIndex] || {} };
-    });
-    for(let i = 0; i < readyWithScene.length; i++){
-        if(!state.isPlayingFilm) break;
-        const { video, scene } = readyWithScene[i];
-        await playOneScene(video, scene, ctx, canvas, dpr);
+function renderVideos(){
+    const grid = document.getElementById('videos-grid');
+    while(grid.children.length > state.videos.length) grid.removeChild(grid.lastChild);
+    for(let i=grid.children.length; i<state.videos.length; i++){
+        const card = document.createElement('div'); card.className='scene-card';
+        card.innerHTML = `<div class="scene-card-header">Scène ${i+1}</div><div class="scene-card-body"></div>`;
+        grid.appendChild(card);
     }
-    stopFilmPlayback();
-}
-
-function playOneScene(videoObj, scene, ctx, canvas, dpr){
-    return new Promise((resolve) => {
-        const video = document.createElement('video');
-        video.src = videoObj.url;
-        video.playsInline = true;
-        video.muted = true;
-        let ttsFired = false, finished = false;
-        const finish = () => { if(finished) return; finished = true; resolve(); };
-        const startTTS = () => { if(ttsFired) return; ttsFired = true; const line = getSceneSpeechLine(scene); if(line) speakFR(line); };
-        const ttsGuard = setTimeout(() => { startTTS(); }, 1500);
-        const drawOverlay = (w, h) => {
-            const t = video.currentTime || 0;
-            const dur = video.duration || state.durationSeconds;
-            let alpha = 1;
-            if(t < 0.4) alpha = t/0.4;
-            else if(dur - t < 0.5) alpha = Math.max(0, (dur-t)/0.5);
-            if(alpha <= 0) return;
-            const pad = Math.round(Math.min(24*dpr, w*0.03));
-            const bandH = Math.round(Math.min(80*dpr, h*0.14));
-            const bandY = h - bandH - pad;
-            const bandX = pad;
-            const bandW = w - pad*2;
-            ctx.save();
-            ctx.globalAlpha = alpha;
-            const grad = ctx.createLinearGradient(bandX, bandY, bandX, bandY+bandH);
-            grad.addColorStop(0, 'rgba(10,10,18,0.0)');
-            grad.addColorStop(0.35, 'rgba(10,10,18,0.85)');
-            grad.addColorStop(1, 'rgba(10,10,18,0.95)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(bandX, bandY, bandW, bandH);
-            ctx.fillStyle = '#e87b35';
-            ctx.fillRect(bandX, bandY+Math.round(bandH*0.15), Math.round(4*dpr), bandH-Math.round(bandH*0.3));
-            const speaker = (scene.dialogue && scene.dialogue.speaker) || '';
-            const nameSize = Math.round(Math.min(13*dpr, h*0.02));
-            const textSize = Math.round(Math.min(18*dpr, h*0.028));
-            if(speaker){
-                ctx.fillStyle = '#e87b35';
-                ctx.font = '700 ' + nameSize + 'px -apple-system,sans-serif';
-                ctx.textBaseline = 'top';
-                ctx.fillText(speaker.toUpperCase(), bandX+Math.round(bandH*0.22), bandY+Math.round(bandH*0.18));
+    
+    state.videos.forEach((v, i) => {
+        const body = grid.children[i].querySelector('.scene-card-body');
+        if(v.status === 'done'){
+            body.innerHTML = `<video src="${v.url}" controls playsinline></video>`;
+            if(v.blob){
+                const btn = document.createElement('button');
+                btn.className='scene-download';
+                btn.textContent='📥 Enregistrer la vidéo';
+                btn.onclick = () => {
+                    // FORCE LE TÉLÉCHARGEMENT (Safari iOS l'envoie dans Fichiers)
+                    const a = document.createElement('a');
+                    const objUrl = URL.createObjectURL(v.blob);
+                    a.href = objUrl;
+                    a.download = `scene-${i+1}.mp4`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(()=>URL.revokeObjectURL(objUrl), 10000);
+                    journalLog(`Téléchargement scène ${i+1} lancé.`,'download');
+                };
+                body.appendChild(btn);
+            } else {
+                body.innerHTML += `<div style="text-align:center;font-size:.7rem;color:var(--warn);margin-top:.5rem;">Préparation du fichier…</div>`;
             }
-            const text = (scene.dialogue && scene.dialogue.line_fr) || '';
-            if(text){
-                ctx.fillStyle = '#f5f0e1';
-                ctx.font = '500 ' + textSize + 'px -apple-system,sans-serif';
-                let txt = text;
-                const maxW = bandW - Math.round(bandH*0.4);
-                while(ctx.measureText(txt).width > maxW && txt.length > 4){ txt = txt.slice(0,-4) + '…'; }
-                ctx.fillText(txt, bandX+Math.round(bandH*0.22), bandY+Math.round(bandH*0.5));
-            }
-            ctx.restore();
-        };
-        const draw = () => {
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            const vw = video.videoWidth || 720;
-            const vh = video.videoHeight || 1280;
-            const ar = vw/vh;
-            const car = canvas.width/canvas.height;
-            let dw, dh, dx, dy;
-            if(ar > car){ dw = canvas.width; dh = canvas.width/ar; dx = 0; dy = (canvas.height-dh)/2; }
-            else { dh = canvas.height; dw = canvas.height*ar; dx = (canvas.width-dw)/2; dy = 0; }
-            try{ ctx.drawImage(video, dx, dy, dw, dh); }catch(e){}
-            drawOverlay(canvas.width, canvas.height);
-        };
-        const loop = () => {
-            if(!state.isPlayingFilm){ clearTimeout(ttsGuard); finish(); return; }
-            if(video.paused || video.ended){ clearTimeout(ttsGuard); finish(); return; }
-            draw();
-            state.playRAF = requestAnimationFrame(loop);
-        };
-        video.onloadedmetadata = () => { clearTimeout(ttsGuard); startTTS(); video.play().then(() => { loop(); }).catch(() => { startTTS(); finish(); }); };
-        video.oncanplay = () => { startTTS(); };
-        video.onended = () => { clearTimeout(ttsGuard); finish(); };
-        video.onerror = () => { startTTS(); clearTimeout(ttsGuard); finish(); };
-        video.load();
+        } else if(v.status === 'error'){
+            body.innerHTML = `<div class="scene-placeholder" style="color:var(--err)">Erreur</div>`;
+        } else {
+            body.innerHTML = `<div class="scene-placeholder"><div class="spinner-mini"></div>${v.progress||'Attente'}</div>`;
+        }
     });
 }
 
-function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAnimationFrame(state.playRAF);state.playRAF=null;stopTTS();const overlay=document.getElementById('player-overlay');if(overlay)overlay.classList.remove('visible');updateButtons()}
-
 // ══════════════════════════════════════════════════════════════════
-// INIT
+// INITIALISATION
 // ══════════════════════════════════════════════════════════════════
 (function init(){
-    clearAppUnlock();
-    showLockScreen();
-    var lockBtn = document.getElementById('lock-btn');
-    var lockInput = document.getElementById('lock-code');
-    if(lockBtn){
-        var newBtn = lockBtn.cloneNode(true);
-        lockBtn.parentNode.replaceChild(newBtn, lockBtn);
-        newBtn.type = 'button';
-        newBtn.addEventListener('click', function(ev){ev.preventDefault();ev.stopPropagation();tryUnlock();});
-    }
-    if(lockInput){
-        lockInput.addEventListener('keydown', function(e){if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }});
-        lockInput.addEventListener('input', function(e){var v = e.target.value.replace(/\D/g,'');e.target.value = v;if(v.length === 4 && v === APP_LOCK_CODE){ tryUnlock(); }});
-    }
+    // Écran de verrouillage
+    const lockScreen = document.getElementById('lock-screen');
+    if(sessionStorage.getItem('unlocked') === '1') lockScreen.style.display = 'none';
+    
+    document.getElementById('lock-btn').onclick = () => {
+        if(document.getElementById('lock-code').value === APP_LOCK_CODE){
+            sessionStorage.setItem('unlocked', '1');
+            lockScreen.style.display = 'none';
+        } else {
+            document.getElementById('lock-error').textContent = 'Code incorrect';
+        }
+    };
 
-    document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
-    document.getElementById('api-keys-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveKeysFromUI()}});
-    document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
-    const chips=document.getElementById('theme-chips');
-    if(chips){chips.innerHTML=THEME_PRESETS.map((p,i)=>'<button type="button" class="preset-chip" data-theme="'+i+'">'+p.emoji+' '+p.label+'</button>').join('');chips.querySelectorAll('.preset-chip').forEach(chip=>{chip.addEventListener('click',()=>{const idx=parseInt(chip.dataset.theme,10);const p=THEME_PRESETS[idx];if(!p)return;document.getElementById('context-input').value=p.prompt;showToast('Thème : '+p.label,'success')})})}
-    document.getElementById('launch-btn').addEventListener('click',createStory);
-    document.getElementById('stop-btn').addEventListener('click',()=>{state.stopRequested=true;stopTTS();journalLog('Arrêt demandé…','warn');setStatus('Arrêt en cours…')});
-    document.getElementById('retry-all-btn').addEventListener('click',manualRetryAllFailed);
-    document.getElementById('play-film-btn').addEventListener('click',playFilm);
-    document.getElementById('replay-btn').addEventListener('click',playFilm);
-    document.getElementById('player-overlay').addEventListener('click',stopFilmPlayback);
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.isPlayingFilm)stopFilmPlayback()});
-    document.getElementById('voice-toggle').addEventListener('change',e=>{state.voiceEnabled=e.target.checked;if(!state.voiceEnabled)stopTTS()});
-    document.getElementById('tab-journal').addEventListener('click',()=>switchTab('journal'));
-    document.getElementById('tab-tech').addEventListener('click',()=>switchTab('tech'));
-    document.getElementById('debug-clear-btn').addEventListener('click',e=>{e.stopPropagation();clearDebug()});
-    document.getElementById('debug-copy-btn').addEventListener('click',e=>{e.stopPropagation();copyDebug()});
-    document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse()});
-    refreshKeyPool();updateApiPanel();updateButtons();initTTS();updateQuotaDisplay();
-    setInterval(renderKeysStatus,1000);
-    journalLog('Prêt. Colle tes répliques, l\'IA construit l\'histoire autour.','lock');
+    // Clés API
+    document.getElementById('api-save-btn').onclick = () => {
+        const keys = document.getElementById('api-keys-input').value.split('\n').map(k=>k.trim()).filter(k=>k);
+        setStoredKeys(keys); refreshKeyPool(); updateUI();
+        showToast('Clés enregistrées ✓');
+        if(keys.length > 0){
+            document.getElementById('api-status-line').classList.add('ok');
+            document.getElementById('api-status-text').textContent = keys.length + ' clé(s) active(s)';
+        }
+    };
+
+    // Boutons
+    document.getElementById('prepare-btn').onclick = prepareProject;
+    document.getElementById('stop-btn').onclick = () => { state.stopRequested = true; };
+    document.getElementById('debug-collapse-btn').onclick = () => {
+        const p = document.getElementById('debug-panel');
+        p.classList.toggle('collapsed');
+        document.getElementById('debug-collapse-btn').textContent = p.classList.contains('collapsed') ? '+' : '−';
+    };
+
+    document.querySelectorAll('[data-toggle]').forEach(h=>{
+        h.onclick = () => document.getElementById(h.dataset.toggle).classList.toggle('open');
+    });
+
+    refreshKeyPool(); updateUI();
+    if(state.keyPool.length > 0){
+        document.getElementById('api-status-line').classList.add('ok');
+        document.getElementById('api-status-text').textContent = state.keyPool.length + ' clé(s) active(s)';
+        document.getElementById('api-keys-input').value = state.keyPool.map(k=>k.key).join('\n');
+    }
 })();
 </script>
 </body>
