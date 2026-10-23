@@ -663,25 +663,35 @@ async function downloadVideo(url, index){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// INITIALISATION
+// INITIALISATION & GESTION DU VERROU
 // ══════════════════════════════════════════════════════════════════
-(function init(){
-    if(sessionStorage.getItem('unlocked')==='1') document.getElementById('lock-screen').style.display='none';
+function unlockApp() {
+    // On récupère la valeur et on nettoie les espaces invisibles
+    const val = document.getElementById('lock-code').value.replace(/\s/g, '');
     
-    // CORRECTION DU BOUTON DE DÉVERROUILLAGE
-    const lockBtn = document.getElementById('lock-btn');
-    if(lockBtn){
-        lockBtn.onclick = () => {
-            const codeInput = document.getElementById('lock-code').value;
-            if(codeInput === APP_LOCK_CODE){
-                sessionStorage.setItem('unlocked','1');
-                document.getElementById('lock-screen').style.display='none';
-            } else {
-                document.getElementById('lock-error').textContent='Code incorrect';
-            }
-        };
+    if(val === APP_LOCK_CODE) {
+        sessionStorage.setItem('unlocked', '1');
+        document.getElementById('lock-screen').style.display = 'none';
+    } else {
+        document.getElementById('lock-error').textContent = 'Code incorrect';
+    }
+}
+
+(function init(){
+    // --- VERROU ---
+    if(sessionStorage.getItem('unlocked') === '1') {
+        document.getElementById('lock-screen').style.display = 'none';
     }
 
+    // Écouteur sur le bouton
+    document.getElementById('lock-btn').addEventListener('click', unlockApp);
+    
+    // Écouteur sur la touche Entrée du clavier iPhone
+    document.getElementById('lock-code').addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') { unlockApp(); }
+    });
+
+    // --- API KEYS ---
     const keys = loadKeys();
     if(keys.length > 0){
         document.getElementById('api-keys-input').value = keys.join('\n');
@@ -696,19 +706,21 @@ async function downloadVideo(url, index){
         document.getElementById('api-status-text').textContent = k.length + ' clé(s)';
     };
 
+    // --- THEMES ---
     const chips = document.getElementById('theme-chips');
     if(chips){
         chips.innerHTML = THEME_PRESETS.map((t,i)=>`<button class="preset-chip" data-i="${i}">${t.emoji} ${t.label}</button>`).join('');
         chips.onclick = (e) => {
-            if(e.target.classList.contains('preset-chip')){
-                const i = e.target.dataset.i;
-                document.getElementById('context-input').value = THEME_PRESETS[i].prompt;
+ACTION            if(e.target.classList.contains ---('preset-chip')){
+                const i
+ = e.target.dataset.i;
+                   document.getElementById('context-input document').value = THEME_PRESETS[i].prom.getElementByIdpt;
                 showToast('Thème : ' + THEME_PRESETS[i].label);
             }
         };
     }
 
-    document.getElementById('prepare-btn').onclick = () => prepareProject(false);
+    // --- BOUTONS D'('prepare-btn').onclick = () => prepareProject(false);
     document.getElementById('regen-story-btn').onclick = () => prepareProject(true);
     document.getElementById('regen-image-btn').onclick = async () => {
         if(state.isRunning) return;
