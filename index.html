@@ -73,6 +73,8 @@ select option{background:var(--bg2);color:var(--ink)}
 .story-meta{font-size:.68rem;color:var(--faint);font-family:var(--fm);margin-bottom:.8rem;padding-bottom:.6rem;border-bottom:1px dashed var(--border)}
 .character-card{background:var(--bg3);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.4rem;font-size:.75rem;border-left:2px solid var(--acc2)}
 .character-card strong{color:var(--acc2)}
+.env-card{background:rgba(232,123,53,.06);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.6rem;font-size:.72rem;border-left:2px solid var(--acc2);color:var(--dim);font-family:var(--fm)}
+.env-card strong{color:var(--acc2)}
 .scene-block{margin-bottom:.8rem;padding-left:.7rem;border-left:2px solid var(--border)}
 .scene-block .sc-head{font-size:.7rem;color:var(--acc2);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.25rem}
 .scene-block .sc-line{margin-bottom:.2rem;font-size:.76rem}
@@ -92,13 +94,16 @@ select option{background:var(--bg2);color:var(--ink)}
 .scene-card-body{padding:.55rem}
 .scene-card-body video{width:100%;border-radius:2px;background:#000;display:block;aspect-ratio:9/16;object-fit:cover}
 .scene-placeholder{width:100%;aspect-ratio:9/16;background:#0a0a12;border-radius:2px;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.68rem;font-family:var(--fm);flex-direction:column;gap:.4rem;text-align:center;padding:.4rem}
-.scene-download{display:block;width:100%;margin-top:.4rem;font-size:.68rem;color:var(--acc2);text-decoration:none;text-align:center;padding:.3rem;border:1px solid var(--border);border-radius:3px;background:transparent;cursor:pointer;font-family:inherit}
-.scene-download:hover{background:rgba(232,123,53,.08);border-color:var(--acc2)}
+.scene-download{display:block;width:100%;margin-top:.4rem;font-size:.72rem;color:#0a0a12;text-decoration:none;text-align:center;padding:.55rem;border:1px solid var(--acc2);border-radius:3px;background:var(--acc2);cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:.05em;transition:all .15s}
+.scene-download:hover{background:var(--acc);border-color:var(--acc)}
+.scene-download:disabled{opacity:.5;cursor:wait}
+.scene-download.preparing{background:var(--bg3);color:var(--warn);border-color:var(--warn)}
 .scene-retry-btn{display:block;width:100%;margin-top:.4rem;font-size:.7rem;color:var(--warn);text-align:center;padding:.4rem;border:1px solid rgba(212,160,23,.4);border-radius:3px;background:rgba(212,160,23,.08);cursor:pointer;font-family:inherit;font-weight:600;letter-spacing:.05em}
 .scene-retry-btn:hover{background:rgba(212,160,23,.15);border-color:var(--warn)}
 .ref-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.15);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .queue-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,123,200,.15);color:#4a7bc8;font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .keyframe-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.2);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
+.blob-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,157,106,.15);color:var(--ok);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .spinner-mini{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .player-overlay{position:fixed;inset:0;background:#000;z-index:2000;display:none;align-items:center;justify-content:center;cursor:pointer}
@@ -180,7 +185,7 @@ select option{background:var(--bg2);color:var(--ink)}
 
 <div class="banner">
 <strong>💬 Tes répliques d'abord.</strong> Colle tes dialogues (un par ligne). L'IA construit une histoire cohérente où chaque réplique trouve sa place.
-<strong>🎬 Keyframes.</strong> La fin de chaque scène est le début de la suivante.
+<strong>🎬 Décor verrouillé.</strong> La 1ère image devient la référence décor + personnage pour toutes les scènes.
 <strong>📥 Partage iOS.</strong> Bouton "Enregistrer" qui ouvre le menu natif.
 </div>
 
@@ -394,6 +399,7 @@ const state = {
     images: [],
     videos: [],
     characterReferenceUrl: null,
+    environmentReferenceUrl: null,
     isGeneratingVideos: false,
     isPlayingFilm: false,
     playRAF: null,
@@ -412,7 +418,7 @@ function showToast(message,type='success',duration=2500){const t=document.getEle
 function nowTime(){return new Date().toLocaleTimeString('fr-FR',{hour12:false})}
 function sanitizeForApi(text){if(text==null)return '';return String(text).replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/\u2013/g,'-').replace(/\u2014/g,'--').replace(/\u2026/g,'...').replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/\u00A0/g,' ')}
 
-function journalLog(msg, level){level=level||'info';const body=document.getElementById('journal-body');if(!body)return;const icons={info:'·',highlight:'▶',success:'✅',warn:'⚠️',error:'❌',story:'📖',image:'🎨',video:'🎥',play:'🎬',key:'🔑',voice:'🔊',retry:'↻',ref:'🔗',queue:'⏳',lock:'🔒',keyframe:'🔗',dialogue:'💬'};const icon=icons[level]||'·';const entry=document.createElement('div');entry.className='j-entry '+level;entry.innerHTML='<span class="j-time">'+esc(nowTime())+'</span><span class="j-icon">'+icon+'</span><span class="j-msg">'+esc(msg)+'</span>';body.appendChild(entry);body.scrollTop=body.scrollHeight;while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild)}
+function journalLog(msg, level){level=level||'info';const body=document.getElementById('journal-body');if(!body)return;const icons={info:'·',highlight:'▶',success:'✅',warn:'⚠️',error:'❌',story:'📖',image:'🎨',video:'🎥',play:'🎬',key:'🔑',voice:'🔊',retry:'↻',ref:'🔗',queue:'⏳',lock:'🔒',keyframe:'🔗',dialogue:'💬',download:'📥'};const icon=icons[level]||'·';const entry=document.createElement('div');entry.className='j-entry '+level;entry.innerHTML='<span class="j-time">'+esc(nowTime())+'</span><span class="j-icon">'+icon+'</span><span class="j-msg">'+esc(msg)+'</span>';body.appendChild(entry);body.scrollTop=body.scrollHeight;while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild)}
 
 let debugCount=0,debugEntries=[],debugCollapsed=false,currentTab='journal';
 function debugLog(level,category,message,data){const body=document.getElementById('tech-body');if(!body)return;const time=nowTime();const entry=document.createElement('div');entry.className='debug-entry '+level;let html='<span class="debug-time">'+time+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';if(data!==undefined&&data!==null){let ds;if(typeof data==='string')ds=data;else{try{ds=JSON.stringify(data,null,2)}catch(e){ds=String(data)}}if(ds.length>2500)ds=ds.slice(0,2500)+'\n…[tronqué]';html+='<pre class="debug-data">'+esc(ds)+'</pre>'}entry.innerHTML=html;body.appendChild(entry);debugEntries.push({time,level,category,message});if(debugEntries.length>DEBUG_MAX)debugEntries.shift();while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild);body.scrollTop=body.scrollHeight;debugCount++;}
@@ -499,9 +505,12 @@ function extractJson(text){if(!text)return null;let c=text.trim();const fm=c.mat
 // ══════════════════════════════════════════════════════════════════
 // IMAGE
 // ══════════════════════════════════════════════════════════════════
-async function generateImage(prompt, referenceUrl){
+async function generateImage(prompt, referenceUrls){
     const body={model:MODEL_IMAGE,prompt:sanitizeForApi(prompt),n:1,size:'1K',ratio:'9:16'};
-    if(referenceUrl)body.extra_body = { image: [referenceUrl] };
+    if(referenceUrls){
+        const arr = Array.isArray(referenceUrls) ? referenceUrls.filter(Boolean) : [referenceUrls];
+        if(arr.length > 0) body.extra_body = { image: arr };
+    }
     const res=await apiFetch(API_BASE+'/images/generations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Image',4);
     const data=await res.json();const item=data.data&&data.data[0];
     if(!item)throw new Error('Pas d\'image');
@@ -582,7 +591,7 @@ async function pollVideo(videoId, onProgress){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS — CONSTRUCTION AUTOUR DES RÉPLIQUES
+// PROMPTS
 // ══════════════════════════════════════════════════════════════════
 function buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount){
     const dialogueList = dialogues.map((d, i) => (i+1) + '. "' + d + '"').join('\n');
@@ -598,20 +607,28 @@ function buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount){
         'RÈGLES ABSOLUES :',
         '- Il y a exactement ' + sceneCount + ' scènes, une par réplique.',
         '- La scène N utilise EXACTEMENT la réplique N (mot pour mot, sans la modifier).',
-        '- Tu dois inventer les personnages, les lieux, les actions et les événements qui justifient chaque réplique.',
+        '- Tu dois inventer les personnages, le LIEU UNIQUE, les actions et les événements qui justifient chaque réplique.',
         '- L\'histoire doit avoir une progression logique : situation initiale → montée de tension → point de rupture → résolution.',
-        '- Chaque scène doit avoir un "summary" (résumé de ce qui se passe) et une "action" (description physique en anglais pour le prompt vidéo).',
-        '- Chaque personnage a : un prénom, un genre, un âge, un métier, une personnalité, un "face_lock" (visage stable) et un "outfit_lock" (habits stables).',
+        '- Chaque scène doit avoir un "summary" (résumé) et une "action" (description physique en anglais pour le prompt vidéo).',
+        '- Chaque personnage a : prénom, genre, âge, métier, personnalité, "face_lock" (visage stable), "outfit_lock" (habits stables).',
+        '',
+        '⚠️ LIEU UNIQUE — RÈGLE CRITIQUE :',
+        '- Toutes les scènes se déroulent dans LE MÊME LIEU PHYSIQUE (même pièce, même décor).',
+        '- Tu dois décrire ce lieu une seule fois dans le champ "environment_lock" à la racine du JSON.',
+        '- Le "environment_lock" doit être une description ANGLAISE TRÈS PRÉCISE et VISUELLE : type de pièce, murs, couleurs dominantes, mobilier, éclairage, objets visibles au premier plan et à l\'arrière-plan.',
+        '- Exemple : "dark night bar interior, deep red velvet booths, black marble counter on the left, hanging brass lamps, smoky haze, warm amber light from the right, art deco wallpaper with gold patterns, a large mirror behind the bar".',
+        '- NE change PAS ce lieu d\'une scène à l\'autre. La caméra peut bouger, mais le décor reste identique.',
         '',
         'FORMAT JSON STRICT (retourne UNIQUEMENT ce JSON) :',
         '{',
         '  "title": "titre adulte",',
         '  "logline": "résumé en une phrase",',
+        '  "environment_lock": "english very detailed description of the single location — walls, colors, furniture, lighting direction, foreground and background objects",',
         '  "characters": [',
         '    { "name": "Prénom", "gender": "homme ou femme", "age": 34, "job": "métier", "personality": "trait", "face_lock": "...", "outfit_lock": "..." }',
         '  ],',
         '  "scenes": [',
-        '    { "scene_number": 1, "summary": "ce qui se passe", "action": "english action description", "emotion": "colère", "speaker": "Nom du personnage qui dit la réplique 1" }',
+        '    { "scene_number": 1, "summary": "ce qui se passe", "action": "english action description — camera movement only, NO change of location", "emotion": "colère", "speaker": "Nom du personnage qui dit la réplique 1" }',
         '  ]',
         '}',
         '',
@@ -625,18 +642,31 @@ function buildIdentityLockBlock(story){
     }).join('\n');
 }
 
+function buildEnvironmentLockBlock(story){
+    const env = story.environment_lock || 'consistent single location across all scenes';
+    return [
+        '🔒 LOCKED ENVIRONMENT — SAME PLACE IN EVERY SCENE:',
+        env,
+        '',
+        'CONSTRAINTS: The room, walls, colors, furniture, background objects and lighting direction MUST be identical to the reference image and to all other scenes. Camera can move (dolly, pan, tilt) but the location does NOT change. Do not invent new rooms. Do not change wall color. Do not change lighting temperature.'
+    ].join('\n');
+}
+
 function buildImagePrompt(scene, story, isFirstImage){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.age+' ans, '+c.job+', '+c.gender+'): '+c.physical_description).join(' | ');
     const identityLock = buildIdentityLockBlock(story);
+    const envLock = buildEnvironmentLockBlock(story);
     const refBlock = (state.characterReferenceUrl && !isFirstImage)
-        ? 'REFERENCE IMAGE — USE THE PROVIDED CHARACTER REFERENCE IMAGE. The characters must look EXACTLY like the reference.\n'
+        ? 'REFERENCE IMAGES — The characters AND the environment MUST look EXACTLY like the provided reference. Same room, same walls, same furniture, same lighting.'
         : '';
     return [
         'PASTEL CINEMATIC KEYFRAME — 35MM FILM, ADULT CINEMA.',
-        'STYLE : pastel cinematic, perfect bilateral symmetry, 35mm film grain.',
+        'STYLE : pastel cinematic, 35mm film grain.',
         'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'.',
         '',
         refBlock,
+        envLock,
+        '',
         '🔒 LOCKED IDENTITY:',
         identityLock,
         '',
@@ -654,6 +684,7 @@ function buildImagePrompt(scene, story, isFirstImage){
 function buildVideoPrompt(scene, story, previousScene, dialogue){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.gender+', '+c.age+'): '+c.physical_description).join(' | ');
     const identityLock = buildIdentityLockBlock(story);
+    const envLock = buildEnvironmentLockBlock(story);
     const intensityMap={subtle:'very subtle and slow movement',moderate:'slow and elegant movement',strong:'dynamic yet controlled movement, tense'};
     const prevAction = previousScene ? ('Starts exactly where previous scene ended: '+(previousScene.action||'')+'. ') : '';
     
@@ -667,17 +698,19 @@ function buildVideoPrompt(scene, story, previousScene, dialogue){
     return [
         'PASTEL CINEMATIC ADULT SHORT FILM — '+state.durationSeconds+'-SECOND SCENE. TIKTOK 9:16.',
         '',
-        'STYLE : Wes Anderson meets Nicolas Winding Refn. Pastel cinematic, perfect symmetry, 35mm film grain.',
+        'STYLE : Wes Anderson meets Nicolas Winding Refn. Pastel cinematic, 35mm film grain.',
         'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'.',
         '',
         prevAction,
+        envLock,
+        '',
         '🔒 LOCKED IDENTITY:',
         identityLock,
         '',
         'ADULT HUMANS:',
         charList,
         '',
-        'CAMERA : one continuous shot, no cuts. Slow dolly-in OR static locked-off.',
+        'CAMERA : one continuous shot, no cuts. Slow dolly-in OR pan OR tilt. Camera CAN move.',
         'ACTION : '+(scene.action||''),
         'Movement intensity : '+(intensityMap[state.intensity]||intensityMap.strong)+'.',
         '',
@@ -685,7 +718,7 @@ function buildVideoPrompt(scene, story, previousScene, dialogue){
         '',
         'AUDIO : No music. Only tension ambience, footsteps, breathing.',
         '',
-        'CONSTRAINTS : vertical 9:16, '+state.durationSeconds+' seconds, no text.'
+        'CONSTRAINTS : vertical 9:16, '+state.durationSeconds+' seconds, no text. The room does NOT change.'
     ].filter(Boolean).join('\n');
 }
 
@@ -716,6 +749,9 @@ function renderStory(){
     html+='<div class="story-title">📖 '+esc(s.title||'Sans titre')+'</div>';
     html+='<div class="story-logline">'+esc(s.logline||'')+'</div>';
     html+='<div class="story-meta">🎬 '+((s.scenes||[]).length)+' scènes · '+(s.characters||[]).length+' personnages · '+Math.round(state.sceneCount*state.durationSeconds)+'s total</div>';
+    if(s.environment_lock){
+        html+='<div class="env-card"><strong>🔒 Décor verrouillé :</strong> '+esc(s.environment_lock)+'</div>';
+    }
     (s.characters||[]).forEach(c=>{
         html+='<div class="character-card"><strong>'+esc(c.name||'')+'</strong> — '+esc(c.age||'')+' ans · '+esc(c.job||'')+' · '+esc(c.gender||'')+'</div>';
     });
@@ -738,9 +774,75 @@ function renderImages(){
         if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
         if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
         const isRef = i===0 && state.characterReferenceUrl;
-        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(isRef?' <span class="ref-badge">🔒 RÉFÉRENCE</span>':'')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
+        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(isRef?' <span class="ref-badge">🔒 DÉCOR+REF</span>':'')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
     }).join('');
     const c=document.getElementById('images-badge');if(c)c.textContent=state.images.filter(i=>i.status==='done').length+'/'+state.images.length;
+}
+
+function buildDownloadButton(videoObj, index){
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='scene-download';
+    
+    if(videoObj._blob){
+        btn.textContent='📥 Enregistrer la vidéo';
+    } else if(videoObj._blobLoading){
+        btn.textContent='⏳ Préparation…';
+        btn.classList.add('preparing');
+        btn.disabled=true;
+    } else {
+        btn.textContent='📥 Enregistrer la vidéo';
+    }
+    
+    btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // CAS 1 : blob prêt → partage synchrone (iOS natif)
+        if(videoObj._blob && navigator.share && navigator.canShare){
+            try{
+                const file = new File([videoObj._blob], 'scene-'+(index+1)+'.mp4', { type:'video/mp4' });
+                if(navigator.canShare({ files: [file] })){
+                    // ⚠️ iOS : passer UNIQUEMENT files
+                    await navigator.share({ files: [file] });
+                    journalLog('Scène '+(index+1)+' partagée via menu natif.','download');
+                    return;
+                }
+            }catch(err){
+                if(err.name === 'AbortError'){ return; }
+                debugLog('warn','SHARE','Échec share : '+err.message);
+            }
+        }
+        
+        // CAS 2 : blob pas encore prêt → attendre
+        if(!videoObj._blob && videoObj._blobLoading){
+            showToast('Préparation en cours, réessayez dans quelques secondes','warn',3000);
+            return;
+        }
+        
+        // CAS 3 : fallback téléchargement direct
+        try{
+            if(videoObj._blob){
+                const a = document.createElement('a');
+                const objectUrl = URL.createObjectURL(videoObj._blob);
+                a.href = objectUrl;
+                a.download = 'scene-'+(index+1)+'.mp4';
+                a.rel = 'noopener';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 30000);
+                journalLog('Scène '+(index+1)+' téléchargée.','download');
+            } else {
+                // dernier recours : ouvrir dans un onglet
+                window.open(videoObj.url, '_blank', 'noopener');
+            }
+        }catch(err){
+            debugLog('error','DOWNLOAD',err.message);
+            window.open(videoObj.url, '_blank', 'noopener');
+        }
+    });
+    return btn;
 }
 
 function renderVideos(){
@@ -758,45 +860,27 @@ function renderVideos(){
         if(v.retryCount)titleText+=' · retry '+v.retryCount;
         if(v.inQueue)titleText+=' <span class="queue-badge">QUEUE</span>';
         if(i>0)titleText+=' <span class="keyframe-badge">🔗</span>';
+        if(v._blob)titleText+=' <span class="blob-badge">📥 PRÊT</span>';
         if(titleEl.innerHTML!==titleText)titleEl.innerHTML=titleText;
         const newClass='scene-card '+(v.status==='done'?'done':v.status==='error'?'error':v.status==='queued'?'queued':v.status==='retrying'?'retrying':(v.status==='loading'||v.status==='pending')?'generating':'');
         if(card.className!==newClass)card.className=newClass;
         if(v.status==='done'&&v.url){
-            if(card.dataset.url!==v.url||!bodyEl.querySelector('video')){
+            const needsRender = (card.dataset.url!==v.url) || !bodyEl.querySelector('video') || (v._blob && !bodyEl.querySelector('.scene-download:not(.preparing)'));
+            if(needsRender){
                 statusEl.innerHTML='<span style="color:var(--ok);">✓</span>';bodyEl.innerHTML='';
                 const video=document.createElement('video');video.src=v.url;video.controls=true;video.preload='metadata';video.setAttribute('playsinline','');bodyEl.appendChild(video);
-                
-                // Bouton de partage iOS — IMPORTANT : n'envoyer QUE files
-                const dl=document.createElement('button');
-                dl.className='scene-download';
-                dl.textContent='📥 Enregistrer la vidéo';
-                dl.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    try {
-                        if (navigator.share) {
-                            const response = await fetch(v.url);
-                            const blob = await response.blob();
-                            const file = new File([blob], 'scene-'+(i+1)+'.mp4', { type: 'video/mp4' });
-                            
-                            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                                // ⚠️ IMPORTANT : ne passer QUE files, pas de title/url/text
-                                await navigator.share({ files: [file] });
-                            } else {
-                                window.open(v.url, '_blank');
-                            }
-                        } else {
-                            window.open(v.url, '_blank');
-                        }
-                    } catch (err) {
-                        // AbortError = l'utilisateur a annulé, ne rien faire
-                        if (err.name !== 'AbortError') {
-                            window.open(v.url, '_blank');
-                        }
-                    }
-                });
+                const dl = buildDownloadButton(v, i);
                 bodyEl.appendChild(dl);
                 card.dataset.url=v.url;
+            } else {
+                // mettre à jour le bouton si son état a changé
+                const existingBtn = bodyEl.querySelector('.scene-download');
+                if(existingBtn){
+                    if(v._blob && existingBtn.classList.contains('preparing')){
+                        const newBtn = buildDownloadButton(v, i);
+                        existingBtn.replaceWith(newBtn);
+                    }
+                }
             }
         } else if(v.status==='error'||v.status==='retrying'||v.status==='queued'){
             if(card.dataset.status!==v.status||card.dataset.progress!==(v.progress||'')){
@@ -851,6 +935,7 @@ async function createStory(){
     state.images = [];
     state.videos = [];
     state.characterReferenceUrl = null;
+    state.environmentReferenceUrl = null;
     
     document.getElementById('section-story').classList.add('hidden');
     document.getElementById('section-images').classList.add('hidden');
@@ -876,13 +961,13 @@ async function createStory(){
         await sleep(500);
         if(state.stopRequested) throw new Error('Arrêt demandé');
 
-        setStatus('Étape 2/4 — Génération des images…');
+        setStatus('Étape 2/4 — Génération des images (décor verrouillé)…');
         revealSection('section-images');
         await generateAllImages(story);
         if(state.stopRequested) throw new Error('Arrêt demandé');
 
-        setStatus('Étape 3/4 — Génération des vidéos (keyframe)…');
-        journalLog('Génération séquentielle KEYFRAME...', 'keyframe');
+        setStatus('Étape 3/4 — Génération des vidéos (keyframe + décor)…');
+        journalLog('Génération séquentielle KEYFRAME avec décor verrouillé...', 'keyframe');
         revealSection('section-videos');
         await generateAllVideos(story);
 
@@ -902,7 +987,7 @@ async function createStory(){
 
 async function llmBuildStoryAroundDialogues(dialogues, context, sceneCount){
     const prompt = buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount);
-    const systemPrompt = 'Tu es un scénariste de séries adultes (HBO/Netflix). On te donne des répliques. Tu construis une histoire cohérente AUTOUR d\'elles. Chaque réplique trouve sa place naturelle dans une scène. Tu retournes TOUJOURS un JSON valide, sans markdown.';
+    const systemPrompt = 'Tu es un scénariste de séries adultes (HBO/Netflix). On te donne des répliques. Tu construis une histoire cohérente AUTOUR d\'elles, dans UN SEUL lieu physique décrit dans environment_lock. Chaque réplique trouve sa place naturelle dans une scène. Tu retournes TOUJOURS un JSON valide, sans markdown.';
     
     for(let attempt=1; attempt<=3; attempt++){
         try{
@@ -918,6 +1003,10 @@ async function llmBuildStoryAroundDialogues(dialogues, context, sceneCount){
                     if(!c.outfit_lock) c.outfit_lock = c.outfit || 'elegant adult clothing';
                     if(!c.physical_description) c.physical_description = c.name + ', ' + (c.gender||'adult') + ', ' + (c.age||30) + ' ans, ' + (c.outfit_lock||'');
                 });
+                
+                if(!story.environment_lock){
+                    story.environment_lock = 'dark night bar interior, deep red velvet booths, black marble counter, hanging brass lamps, smoky haze, warm amber light, art deco wallpaper';
+                }
                 
                 if(story.scenes.length > sceneCount) story.scenes = story.scenes.slice(0, sceneCount);
                 while(story.scenes.length < sceneCount){
@@ -952,12 +1041,23 @@ async function generateAllImages(story){
         let success = false;
         for(let attempt=1; attempt<=3 && !success; attempt++){
             try{
-                const refUrl = (idx === 0) ? null : state.characterReferenceUrl;
+                // Scène 1 : pas de référence. Scènes suivantes : image 0 = référence DÉCOR + PERSONNAGE
+                let refUrls = null;
+                if(idx > 0 && state.environmentReferenceUrl){
+                    refUrls = [state.environmentReferenceUrl];
+                    if(state.characterReferenceUrl && state.characterReferenceUrl !== state.environmentReferenceUrl){
+                        refUrls.push(state.characterReferenceUrl);
+                    }
+                }
                 const prompt = buildImagePrompt(scene, story, idx === 0);
-                const url = await generateImage(prompt, refUrl);
+                const url = await generateImage(prompt, refUrls);
                 state.images[idx] = {status:'done', url:url, prompt:prompt};
                 renderImages();
-                if(idx === 0) state.characterReferenceUrl = url;
+                if(idx === 0){
+                    state.characterReferenceUrl = url;
+                    state.environmentReferenceUrl = url;
+                    journalLog('Image 1 générée — DÉCOR + PERSONNAGES verrouillés pour toutes les scènes suivantes.','ref');
+                }
                 success = true;
             }catch(e){
                 if(e.message === 'Arrêt demandé') break;
@@ -965,19 +1065,43 @@ async function generateAllImages(story){
                 else { state.images[idx] = {status:'error', url:null, prompt:null}; renderImages(); }
             }
         }
+        // Si la 1ère image échoue, on ne peut pas verrouiller le décor → on arrête
+        if(idx === 0 && state.images[0].status !== 'done'){
+            throw new Error('La première image a échoué — impossible de verrouiller le décor.');
+        }
     }
     const ok = state.images.filter(i => i.status === 'done').length;
     journalLog('Images : ' + ok + '/' + scenes.length + ' prêtes.', ok === scenes.length ? 'success' : 'warn');
 }
 
+async function preloadVideoBlob(index, url){
+    if(state.videos[index]._blob || state.videos[index]._blobLoading) return;
+    state.videos[index]._blobLoading = true;
+    renderVideos();
+    try{
+        const res = await fetch(url);
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        const blob = await res.blob();
+        if(blob.size < 1000) throw new Error('Blob trop petit');
+        state.videos[index]._blob = blob;
+        state.videos[index]._blobLoading = false;
+        journalLog('Scène '+(index+1)+' prête à télécharger.','download');
+        renderVideos();
+    }catch(e){
+        state.videos[index]._blobLoading = false;
+        debugLog('warn','BLOB','Échec pré-chargement scène '+(index+1)+' : '+e.message);
+        renderVideos();
+    }
+}
+
 async function generateAllVideos(story){
     state.isGeneratingVideos = true;
     const scenes = story.scenes || [];
-    state.videos = scenes.map(() => ({status:'pending', url:null, prompt:'', progress:'En attente…', retryCount:0, error:null, inQueue:false}));
+    state.videos = scenes.map(() => ({status:'pending', url:null, prompt:'', progress:'En attente…', retryCount:0, error:null, inQueue:false, _blob:null, _blobLoading:false}));
     renderVideos();
     for(let i=0; i<scenes.length; i++){
         if(state.stopRequested) break;
-        journalLog('▶ Scène ' + (i+1) + '/' + scenes.length + ' — KEYFRAME', 'highlight');
+        journalLog('▶ Scène ' + (i+1) + '/' + scenes.length + ' — KEYFRAME + DÉCOR', 'highlight');
         await generateOneVideoKeyframe(scenes[i], i, story);
         if(state.videos[i].status !== 'done'){
             journalLog('Scène ' + (i+1) + ' non générée — on arrête.', 'error');
@@ -1000,6 +1124,8 @@ async function generateOneVideoKeyframe(scene, index, story){
     state.videos[index].status = 'loading';
     state.videos[index].prompt = prompt;
     state.videos[index].progress = 'Initialisation…';
+    state.videos[index]._blob = null;
+    state.videos[index]._blobLoading = false;
     renderVideos();
 
     let attempt = 0;
@@ -1010,10 +1136,12 @@ async function generateOneVideoKeyframe(scene, index, story){
         try{
             const videoId = await createVideoTask(prompt, firstFrameUrl, lastFrameUrl);
             const videoUrl = await pollVideo(videoId, (prog) => { state.videos[index].progress = prog; renderVideos(); });
-            state.videos[index] = {status:'done', url:videoUrl, prompt, retryCount:attempt-1, error:null, inQueue:false};
+            state.videos[index] = {status:'done', url:videoUrl, prompt, retryCount:attempt-1, error:null, inQueue:false, _blob:null, _blobLoading:false};
             addVideoSeconds(state.durationSeconds);
             renderVideos();
             journalLog('Scène ' + (index+1) + ' prête ✓', 'success');
+            // Pré-chargement du blob pour le bouton "Enregistrer" (iOS)
+            preloadVideoBlob(index, videoUrl);
             return true;
         }catch(e){
             if(e.message === 'Arrêt demandé') return false;
