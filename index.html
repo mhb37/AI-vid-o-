@@ -181,6 +181,7 @@ select option{background:var(--bg2);color:var(--ink)}
 <div class="banner">
 <strong>💬 Tes répliques d'abord.</strong> Colle tes dialogues (un par ligne). L'IA construit une histoire cohérente où chaque réplique trouve sa place.
 <strong>🎬 Keyframes.</strong> La fin de chaque scène est le début de la suivante.
+<strong>📥 Partage iOS.</strong> Bouton "Enregistrer" qui ouvre le menu natif.
 </div>
 
 <div class="panel" id="api-panel">
@@ -583,8 +584,6 @@ async function pollVideo(videoId, onProgress){
 // ══════════════════════════════════════════════════════════════════
 // PROMPTS — CONSTRUCTION AUTOUR DES RÉPLIQUES
 // ══════════════════════════════════════════════════════════════════
-
-// Construction de l'histoire AUTOUR des répliques fournies
 function buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount){
     const dialogueList = dialogues.map((d, i) => (i+1) + '. "' + d + '"').join('\n');
     return [
@@ -766,21 +765,35 @@ function renderVideos(){
             if(card.dataset.url!==v.url||!bodyEl.querySelector('video')){
                 statusEl.innerHTML='<span style="color:var(--ok);">✓</span>';bodyEl.innerHTML='';
                 const video=document.createElement('video');video.src=v.url;video.controls=true;video.preload='metadata';video.setAttribute('playsinline','');bodyEl.appendChild(video);
+                
+                // Bouton de partage iOS — IMPORTANT : n'envoyer QUE files
                 const dl=document.createElement('button');
                 dl.className='scene-download';
-                dl.textContent='📥 Enregistrer';
+                dl.textContent='📥 Enregistrer la vidéo';
                 dl.addEventListener('click', async (e) => {
-                    e.preventDefault();e.stopPropagation();
+                    e.preventDefault();
+                    e.stopPropagation();
                     try {
                         if (navigator.share) {
                             const response = await fetch(v.url);
                             const blob = await response.blob();
                             const file = new File([blob], 'scene-'+(i+1)+'.mp4', { type: 'video/mp4' });
+                            
                             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                                await navigator.share({ files: [file], title: 'Scène '+(i+1) });
-                            } else { window.open(v.url, '_blank'); }
-                        } else { window.open(v.url, '_blank'); }
-                    } catch (err) { window.open(v.url, '_blank'); }
+                                // ⚠️ IMPORTANT : ne passer QUE files, pas de title/url/text
+                                await navigator.share({ files: [file] });
+                            } else {
+                                window.open(v.url, '_blank');
+                            }
+                        } else {
+                            window.open(v.url, '_blank');
+                        }
+                    } catch (err) {
+                        // AbortError = l'utilisateur a annulé, ne rien faire
+                        if (err.name !== 'AbortError') {
+                            window.open(v.url, '_blank');
+                        }
+                    }
                 });
                 bodyEl.appendChild(dl);
                 card.dataset.url=v.url;
@@ -897,7 +910,6 @@ async function llmBuildStoryAroundDialogues(dialogues, context, sceneCount){
             if(!content) continue;
             const story = extractJson(content);
             if(story && story.scenes && Array.isArray(story.scenes)){
-                // Fallback personnages
                 if(!story.characters || !story.characters.length){
                     story.characters = [{name:'Marco', gender:'homme', age:34, job:'videur', personality:'colérique', face_lock:'sharp jawline, dark eyes, short dark hair, stubble', outfit_lock:'black tailored suit, open white shirt', physical_description:'handsome charismatic adult man, black suit'}];
                 }
@@ -907,13 +919,11 @@ async function llmBuildStoryAroundDialogues(dialogues, context, sceneCount){
                     if(!c.physical_description) c.physical_description = c.name + ', ' + (c.gender||'adult') + ', ' + (c.age||30) + ' ans, ' + (c.outfit_lock||'');
                 });
                 
-                // S'assurer qu'il y a exactement sceneCount scènes
                 if(story.scenes.length > sceneCount) story.scenes = story.scenes.slice(0, sceneCount);
                 while(story.scenes.length < sceneCount){
                     story.scenes.push({ scene_number: story.scenes.length+1, summary: '...', action: '...', emotion: 'neutre' });
                 }
                 
-                // Injecter les répliques fournies par l'utilisateur
                 story.scenes.forEach((sc, i) => {
                     sc.scene_number = i+1;
                     sc.dialogue = {
