@@ -101,6 +101,7 @@ select option{background:var(--bg2);color:var(--ink)}
 .scene-retry-btn:active{transform:scale(.98)}
 .ref-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.15);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .queue-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,123,200,.15);color:#4a7bc8;font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
+.lock-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,157,106,.15);color:var(--ok);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .spinner-mini{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .player-overlay{position:fixed;inset:0;background:#000;z-index:2000;display:none;align-items:center;justify-content:center;cursor:pointer}
@@ -181,9 +182,8 @@ select option{background:var(--bg2);color:var(--ink)}
 </header>
 
 <div class="banner">
-<strong>Personnages adultes.</strong> Hommes élégants et charismatiques, femmes belles et sensuelles. Aucun fruit.
-<strong>Cohérence absolue.</strong> La première image est verrouillée et envoyée comme référence à toutes les autres images et vidéos.
-<strong>Séquentiel strict.</strong> La scène 2 ne démarre jamais avant que la scène 1 soit terminée. Retry automatique infini jusqu'à succès.
+<strong>🔒 Verrouillage absolu.</strong> Visage ET habits décrits mot pour mot dans chaque prompt. Image de référence transmise à chaque image et vidéo.
+<strong>Séquentiel strict.</strong> La scène 2 ne démarre jamais avant que la scène 1 soit terminée. Retry automatique infini.
 </div>
 
 <div class="panel" id="api-panel">
@@ -346,10 +346,7 @@ const VIDEO_FIRST_POLL_DELAY_SEC = 60;
 const VIDEO_POLL_INTERVALS = [8, 8, 12, 12, 20, 20, 25];
 const VIDEO_MAX_POLL_ATTEMPTS = 100;
 const VIDEO_RETRY_DELAY_MS = 15000;
-
-// Retry infini : on ne passe JAMAIS à la scène suivante si celle-ci échoue
 const VIDEO_QUEUE_RETRY_INTERVAL_MS = 45000;
-const VIDEO_QUEUE_RETRY_MAX_MS = 900000;
 
 const API_KEYS_STORAGE = 'fruit_tales_api_keys';
 const QUOTA_STORAGE = 'fruit_tales_quota';
@@ -412,7 +409,7 @@ function journalLog(msg, level){
     level = level || 'info';
     const body = document.getElementById('journal-body');
     if(!body) return;
-    const icons = { info:'·', highlight:'▶', success:'✅', warn:'⚠️', error:'❌', story:'📖', image:'🎨', video:'🎥', play:'🎬', key:'🔑', voice:'🔊', retry:'↻', ref:'🔗', queue:'⏳' };
+    const icons = { info:'·', highlight:'▶', success:'✅', warn:'⚠️', error:'❌', story:'📖', image:'🎨', video:'🎥', play:'🎬', key:'🔑', voice:'🔊', retry:'↻', ref:'🔗', queue:'⏳', lock:'🔒' };
     const icon = icons[level] || '·';
     const entry = document.createElement('div');
     entry.className = 'j-entry ' + level;
@@ -517,14 +514,11 @@ function balanceJson(text){let ob=0,ok=0,inString=false,escape=false;for(let i=0
 function extractJson(text){if(!text)return null;let c=text.trim();const fm=c.match(/```(?:json)?\s*([\s\S]*?)```/);if(fm)c=fm[1].trim();const fb=c.indexOf('{');if(fb<0)return null;c=c.slice(fb);try{return JSON.parse(c)}catch(e1){}try{return JSON.parse(escapeControlCharsInStrings(c))}catch(e2){}try{const lb=c.lastIndexOf('}');if(lb>0)return JSON.parse(escapeControlCharsInStrings(c.slice(0,lb+1)))}catch(e3){}try{return JSON.parse(balanceJson(escapeControlCharsInStrings(c)))}catch(e4){}debugLog('error','PARSE','Aucune stratégie OK');return null}
 
 // ══════════════════════════════════════════════════════════════════
-// IMAGE — avec référence forcée pour les scènes 2+
+// IMAGE
 // ══════════════════════════════════════════════════════════════════
 async function generateImage(prompt, referenceUrl){
     const body={model:MODEL_IMAGE,prompt:sanitizeForApi(prompt),n:1,size:'1K',ratio:'9:16'};
-    // Si on a une image de référence, on l'envoie au modèle
-    if(referenceUrl){
-        body.extra_body = { image: [referenceUrl] };
-    }
+    if(referenceUrl)body.extra_body = { image: [referenceUrl] };
     const res=await apiFetch(API_BASE+'/images/generations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Image',4);
     const data=await res.json();const item=data.data&&data.data[0];
     if(!item)throw new Error('Pas d\'image');
@@ -585,7 +579,7 @@ async function pollVideo(videoIdObj,onProgress){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS — PERSONNAGES ADULTES HUMAINS (pas de fruit)
+// PROMPTS — VERROUILLAGE VISAGE + HABITS
 // ══════════════════════════════════════════════════════════════════
 function buildStoryPrompt(storyInput, sceneCount){
     return [
@@ -597,19 +591,22 @@ function buildStoryPrompt(storyInput, sceneCount){
         '',
         'CONTRAINTES :',
         '- Crée 3 à 5 PERSONNAGES HUMAINS ADULTES : hommes charismatiques (bad boy élégant, mystérieux, dangereux, séducteur) et femmes très sexy (femme fatale, sensuelle, assurée, magnétique).',
-        '- Chaque personnage a : un prénom adulte, un âge (25-50), un métier, une personnalité complexe, un style vestimentaire précis.',
+        '- Chaque personnage a : un prénom adulte, un âge (25-50), un métier, une personnalité complexe.',
         '- Écris un scénario de '+sceneCount+' scènes qui forment une histoire ADULTE complète : tension, montée en puissance, affrontement, résolution.',
         '- Chaque scène dure 7 à 8 secondes.',
         '- Chaque scène contient UN SEUL dialogue court (8-15 mots), CRU, DIRECT, avec des insultes stylisées si l\'histoire s\'y prête.',
         '- Registre : adulte, sensuel, tendu, violent si nécessaire. Insultes françaises réalistes mais stylisées.',
         '- Style visuel : pastel cinéma, symétrie Wes Anderson, pellicule 35mm, décors sombres et élégants (bars, lofts, rues de nuit, hôtels).',
         '',
-        'RENDU DES PERSONNAGES — RÈGLE ABSOLUE :',
+        'RENDU DES PERSONNAGES — RÈGLE ABSOLUE DE COHÉRENCE :',
         'Ce sont des HUMAINS ADULTES NORMAUX. Pas de fruit, pas de costume, pas de cartoon.',
         'Les HOMMES sont charismatiques, élégants, dangereux, séduisants.',
         'Les FEMMES sont très sexy, sensuelles, sûres d\'elles, magnétiques.',
-        'Vêtements adultes et raffinés (costume noir, robe de soirée, blouson de cuir, talons hauts, chemise ouverte, bijoux discrets).',
-        'Chaque personnage doit être décrit avec un maximum de détails physiques stables pour garantir la cohérence entre les scènes.',
+        '',
+        '🔒 RÈGLE DE VERROUILLAGE — TRÈS IMPORTANT :',
+        'Pour chaque personnage, tu DOIS fournir :',
+        '- "face_lock" : description PRÉCISE et STABLE du visage (forme, yeux, cheveux, barbe, cicatrices, signes distinctifs). Cette description sera répétée MOT POUR MOT dans chaque scène pour garantir la cohérence.',
+        '- "outfit_lock" : description PRÉCISE et STABLE des habits (couleur, matière, coupe, accessoires). Cette description sera répétée MOT POUR MOT dans chaque scène.',
         '',
         'FORMAT JSON STRICT (retourne UNIQUEMENT ce JSON) :',
         '{',
@@ -622,8 +619,9 @@ function buildStoryPrompt(storyInput, sceneCount){
         '      "age": 34,',
         '      "job": "ancien boxeur devenu videur",',
         '      "personality": "colérique mais loyal, blessé par son passé",',
-        '      "outfit": "costume noir sur mesure, chemise blanche ouverte, cheveux courts, barbe de trois jours",',
-        '      "physical_description": "a handsome charismatic adult man, around 34, athletic tall build, short dark hair, three-day stubble, sharp jawline, intense gaze, wearing a tailored black suit with an open white shirt and a silver chain, dark cinematic lighting"',
+        '      "face_lock": "sharp jawline, deep brown eyes, short dark hair, three-day stubble, small scar on left eyebrow",',
+        '      "outfit_lock": "black tailored suit, open white shirt, silver chain, black leather shoes",',
+        '      "physical_description": "a handsome charismatic adult man, around 34, athletic tall build, sharp jawline, deep brown eyes, short dark hair, three-day stubble, small scar on left eyebrow, wearing a black tailored suit, open white shirt, silver chain, black leather shoes, dark cinematic lighting"',
         '    }',
         '  ],',
         '  "scenes": [',
@@ -642,10 +640,17 @@ function buildStoryPrompt(storyInput, sceneCount){
     ].join('\n');
 }
 
+function buildIdentityLockBlock(story){
+    return (story.characters||[]).map(c => {
+        return `${c.name} (${c.gender}, ${c.age} ans) — FACE: ${c.face_lock||'stable adult face'} | OUTFIT: ${c.outfit_lock||c.outfit||'elegant adult clothing'}`;
+    }).join('\n');
+}
+
 function buildImagePrompt(scene, story, isFirstImage){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.age+' ans, '+c.job+', '+c.gender+'): '+c.physical_description).join(' | ');
+    const identityLock = buildIdentityLockBlock(story);
     const refBlock = (state.characterReferenceUrl && !isFirstImage)
-        ? 'REFERENCE IMAGE — USE THE PROVIDED CHARACTER REFERENCE IMAGE: the characters must look EXACTLY like the ones in the reference image. Same faces, same outfits, same body, same age, same hairstyle. Perfect visual consistency. This is a new scene with the SAME characters.\n'
+        ? 'REFERENCE IMAGE — USE THE PROVIDED CHARACTER REFERENCE IMAGE. The characters must look EXACTLY like the reference. Same face, same outfit, same body, same age, same hairstyle. Perfect visual consistency. This is a new scene with the SAME characters.\n'
         : '';
     return [
         'PASTEL CINEMATIC KEYFRAME — 35MM FILM, ADULT CINEMA, ABSOLUTELY NOT CARTOON.',
@@ -654,9 +659,13 @@ function buildImagePrompt(scene, story, isFirstImage){
         'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'. No neon, no fluorescent.',
         '',
         refBlock,
+        '🔒 LOCKED IDENTITY — DO NOT CHANGE FACE OR OUTFIT (THESE MUST BE IDENTICAL IN EVERY SCENE):',
+        identityLock,
+        'CRITICAL: Do not alter, recolor, or replace any facial feature or clothing item described above. This is the SAME person in a new scene.',
+        '',
         'CHARACTERS — ADULT HUMANS (no fruit, no cartoon, no kawaii):',
         charList,
-        'CRITICAL : the men are charismatic, elegant, dangerous, seductive. The women are very sexy, sensual, confident, magnetic. Fully clothed but adult, refined, attractive.',
+        'The men are charismatic, elegant, dangerous, seductive. The women are very sexy, sensual, confident, magnetic. Fully clothed but adult, refined, attractive.',
         'NO fruit body. NO cartoon. NO kawaii. NO chibi. NO children.',
         '',
         'SCENE : '+(scene.image_prompt||scene.description||''),
@@ -669,6 +678,7 @@ function buildImagePrompt(scene, story, isFirstImage){
 
 function buildVideoPrompt(scene, story){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.gender+', '+c.age+'): '+c.physical_description).join(' | ');
+    const identityLock = buildIdentityLockBlock(story);
     const dialogue=scene.dialogue||{};
     const intensityMap={subtle:'very subtle and slow movement, meditative',moderate:'slow and elegant movement',strong:'dynamic yet controlled movement, tense, theatrical, sensual energy'};
     const refBlock = state.characterReferenceUrl
@@ -681,9 +691,13 @@ function buildVideoPrompt(scene, story){
         'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'. No neon.',
         '',
         refBlock,
-        'ADULT HUMANS (must remain visually identical to the reference image):',
+        '🔒 LOCKED IDENTITY — DO NOT CHANGE FACE OR OUTFIT:',
+        identityLock,
+        'CRITICAL: The face and outfit of each character MUST be identical to the reference image and to the description above. No variation allowed.',
+        '',
+        'ADULT HUMANS (must remain visually identical):',
         charList,
-        'CRITICAL : charismatic men, very sexy women. Adult, elegant, seductive, dangerous. NOT cartoon. NOT kawaii. NOT children.',
+        'Charismatic men, very sexy women. Adult, elegant, seductive, dangerous. NOT cartoon. NOT kawaii. NOT children.',
         '',
         'CAMERA : one continuous shot, no cuts. Slow dolly-in OR static locked-off. Perfect symmetry.',
         'ACTION : '+(scene.action||''),
@@ -727,6 +741,8 @@ function renderStory(){
     html+='<div class="story-meta">🎬 '+((s.scenes||[]).length)+' scènes · '+(s.characters||[]).length+' personnages · '+Math.round(state.sceneCount*state.durationFrames/24)+'s total</div>';
     (s.characters||[]).forEach(c=>{
         html+='<div class="character-card"><strong>'+esc(c.name||'')+'</strong> — '+esc(c.age||'')+' ans · '+esc(c.job||'')+' · '+esc(c.gender||'')+'</div>';
+        html+='<div class="character-card" style="font-size:.7rem;border-left-color:var(--ok);margin-left:.6rem;"><span class="lock-badge">🔒 FACE</span> '+esc(c.face_lock||'—')+'</div>';
+        html+='<div class="character-card" style="font-size:.7rem;border-left-color:var(--ok);margin-left:.6rem;"><span class="lock-badge">🔒 OUTFIT</span> '+esc(c.outfit_lock||c.outfit||'—')+'</div>';
     });
     (s.scenes||[]).forEach((sc,i)=>{
         html+='<div class="scene-block">';
@@ -747,7 +763,7 @@ function renderImages(){
         if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
         if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
         const isRef = i===0 && state.characterReferenceUrl;
-        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(isRef?' <span class="ref-badge">RÉFÉRENCE</span>':'')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
+        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(isRef?' <span class="ref-badge">🔒 RÉFÉRENCE</span>':' <span class="lock-badge">🔒 LOCKED</span>')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
     }).join('');
     const c=document.getElementById('images-badge');if(c)c.textContent=state.images.filter(i=>i.status==='done').length+'/'+state.images.length;
 }
@@ -829,7 +845,7 @@ async function createStory(){
     document.getElementById('videos-grid').innerHTML='';
     renderStory();renderImages();renderVideos();updateButtons();
     const totalSec=Math.round(state.sceneCount*state.durationFrames/24);
-    journalLog('Création lancée. '+state.sceneCount+' scènes, ~'+totalSec+'s.','highlight');
+    journalLog('Création lancée. '+state.sceneCount+' scènes, ~'+totalSec+'s. Verrouillage visage+habits activé.','lock');
 
     try{
         setStatus('Étape 1/4 — L\'IA écrit l\'histoire adulte…');
@@ -841,8 +857,8 @@ async function createStory(){
         await sleep(500);
         if(state.stopRequested)throw new Error('Arrêt demandé');
 
-        setStatus('Étape 2/4 — Génération des images (référence verrouillée)…');
-        journalLog('Génération des images avec référence stricte…','image');
+        setStatus('Étape 2/4 — Génération des images (visage+habits verrouillés)…');
+        journalLog('Génération des images avec verrouillage visage+habits…','image');
         revealSection('section-images');
         await generateAllImages(story);
         if(state.stopRequested)throw new Error('Arrêt demandé');
@@ -867,14 +883,18 @@ async function createStory(){
 
 async function llmCreateStory(storyInput,sceneCount){
     const prompt=buildStoryPrompt(storyInput,sceneCount);
-    const systemPrompt='Tu es un scénariste de séries adultes (HBO/Netflix). Tu écris des drames urbains crus, violents, sensuels, adultes. Les personnages sont des HUMAINS ADULTES : hommes charismatiques et femmes très sexy. Aucun fruit, aucun cartoon. Tu retournes TOUJOURS un JSON valide, sans markdown.';
+    const systemPrompt='Tu es un scénariste de séries adultes (HBO/Netflix). Tu écris des drames urbains crus, violents, sensuels, adultes. Les personnages sont des HUMAINS ADULTES : hommes charismatiques et femmes très sexy. Pour chaque personnage, tu DOIS fournir face_lock (description stable du visage) et outfit_lock (description stable des habits). Tu retournes TOUJOURS un JSON valide, sans markdown.';
     for(let attempt=1;attempt<=3;attempt++){
         try{
             const content=await callChatCompletion(systemPrompt,prompt,'Histoire (essai '+attempt+')',8000,attempt===1?0.85:0.5);
             if(!content)continue;
             const story=extractJson(content);
             if(story&&story.scenes&&Array.isArray(story.scenes)){
-                if(!story.characters||!story.characters.length)story.characters=[{name:'Marco',gender:'homme',age:34,job:'videur',personality:'colérique',outfit:'costume noir',physical_description:'handsome charismatic adult man, athletic build, black suit'}];
+                if(!story.characters||!story.characters.length)story.characters=[{name:'Marco',gender:'homme',age:34,job:'videur',personality:'colérique',face_lock:'sharp jawline, dark eyes, short dark hair, stubble',outfit_lock:'black tailored suit, open white shirt',physical_description:'handsome charismatic adult man, black suit'}];
+                story.characters.forEach(c=>{
+                    if(!c.face_lock)c.face_lock='stable adult face, '+(c.physical_description||'').slice(0,80);
+                    if(!c.outfit_lock)c.outfit_lock=c.outfit||'elegant adult clothing';
+                });
                 story.scenes.forEach((sc,i)=>{
                     if(!sc.dialogue||!sc.dialogue.line_fr)sc.dialogue={speaker:story.characters[0].name,line_fr:'...'};
                     if(!sc.scene_number)sc.scene_number=i+1;
@@ -887,7 +907,7 @@ async function llmCreateStory(storyInput,sceneCount){
     throw new Error('Impossible de générer l\'histoire après 3 tentatives');
 }
 
-// Images SÉQUENTIELLES avec référence stricte
+// Images SÉQUENTIELLES avec référence stricte + verrouillage visage/habits
 async function generateAllImages(story){
     const scenes=story.scenes||[];
     state.images=scenes.map(()=>({status:'pending',url:null,prompt:null}));
@@ -903,7 +923,7 @@ async function generateAllImages(story){
                 const prompt=buildImagePrompt(scene,story,idx===0);
                 const url=await generateImage(prompt, refUrl);
                 state.images[idx]={status:'done',url:url,prompt:prompt};renderImages();
-                if(idx===0){state.characterReferenceUrl=url;debugLog('success','REF','Image de référence définie : Scène 1 (verrouillée)')}
+                if(idx===0){state.characterReferenceUrl=url;debugLog('success','REF','Image de référence définie : Scène 1 (verrouillée, visage+habits)')}
                 success=true;
             }catch(e){
                 if(e.message==='Arrêt demandé')break;
@@ -917,7 +937,7 @@ async function generateAllImages(story){
     journalLog('Images : '+ok+'/'+scenes.length+' prêtes.',ok===scenes.length?'success':'warn');
 }
 
-// Vidéos SÉQUENTIELLES STRICTES — pas de passage à la scène suivante si la précédente échoue
+// Vidéos SÉQUENTIELLES STRICTES
 async function generateAllVideos(story){
     state.isGeneratingVideos=true;
     const scenes=story.scenes||[];
@@ -928,7 +948,6 @@ async function generateAllVideos(story){
         if(state.stopRequested)break;
         journalLog('▶ Scène '+(i+1)+'/'+scenes.length+' — démarrage','highlight');
         await generateOneVideoStrict(scenes[i],i,story);
-        // On ne passe à la suivante QUE si celle-ci est done
         if(state.videos[i].status!=='done'){
             journalLog('Scène '+(i+1)+' non générée — on arrête pour ne pas casser le film.','error');
             break;
@@ -940,7 +959,6 @@ async function generateAllVideos(story){
     journalLog('Vidéos : '+done+'/'+scenes.length+(allDone?' — film complet ✓':' — film incomplet'),allDone?'success':'warn');
 }
 
-// Génère UNE vidéo avec retry infini (sauf arrêt manuel)
 async function generateOneVideoStrict(scene,index,story){
     if(state.stopRequested)return;
     const prompt=buildVideoPrompt(scene,story);
@@ -978,13 +996,11 @@ async function generateOneVideoStrict(scene,index,story){
                 continue;
             }
 
-            // Erreur normale : retry avec backoff
             state.videos[index].status='retrying';
             state.videos[index].progress='Retry '+(attempt+1)+' dans 15s… ('+(e.message||'erreur').slice(0,60)+')';
             renderVideos();
             journalLog('Scène '+(index+1)+' échec (essai '+attempt+') : '+(e.message||'').slice(0,80)+' — retry dans 15s','warn');
             await sleep(VIDEO_RETRY_DELAY_MS);
-            // continue la boucle : retry infini
         }
     }
 }
@@ -1127,7 +1143,7 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse()});
     refreshKeyPool();updateApiPanel();updateButtons();initTTS();updateQuotaDisplay();
     setInterval(renderKeysStatus,1000);
-    journalLog('Prêt. La Scène 1 est verrouillée comme référence visuelle absolue.','highlight');
+    journalLog('Prêt. Verrouillage visage+habits actif. La Scène 1 est la référence absolue.','lock');
 })();
 </script>
 </body>
