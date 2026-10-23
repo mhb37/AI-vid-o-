@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Fruit Tales Studio — Histoires adultes cohérentes</title>
+<title>Fruit Tales Studio — Films adultes charismatiques</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -48,6 +48,8 @@ input:focus,textarea:focus{outline:none;border-color:var(--acc2)}
 .key-row .key-state{font-size:.6rem;padding:.12rem .45rem;border-radius:2px;background:rgba(74,157,106,.15);color:var(--ok);border:1px solid rgba(74,157,106,.3);text-transform:uppercase;font-weight:700}
 .key-row .key-state.cool{background:rgba(212,160,23,.15);color:var(--warn);border-color:rgba(212,160,23,.3)}
 .key-row .key-state.dead{background:rgba(200,90,74,.15);color:var(--err);border-color:rgba(200,90,74,.3)}
+.quota-line{font-size:.7rem;padding:.5rem .7rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-top:.4rem;color:var(--dim);font-family:var(--fm);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
+.quota-line .q-val{color:var(--acc2);font-weight:600}
 .section{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.8rem;overflow:hidden}
 .section.hidden{display:none!important}
 .section-header{padding:.8rem 1rem;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center}
@@ -72,7 +74,6 @@ select option{background:var(--bg2);color:var(--ink)}
 .story-meta{font-size:.68rem;color:var(--faint);font-family:var(--fm);margin-bottom:.8rem;padding-bottom:.6rem;border-bottom:1px dashed var(--border)}
 .character-card{background:var(--bg3);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.4rem;font-size:.75rem;border-left:2px solid var(--acc2)}
 .character-card strong{color:var(--acc2)}
-.character-card .fruit-emoji{font-size:1.1rem;margin-right:.3rem}
 .scene-block{margin-bottom:.8rem;padding-left:.7rem;border-left:2px solid var(--border)}
 .scene-block .sc-head{font-size:.7rem;color:var(--acc2);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.25rem}
 .scene-block .sc-line{margin-bottom:.2rem;font-size:.76rem}
@@ -85,7 +86,9 @@ select option{background:var(--bg2);color:var(--ink)}
 .scene-card.done{border-color:var(--ok)}
 .scene-card.error{border-color:var(--err)}
 .scene-card.retrying{border-color:var(--warn);animation:pulseWarn 1.5s ease infinite}
+.scene-card.queued{border-color:#4a7bc8;animation:pulseBlue 1.5s ease infinite}
 @keyframes pulseWarn{0%,100%{border-color:var(--warn)}50%{border-color:rgba(212,160,23,.4)}}
+@keyframes pulseBlue{0%,100%{border-color:#4a7bc8}50%{border-color:rgba(74,123,200,.4)}}
 .scene-card-header{padding:.45rem .6rem;font-size:.64rem;font-family:var(--fm);color:var(--dim);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);gap:.4rem}
 .scene-card-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
 .scene-card-body{padding:.55rem}
@@ -97,6 +100,7 @@ select option{background:var(--bg2);color:var(--ink)}
 .scene-retry-btn:hover{background:rgba(212,160,23,.15);border-color:var(--warn)}
 .scene-retry-btn:active{transform:scale(.98)}
 .ref-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.15);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
+.queue-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,123,200,.15);color:#4a7bc8;font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .spinner-mini{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .player-overlay{position:fixed;inset:0;background:#000;z-index:2000;display:none;align-items:center;justify-content:center;cursor:pointer}
@@ -133,14 +137,11 @@ select option{background:var(--bg2);color:var(--ink)}
 .journal-body .j-entry.success .j-msg{color:var(--ok)}
 .journal-body .j-entry.warn .j-msg{color:var(--warn)}
 .journal-body .j-entry.error .j-msg{color:var(--err)}
-.journal-body .j-entry.fruit .j-msg{color:var(--fruit1)}
 .debug-entry{margin-bottom:.25rem;padding:.2rem .35rem;border-left:2px solid transparent;border-radius:2px;word-break:break-word}
 .debug-entry.info{border-left-color:var(--faint)}
 .debug-entry.success{border-left-color:var(--ok);background:rgba(74,157,106,.04)}
 .debug-entry.warn{border-left-color:var(--warn);background:rgba(212,160,23,.04)}
 .debug-entry.error{border-left-color:var(--err);background:rgba(200,90,74,.06);color:#f0a0a0}
-.debug-entry.api{border-left-color:var(--acc)}
-.debug-entry.response{border-left-color:var(--acc2)}
 .debug-time{color:var(--faint);margin-right:.4rem;font-size:.6rem}
 .debug-cat{color:var(--acc2);font-weight:600;margin-right:.35rem;font-size:.6rem}
 .debug-msg{color:#d8d8e0}
@@ -176,14 +177,13 @@ select option{background:var(--bg2);color:var(--ink)}
 
 <header>
 <h1>Fruit Tales Studio</h1>
-<p class="subtitle">Histoires adultes de fruits · Cohérence des personnages · Format TikTok 9:16</p>
+<p class="subtitle">Films adultes · Hommes charismatiques & Femmes sexy · Cohérence verrouillée</p>
 </header>
 
 <div class="banner">
-<strong>Cohérence des personnages.</strong> La première image générée sert de <span class="hl">référence visuelle</span> pour toutes les scènes vidéo suivantes.
-Chaque scène utilise cette image comme point d'ancrage pour garder le même visage et la même identité.
-<strong>Format TikTok 9:16 · Durée 60 à 70 secondes.</strong>
-Retry auto ×6 + retry manuel par scène.
+<strong>Personnages adultes.</strong> Hommes élégants et charismatiques, femmes belles et sensuelles. Aucun fruit.
+<strong>Cohérence absolue.</strong> La première image est verrouillée et envoyée comme référence à toutes les autres images et vidéos.
+<strong>Séquentiel strict.</strong> La scène 2 ne démarre jamais avant que la scène 1 soit terminée. Retry automatique infini jusqu'à succès.
 </div>
 
 <div class="panel" id="api-panel">
@@ -192,18 +192,22 @@ Retry auto ×6 + retry manuel par scène.
 <button type="button" class="btn" id="api-save-btn">Enregistrer les clés</button>
 <div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé API enregistrée</span></div>
 <div class="keys-list" id="api-keys-status"></div>
-<div class="hint">Clés gratuites sur <a href="https://platform.agnes-ai.com" target="_blank">platform.agnes-ai.com</a> · N clés = N workers parallèles</div>
+<div class="quota-line">
+    <span>📊 Vidéo générée aujourd'hui : <span class="q-val" id="video-quota-used">0</span>s</span>
+    <span>Quota Token Plan : 500s/jour</span>
+</div>
+<div class="hint">Clés gratuites sur <a href="https://platform.agnes-ai.com" target="_blank">platform.agnes-ai.com</a></div>
 </div>
 
 <div class="section open" id="section-idea">
 <div class="section-header" data-toggle="section-idea">
-<span class="section-title">🍊 Votre histoire <span class="badge">obligatoire</span></span>
+<span class="section-title">🎬 Votre histoire <span class="badge">obligatoire</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
 <div class="control-row">
 <label class="control-label">Décrivez l'histoire en une ou deux phrases</label>
-<textarea id="story-input" placeholder="Ex : Une banane et sa copine tombent sur un groupe d'oranges qui les provoquent. La tension monte, les insultes fusent, et ça finit en bagarre générale.">Une banane et sa copine tombent sur un groupe d'oranges qui les provoquent. La tension monte, les insultes fusent, et ça finit en bagarre générale.</textarea>
+<textarea id="story-input" placeholder="Ex : Une femme fatale et un homme charismatique se rencontrent dans un bar de nuit. La tension monte, les insultes fusent, ça finit en bagarre.">Une femme fatale et un homme charismatique se rencontrent dans un bar de nuit. La tension monte, les insultes fusent, ça finit en bagarre.</textarea>
 </div>
 <div class="control-row">
 <label class="control-label">Ou choisissez un thème</label>
@@ -236,7 +240,7 @@ Retry auto ×6 + retry manuel par scène.
 </div></div>
 </div>
 
-<button type="button" class="btn btn-primary" id="launch-btn" disabled>▶ Créer l'histoire animée</button>
+<button type="button" class="btn btn-primary" id="launch-btn" disabled>▶ Créer le film</button>
 <button type="button" class="btn btn-stop" id="stop-btn">⏹ Arrêter</button>
 <button type="button" class="btn btn-retry-all" id="retry-all-btn">↻ Relancer toutes les scènes échouées</button>
 
@@ -272,7 +276,7 @@ Retry auto ×6 + retry manuel par scène.
 
 <div class="section hidden" id="section-player">
 <div class="section-header" data-toggle="section-player">
-<span class="section-title">▶ Lire l'histoire animée <span class="badge" id="player-badge">0</span></span>
+<span class="section-title">▶ Lire le film <span class="badge" id="player-badge">0</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
@@ -283,7 +287,7 @@ Retry auto ×6 + retry manuel par scène.
 </div>
 <div class="voice-toggle">
 <input type="checkbox" id="voice-toggle" checked>
-<label for="voice-toggle">Narration vocale française (voix du navigateur)</label>
+<label for="voice-toggle">Narration vocale française</label>
 </div>
 <div class="hint">Lecture séquentielle verticale avec sous-titres. Échap ou clic pour quitter.</div>
 </div>
@@ -316,63 +320,16 @@ Retry auto ×6 + retry manuel par scène.
 
 <script>
 // ══════════════════════════════════════════════════════════════════
-// VERROUILLAGE — VERSION ROBUSTE
+// VERROUILLAGE
 // ══════════════════════════════════════════════════════════════════
 const APP_LOCK_CODE = '1992';
 const LOCK_STORAGE_KEY = 'fruit_tales_unlocked_session';
 
-function isAppUnlocked(){
-    try { return sessionStorage.getItem(LOCK_STORAGE_KEY) === '1'; } catch(e){ return false; }
-}
-function setAppUnlocked(){
-    try { sessionStorage.setItem(LOCK_STORAGE_KEY, '1'); } catch(e){}
-}
-function hideLockScreen(){
-    var el = document.getElementById('lock-screen');
-    if(el){
-        el.style.display = 'none';
-        el.style.visibility = 'hidden';
-        el.style.pointerEvents = 'none';
-        el.classList.add('hidden');
-    }
-}
-function showLockScreen(){
-    var el = document.getElementById('lock-screen');
-    if(el){
-        el.style.display = 'flex';
-        el.style.visibility = 'visible';
-        el.style.pointerEvents = 'auto';
-        el.classList.remove('hidden');
-    }
-    var input = document.getElementById('lock-code');
-    if(input){
-        input.value = '';
-        setTimeout(function(){ try{ input.focus(); }catch(e){} }, 150);
-    }
-    var err = document.getElementById('lock-error');
-    if(err) err.textContent = '';
-}
-function tryUnlock(){
-    var input = document.getElementById('lock-code');
-    var err = document.getElementById('lock-error');
-    if(!input){ console.log('[Unlock] input introuvable'); return; }
-    var code = (input.value || '').trim();
-    console.log('[Unlock] code saisi =', JSON.stringify(code), 'attendu =', APP_LOCK_CODE);
-    if(code === APP_LOCK_CODE){
-        setAppUnlocked();
-        if(err) err.textContent = '';
-        input.classList.remove('error');
-        hideLockScreen();
-        console.log('[Unlock] OK — écran masqué');
-    } else {
-        if(err) err.textContent = 'Code incorrect (' + code.length + ' chiffres saisis)';
-        input.classList.add('error');
-        setTimeout(function(){ input.classList.remove('error'); }, 500);
-        input.value = '';
-        try{ input.focus(); }catch(e){}
-        console.log('[Unlock] KO');
-    }
-}
+function isAppUnlocked(){try{return sessionStorage.getItem(LOCK_STORAGE_KEY)==='1'}catch(e){return false}}
+function setAppUnlocked(){try{sessionStorage.setItem(LOCK_STORAGE_KEY,'1')}catch(e){}}
+function hideLockScreen(){var el=document.getElementById('lock-screen');if(el){el.style.display='none';el.style.visibility='hidden';el.style.pointerEvents='none';el.classList.add('hidden')}}
+function showLockScreen(){var el=document.getElementById('lock-screen');if(el){el.style.display='flex';el.style.visibility='visible';el.style.pointerEvents='auto';el.classList.remove('hidden')}var input=document.getElementById('lock-code');if(input){input.value='';setTimeout(function(){try{input.focus()}catch(e){}},150)}var err=document.getElementById('lock-error');if(err)err.textContent=''}
+function tryUnlock(){var input=document.getElementById('lock-code');var err=document.getElementById('lock-error');if(!input){console.log('[Unlock] input introuvable');return}var code=(input.value||'').trim();console.log('[Unlock] code saisi =',JSON.stringify(code));if(code===APP_LOCK_CODE){setAppUnlocked();if(err)err.textContent='';input.classList.remove('error');hideLockScreen();console.log('[Unlock] OK')}else{if(err)err.textContent='Code incorrect ('+code.length+' chiffres saisis)';input.classList.add('error');setTimeout(function(){input.classList.remove('error')},500);input.value='';try{input.focus()}catch(e){};console.log('[Unlock] KO')}}
 window.tryUnlock = tryUnlock;
 
 // ══════════════════════════════════════════════════════════════════
@@ -388,10 +345,14 @@ const FRAME_RATE = 24;
 const VIDEO_FIRST_POLL_DELAY_SEC = 60;
 const VIDEO_POLL_INTERVALS = [8, 8, 12, 12, 20, 20, 25];
 const VIDEO_MAX_POLL_ATTEMPTS = 100;
-const VIDEO_AUTO_RETRY_MAX = 6;
 const VIDEO_RETRY_DELAY_MS = 15000;
 
+// Retry infini : on ne passe JAMAIS à la scène suivante si celle-ci échoue
+const VIDEO_QUEUE_RETRY_INTERVAL_MS = 45000;
+const VIDEO_QUEUE_RETRY_MAX_MS = 900000;
+
 const API_KEYS_STORAGE = 'fruit_tales_api_keys';
+const QUOTA_STORAGE = 'fruit_tales_quota';
 const DEBUG_MAX = 600;
 
 const PASTEL_PALETTE = {
@@ -400,14 +361,14 @@ const PASTEL_PALETTE = {
 };
 
 const THEME_PRESETS = [
-    { emoji: '🍊', label: 'Bagarre', prompt: 'Une banane et sa copine tombent sur un groupe d\'oranges qui les provoquent. Ça finit en bagarre générale.' },
-    { emoji: '🍋', label: 'Trahison', prompt: 'Un citron découvre que son meilleur ami l\'a trahi pour de l\'argent.' },
-    { emoji: '🍇', label: 'Vengeance', prompt: 'Une grappe de raisins prépare une vengeance froide contre celui qui l\'a humiliée.' },
-    { emoji: '🍎', label: 'Rupture', prompt: 'Une pomme annonce à son compagnon qu\'elle le quitte après dix ans.' },
-    { emoji: '🍑', label: 'Dette', prompt: 'Une pêche doit de l\'argent à un caïd de la pègre fruitière.' },
-    { emoji: '🍒', label: 'Rivalité', prompt: 'Deux cerises sœurs se déchirent pour un héritage.' },
-    { emoji: '🥝', label: 'Rédemption', prompt: 'Un kiwi sort de prison et essaie de retrouver sa place.' },
-    { emoji: '🍍', label: 'Corruption', prompt: 'Un ananas flic ripou est confronté à ses propres crimes.' }
+    { emoji: '💋', label: 'Femme fatale', prompt: 'Une femme fatale et un homme charismatique se rencontrent dans un bar de nuit. La tension monte, les insultes fusent, ça finit en bagarre.' },
+    { emoji: '🥃', label: 'Trahison', prompt: 'Un homme élégant découvre que sa meilleure amie l\'a trahi pour de l\'argent.' },
+    { emoji: '🌹', label: 'Vengeance', prompt: 'Une femme mystérieuse prépare une vengeance froide contre celui qui l\'a humiliée.' },
+    { emoji: '🚬', label: 'Rupture', prompt: 'Une femme annonce à son amant qu\'elle le quitte après dix ans.' },
+    { emoji: '🎲', label: 'Dette', prompt: 'Un homme endetté doit de l\'argent à un caïd de la pègre.' },
+    { emoji: '🖤', label: 'Rivalité', prompt: 'Deux sœurs se déchirent pour un héritage familial.' },
+    { emoji: '🔓', label: 'Rédemption', prompt: 'Un homme sort de prison et essaie de retrouver sa place.' },
+    { emoji: '💼', label: 'Corruption', prompt: 'Un flic ripou est confronté à ses propres crimes.' }
 ];
 
 const state = {
@@ -451,7 +412,7 @@ function journalLog(msg, level){
     level = level || 'info';
     const body = document.getElementById('journal-body');
     if(!body) return;
-    const icons = { info:'·', highlight:'▶', success:'✅', warn:'⚠️', error:'❌', fruit:'🍊', story:'📖', image:'🎨', video:'🎥', play:'🎬', key:'🔑', voice:'🔊', retry:'↻', ref:'🔗' };
+    const icons = { info:'·', highlight:'▶', success:'✅', warn:'⚠️', error:'❌', story:'📖', image:'🎨', video:'🎥', play:'🎬', key:'🔑', voice:'🔊', retry:'↻', ref:'🔗', queue:'⏳' };
     const icon = icons[level] || '·';
     const entry = document.createElement('div');
     entry.className = 'j-entry ' + level;
@@ -474,6 +435,14 @@ function scrollToSection(id){if(userIsReadingConsole())return;const el=document.
 function revealSection(id){const el=document.getElementById(id);if(!el)return;el.classList.remove('hidden');el.classList.add('open');scrollToSection(id)}
 
 // ══════════════════════════════════════════════════════════════════
+// QUOTA
+// ══════════════════════════════════════════════════════════════════
+function getQuota(){try{const raw=localStorage.getItem(QUOTA_STORAGE);if(!raw)return{date:'',seconds:0};const q=JSON.parse(raw);const today=new Date().toISOString().slice(0,10);if(q.date!==today)return{date:today,seconds:0};return q}catch(e){return{date:new Date().toISOString().slice(0,10),seconds:0}}}
+function setQuota(q){try{localStorage.setItem(QUOTA_STORAGE,JSON.stringify(q))}catch(e){}}
+function addVideoSeconds(sec){const q=getQuota();q.seconds=(q.seconds||0)+sec;setQuota(q);updateQuotaDisplay()}
+function updateQuotaDisplay(){const el=document.getElementById('video-quota-used');if(!el)return;const q=getQuota();el.textContent=Math.round(q.seconds||0)}
+
+// ══════════════════════════════════════════════════════════════════
 // MULTI-CLÉS API
 // ══════════════════════════════════════════════════════════════════
 function getStoredKeys(){try{const raw=localStorage.getItem(API_KEYS_STORAGE);if(!raw)return[];const arr=JSON.parse(raw);if(!Array.isArray(arr))return[];return arr.filter(k=>typeof k==='string'&&k.trim().length>0)}catch(e){return[]}}
@@ -490,14 +459,12 @@ function saveKeysFromUI(){
     const raw=input.value||'';
     const keys=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
     if(keys.length===0){setStoredKeys([]);refreshKeyPool();updateApiPanel();renderKeysStatus();showToast('Aucune clé saisie','warn');return}
-    const nonStandard=keys.filter(k=>!k.startsWith('sk-'));
-    if(nonStandard.length>0){console.warn('[Clés] '+nonStandard.length+' non-sk acceptée(s).');showToast(nonStandard.length+' clé(s) non-sk acceptée(s)','warn',3000)}
     setStoredKeys(keys);refreshKeyPool();updateApiPanel();renderKeysStatus();
     showToast(keys.length+' clé(s) enregistrée(s) ✓','success');
-    journalLog(keys.length+' clé(s) API active(s). Parallélisme : '+keys.length+'.','key');
+    journalLog(keys.length+' clé(s) API active(s).','key');
 }
 
-function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');if(!panel||!input||!line||!text)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s) · parallélisme : '+n;input.value=state.keyPool.map(k=>k.key).join('\n');input.placeholder=''}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';input.placeholder='Collez votre clé API — une par ligne'}renderKeysStatus();updateButtons()}
+function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');if(!panel||!input||!line||!text)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s)';input.value=state.keyPool.map(k=>k.key).join('\n');input.placeholder=''}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';input.placeholder='Collez votre clé API — une par ligne'}renderKeysStatus();updateButtons();updateQuotaDisplay()}
 
 // ══════════════════════════════════════════════════════════════════
 // API FETCH
@@ -522,10 +489,20 @@ async function apiFetch(url, options, label, maxAttempts){
                 const err=new Error('HTTP '+res.status+' — '+errorText.slice(0,300));err.status=res.status;throw err;
             }
             if(res.status===429){const wait=retryAfter>0?retryAfter:Math.min(120,20+attempt*15);keyObj.cooldownUntil=Date.now()+wait*1000;debugLog('warn','RATELIMIT','Clé → cooldown '+wait+'s');renderKeysStatus();const{key:next}=getReadyKey();if(next&&next!==keyObj)continue;setStatus('Limite API — attente '+wait+'s');await sleep(Math.min(wait*1000,3000));continue}
-            if([500,502,503,504,520,522,524].includes(res.status)){const isQueueFull=res.status===503;const wait=isQueueFull?Math.min(120,30+attempt*20):Math.min(60,8+attempt*6);debugLog('warn','SERVICE','HTTP '+res.status+(isQueueFull?' (queue pleine)':'')+' — attente '+wait+'s');setStatus(isQueueFull?'File Agnes pleine — reprise dans '+wait+'s':'Service occupé — reprise dans '+wait+'s');await sleep(wait*1000);continue}
+            if([500,502,503,504,520,522,524].includes(res.status)){
+                const isQueueFull=res.status===503&&(errorText.toLowerCase().includes('queue')||errorText.toLowerCase().includes('video_queue_full'));
+                if(isQueueFull){const err=new Error('QUEUE_FULL');err.isQueueFull=true;err.status=503;throw err}
+                const wait=Math.min(60,8+attempt*6);
+                debugLog('warn','SERVICE','HTTP '+res.status+' — attente '+wait+'s');
+                setStatus('Service occupé — reprise dans '+wait+'s');
+                await sleep(wait*1000);continue;
+            }
             const wait=Math.min(60,6+attempt*5);debugLog('warn','HTTP','HTTP '+res.status+' — retry '+wait+'s');await sleep(wait*1000);
         }catch(e){
-            if(e.message==='Arrêt demandé')throw e;if(e.status&&[400,401,403,404].includes(e.status))throw e;lastErr=e;
+            if(e.message==='Arrêt demandé')throw e;
+            if(e.isQueueFull)throw e;
+            if(e.status&&[400,401,403,404].includes(e.status))throw e;
+            lastErr=e;
             const wait=Math.min(45,4+attempt*4);debugLog('warn','NETWORK',e.message+' — retry '+wait+'s');await sleep(wait*1000);
         }
     }
@@ -537,13 +514,17 @@ async function apiFetch(url, options, label, maxAttempts){
 // ══════════════════════════════════════════════════════════════════
 function escapeControlCharsInStrings(text){let result='';let inString=false;let escape=false;for(let i=0;i<text.length;i++){const ch=text[i];if(escape){result+=ch;escape=false;continue}if(ch==='\\'){result+=ch;escape=true;continue}if(ch==='"'){inString=!inString;result+=ch;continue}if(inString){if(ch==='\n'){result+='\\n';continue}if(ch==='\r'){result+='\\r';continue}if(ch==='\t'){result+='\\t';continue}const code=ch.charCodeAt(0);if(code<32){result+='\\u'+code.toString(16).padStart(4,'0');continue}}result+=ch}return result}
 function balanceJson(text){let ob=0,ok=0,inString=false,escape=false;for(let i=0;i<text.length;i++){const ch=text[i];if(escape){escape=false;continue}if(ch==='\\'){escape=true;continue}if(ch==='"'){inString=!inString;continue}if(inString)continue;if(ch==='{')ob++;else if(ch==='}')ob--;else if(ch==='[')ok++;else if(ch===']')ok--}let r=text;if(inString)r+='"';while(ok>0){r+=']';ok--}while(ob>0){r+='}';ob--}return r}
-function extractJson(text){if(!text)return null;let c=text.trim();const fm=c.match(/```(?:json)?\s*([\s\S]*?)```/);if(fm)c=fm[1].trim();const fb=c.indexOf('{');if(fb<0)return null;c=c.slice(fb);try{return JSON.parse(c)}catch(e1){debugLog('warn','PARSE','S1 échouée')}try{return JSON.parse(escapeControlCharsInStrings(c))}catch(e2){debugLog('warn','PARSE','S2 échouée')}try{const lb=c.lastIndexOf('}');if(lb>0)return JSON.parse(escapeControlCharsInStrings(c.slice(0,lb+1)))}catch(e3){debugLog('warn','PARSE','S3 échouée')}try{return JSON.parse(balanceJson(escapeControlCharsInStrings(c)))}catch(e4){debugLog('warn','PARSE','S4 échouée')}debugLog('error','PARSE','Aucune stratégie OK');return null}
+function extractJson(text){if(!text)return null;let c=text.trim();const fm=c.match(/```(?:json)?\s*([\s\S]*?)```/);if(fm)c=fm[1].trim();const fb=c.indexOf('{');if(fb<0)return null;c=c.slice(fb);try{return JSON.parse(c)}catch(e1){}try{return JSON.parse(escapeControlCharsInStrings(c))}catch(e2){}try{const lb=c.lastIndexOf('}');if(lb>0)return JSON.parse(escapeControlCharsInStrings(c.slice(0,lb+1)))}catch(e3){}try{return JSON.parse(balanceJson(escapeControlCharsInStrings(c)))}catch(e4){}debugLog('error','PARSE','Aucune stratégie OK');return null}
 
 // ══════════════════════════════════════════════════════════════════
-// IMAGE
+// IMAGE — avec référence forcée pour les scènes 2+
 // ══════════════════════════════════════════════════════════════════
-async function generateImage(prompt){
+async function generateImage(prompt, referenceUrl){
     const body={model:MODEL_IMAGE,prompt:sanitizeForApi(prompt),n:1,size:'1K',ratio:'9:16'};
+    // Si on a une image de référence, on l'envoie au modèle
+    if(referenceUrl){
+        body.extra_body = { image: [referenceUrl] };
+    }
     const res=await apiFetch(API_BASE+'/images/generations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Image',4);
     const data=await res.json();const item=data.data&&data.data[0];
     if(!item)throw new Error('Pas d\'image');
@@ -559,7 +540,7 @@ function decodeCompositeId(composite){if(!composite||typeof composite!=='string'
 async function createVideoTask(prompt,imageUrl,duration){
     const body={model:MODEL_VIDEO,prompt:sanitizeForApi(prompt),num_frames:duration,frame_rate:FRAME_RATE};
     if(imageUrl)body.image=imageUrl;
-    debugLog('ai','PROMPT VIDÉO','Envoyé ('+body.prompt.length+' chars)');
+    debugLog('ai','PROMPT VIDÉO','Envoyé ('+body.prompt.length+' chars, image='+(imageUrl?'oui':'non')+')');
     const res=await apiFetch(API_BASE+'/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Video Task',4);
     const data=await res.json();const compositeId=data.video_id||data.id||data.task_id;
     if(!compositeId)throw new Error('Pas de video_id');
@@ -604,31 +585,30 @@ async function pollVideo(videoIdObj,onProgress){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS — COHÉRENCE PERSONNAGE + ADULTE
+// PROMPTS — PERSONNAGES ADULTES HUMAINS (pas de fruit)
 // ══════════════════════════════════════════════════════════════════
 function buildStoryPrompt(storyInput, sceneCount){
     return [
-        'Tu es un scénariste de séries adultes (HBO / Netflix) spécialisé dans les drames urbains et les conflits de quartier.',
-        'Tu écris des histoires CRUES, TENDUES, VIOLENTES, avec des personnages ADULTES complexes.',
+        'Tu es un scénariste de séries adultes (HBO / Netflix) spécialisé dans les drames urbains, le film noir et les histoires de séduction dangereuse.',
+        'Tu écris des histoires ADULTES, CRUES, TENDUES, avec des personnages CHARISMATIQUES et SEXY.',
         '',
         'HISTOIRE DEMANDÉE :',
         storyInput,
         '',
         'CONTRAINTES :',
-        '- Crée 3 à 5 PERSONNAGES ADULTES avec un VISAGE DE FRUIT (corps humain adulte, peau humaine, vêtements adultes modernes, visage de fruit uniquement).',
-        '- Chaque personnage a : un prénom adulte, un fruit-visage, un âge, un métier, un trait de caractère complexe.',
+        '- Crée 3 à 5 PERSONNAGES HUMAINS ADULTES : hommes charismatiques (bad boy élégant, mystérieux, dangereux, séducteur) et femmes très sexy (femme fatale, sensuelle, assurée, magnétique).',
+        '- Chaque personnage a : un prénom adulte, un âge (25-50), un métier, une personnalité complexe, un style vestimentaire précis.',
         '- Écris un scénario de '+sceneCount+' scènes qui forment une histoire ADULTE complète : tension, montée en puissance, affrontement, résolution.',
         '- Chaque scène dure 7 à 8 secondes.',
         '- Chaque scène contient UN SEUL dialogue court (8-15 mots), CRU, DIRECT, avec des insultes stylisées si l\'histoire s\'y prête.',
-        '- Registre : adulte, sans filtre enfantin. Insultes françaises réalistes mais stylisées.',
-        '- Style visuel : pastel cinéma, symétrie Wes Anderson, pellicule 35mm, décors rétrofuturistes ou urbains sombres.',
+        '- Registre : adulte, sensuel, tendu, violent si nécessaire. Insultes françaises réalistes mais stylisées.',
+        '- Style visuel : pastel cinéma, symétrie Wes Anderson, pellicule 35mm, décors sombres et élégants (bars, lofts, rues de nuit, hôtels).',
         '',
-        'RENDU DES PERSONNAGES — RÈGLE ABSOLUE DE COHÉRENCE :',
-        'Ce sont des êtres HUMAINS ADULTES avec un VISAGE DE FRUIT.',
-        'Le CORPS est humain (peau humaine, mains humaines, morphologie adulte).',
-        'Les VÊTEMENTS sont adultes (costume, jean, blouson de cuir, robe, survêtement, uniforme…).',
-        'Seul le VISAGE est celui d\'un fruit (banane, orange, fraise, kiwi…) avec des yeux et une bouche HUMAINS expressifs.',
-        'PAS de corps de fruit. PAS de style cartoon enfantin. PAS de kawaii.',
+        'RENDU DES PERSONNAGES — RÈGLE ABSOLUE :',
+        'Ce sont des HUMAINS ADULTES NORMAUX. Pas de fruit, pas de costume, pas de cartoon.',
+        'Les HOMMES sont charismatiques, élégants, dangereux, séduisants.',
+        'Les FEMMES sont très sexy, sensuelles, sûres d\'elles, magnétiques.',
+        'Vêtements adultes et raffinés (costume noir, robe de soirée, blouson de cuir, talons hauts, chemise ouverte, bijoux discrets).',
         'Chaque personnage doit être décrit avec un maximum de détails physiques stables pour garantir la cohérence entre les scènes.',
         '',
         'FORMAT JSON STRICT (retourne UNIQUEMENT ce JSON) :',
@@ -638,19 +618,19 @@ function buildStoryPrompt(storyInput, sceneCount){
         '  "characters": [',
         '    {',
         '      "name": "Prénom adulte",',
-        '      "fruit_face": "orange",',
+        '      "gender": "homme ou femme",',
         '      "age": 34,',
         '      "job": "ancien boxeur devenu videur",',
         '      "personality": "colérique mais loyal, blessé par son passé",',
-        '      "outfit": "blouson de cuir noir, jean, bottes",',
-        '      "physical_description": "an adult human man with an orange for a face — orange peel skin texture only on the face, sharp human eyes, stubble on the fruit face, wearing a black leather jacket and jeans, tall athletic build"',
+        '      "outfit": "costume noir sur mesure, chemise blanche ouverte, cheveux courts, barbe de trois jours",',
+        '      "physical_description": "a handsome charismatic adult man, around 34, athletic tall build, short dark hair, three-day stubble, sharp jawline, intense gaze, wearing a tailored black suit with an open white shirt and a silver chain, dark cinematic lighting"',
         '    }',
         '  ],',
         '  "scenes": [',
         '    {',
         '      "scene_number": 1,',
         '      "description": "description visuelle de la scène",',
-        '      "image_prompt": "english prompt for the image, pastel cinematic style, adults with fruit faces",',
+        '      "image_prompt": "english prompt for the image, pastel cinematic style, adult humans, elegant and sexy",',
         '      "action": "english description of the action during this scene",',
         '      "dialogue": { "speaker": "Prénom", "line_fr": "phrase courte ADULTE et CRUE (8-15 mots)" },',
         '      "emotion": "colère"',
@@ -663,11 +643,9 @@ function buildStoryPrompt(storyInput, sceneCount){
 }
 
 function buildImagePrompt(scene, story, isFirstImage){
-    const charList=(story.characters||[]).map(c=>{
-        return c.name+' ('+c.age+' ans, '+c.job+'): '+c.physical_description;
-    }).join(' | ');
+    const charList=(story.characters||[]).map(c=>c.name+' ('+c.age+' ans, '+c.job+', '+c.gender+'): '+c.physical_description).join(' | ');
     const refBlock = (state.characterReferenceUrl && !isFirstImage)
-        ? 'REFERENCE IMAGE — USE THE PROVIDED CHARACTER REFERENCE IMAGE: the characters must look EXACTLY like the ones in the reference image. Same faces, same outfits, same proportions, same age. Maintain perfect visual consistency.\n'
+        ? 'REFERENCE IMAGE — USE THE PROVIDED CHARACTER REFERENCE IMAGE: the characters must look EXACTLY like the ones in the reference image. Same faces, same outfits, same body, same age, same hairstyle. Perfect visual consistency. This is a new scene with the SAME characters.\n'
         : '';
     return [
         'PASTEL CINEMATIC KEYFRAME — 35MM FILM, ADULT CINEMA, ABSOLUTELY NOT CARTOON.',
@@ -676,26 +654,25 @@ function buildImagePrompt(scene, story, isFirstImage){
         'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'. No neon, no fluorescent.',
         '',
         refBlock,
-        'CHARACTERS — ADULT HUMANS WITH A FRUIT FOR A FACE :',
+        'CHARACTERS — ADULT HUMANS (no fruit, no cartoon, no kawaii):',
         charList,
-        'CRITICAL : the BODY must be HUMAN ADULT (human skin, human hands, adult proportions, adult clothes).',
-        'ONLY THE FACE is a fruit. The fruit has HUMAN eyes and a HUMAN mouth.',
-        'NO fruit body. NO cartoon. NO kawaii. NO chibi.',
+        'CRITICAL : the men are charismatic, elegant, dangerous, seductive. The women are very sexy, sensual, confident, magnetic. Fully clothed but adult, refined, attractive.',
+        'NO fruit body. NO cartoon. NO kawaii. NO chibi. NO children.',
         '',
         'SCENE : '+(scene.image_prompt||scene.description||''),
         'ACTION : '+(scene.action||''),
         '',
         'FORMAT : portrait 9:16 vertical. No text, no subtitles, no watermarks.',
-        'The characters are adult, tense, expressive, dangerous, tired, angry or wounded. NOT cute.'
+        'The characters are adult, tense, expressive, seductive, dangerous. Cinematic adult drama.'
     ].filter(Boolean).join('\n');
 }
 
 function buildVideoPrompt(scene, story){
-    const charList=(story.characters||[]).map(c=>c.name+' ('+c.fruit_face+'): '+c.physical_description).join(' | ');
+    const charList=(story.characters||[]).map(c=>c.name+' ('+c.gender+', '+c.age+'): '+c.physical_description).join(' | ');
     const dialogue=scene.dialogue||{};
-    const intensityMap={subtle:'very subtle and slow movement, meditative',moderate:'slow and elegant movement',strong:'dynamic yet controlled movement, tense, theatrical, violent energy'};
+    const intensityMap={subtle:'very subtle and slow movement, meditative',moderate:'slow and elegant movement',strong:'dynamic yet controlled movement, tense, theatrical, sensual energy'};
     const refBlock = state.characterReferenceUrl
-        ? 'USE THE PROVIDED REFERENCE IMAGE AS THE VISUAL ANCHOR: the characters in the video must look EXACTLY like the ones in the reference image. Same faces, same fruit faces, same outfits, same body proportions. Perfect consistency.\n'
+        ? 'USE THE PROVIDED REFERENCE IMAGE AS THE VISUAL ANCHOR: the characters in the video must look EXACTLY like the ones in the reference image. Same faces, same outfits, same body, same hairstyle. Perfect consistency.\n'
         : '';
     return [
         'PASTEL CINEMATIC ADULT SHORT FILM — '+Math.round(state.durationFrames/24)+'-SECOND SCENE. TIKTOK 9:16 VERTICAL.',
@@ -704,9 +681,9 @@ function buildVideoPrompt(scene, story){
         'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'. No neon.',
         '',
         refBlock,
-        'ADULT HUMANS WITH FRUIT FACES (must remain visually identical to the reference image):',
+        'ADULT HUMANS (must remain visually identical to the reference image):',
         charList,
-        'CRITICAL : human adult bodies, human adult clothes, human adult proportions. ONLY THE FACE is a fruit with human eyes and human mouth. NOT cartoon. NOT kawaii.',
+        'CRITICAL : charismatic men, very sexy women. Adult, elegant, seductive, dangerous. NOT cartoon. NOT kawaii. NOT children.',
         '',
         'CAMERA : one continuous shot, no cuts. Slow dolly-in OR static locked-off. Perfect symmetry.',
         'ACTION : '+(scene.action||''),
@@ -715,7 +692,7 @@ function buildVideoPrompt(scene, story){
         dialogue.line_fr?('SPOKEN LINE (French, adult raw delivery, character speaks it to camera, mouth moving) : "'+dialogue.line_fr+'"'):'',
         '',
         'AUDIO : No music. Only tension ambience, footsteps, breathing, fabric, urban sounds.',
-        'The characters are adult, tense, expressive. NOT cute.',
+        'The characters are adult, tense, expressive, seductive. NOT cute.',
         '',
         'CONSTRAINTS : vertical 9:16 TikTok, '+Math.round(state.durationFrames/24)+' seconds, no text, no subtitles, no watermarks. Perfect symmetry. The characters face camera and speak.'
     ].filter(Boolean).join('\n');
@@ -733,7 +710,7 @@ function updateButtons(){
     const hasKey=hasActiveKey();
     const hasVideos=state.videos.filter(v=>v.status==='done').length>0;
     const failedCount=state.videos.filter(v=>v.status==='error').length;
-    if(launch){launch.disabled=!hasKey||state.isRunning;if(!hasKey)launch.innerHTML='🔑 Ajoutez une clé API';else if(state.isRunning)launch.innerHTML='⏳ Création en cours…';else launch.innerHTML='▶ Créer l\'histoire animée'}
+    if(launch){launch.disabled=!hasKey||state.isRunning;if(!hasKey)launch.innerHTML='🔑 Ajoutez une clé API';else if(state.isRunning)launch.innerHTML='⏳ Création en cours…';else launch.innerHTML='▶ Créer le film'}
     if(stop)stop.classList.toggle('visible',state.isRunning);
     if(play)play.disabled=!hasVideos||state.isPlayingFilm||state.isRunning;
     if(replay)replay.disabled=!hasVideos||state.isPlayingFilm||state.isRunning;
@@ -749,7 +726,7 @@ function renderStory(){
     html+='<div class="story-logline">'+esc(s.logline||'')+'</div>';
     html+='<div class="story-meta">🎬 '+((s.scenes||[]).length)+' scènes · '+(s.characters||[]).length+' personnages · '+Math.round(state.sceneCount*state.durationFrames/24)+'s total</div>';
     (s.characters||[]).forEach(c=>{
-        html+='<div class="character-card"><span class="fruit-emoji">🍊</span><strong>'+esc(c.name||'')+'</strong> — '+esc(c.age||'')+' ans · '+esc(c.job||'')+' · visage '+esc(c.fruit_face||'')+'</div>';
+        html+='<div class="character-card"><strong>'+esc(c.name||'')+'</strong> — '+esc(c.age||'')+' ans · '+esc(c.job||'')+' · '+esc(c.gender||'')+'</div>';
     });
     (s.scenes||[]).forEach((sc,i)=>{
         html+='<div class="scene-block">';
@@ -770,7 +747,7 @@ function renderImages(){
         if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
         if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
         const isRef = i===0 && state.characterReferenceUrl;
-        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(isRef?' <span class="ref-badge">RÉFÉRENCE</span>':'')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""><div class="scene-download" style="margin-top:.4rem;">Scène '+(i+1)+'</div></div></div>';
+        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(isRef?' <span class="ref-badge">RÉFÉRENCE</span>':'')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
     }).join('');
     const c=document.getElementById('images-badge');if(c)c.textContent=state.images.filter(i=>i.status==='done').length+'/'+state.images.length;
 }
@@ -786,9 +763,11 @@ function renderVideos(){
     state.videos.forEach((v,i)=>{
         const card=grid.children[i];if(!card)return;
         const titleEl=card.querySelector('.scene-card-title');const statusEl=card.querySelector('.scene-card-status');const bodyEl=card.querySelector('.scene-card-body');
-        const titleText='🎬 Scène '+(i+1)+(v.retryCount?' · retry '+v.retryCount:'');
-        if(titleEl.textContent!==titleText)titleEl.textContent=titleText;
-        const newClass='scene-card '+(v.status==='done'?'done':v.status==='error'?'error':v.status==='retrying'?'retrying':(v.status==='loading'||v.status==='pending')?'generating':'');
+        let titleText='🎬 Scène '+(i+1);
+        if(v.retryCount)titleText+=' · retry '+v.retryCount;
+        if(v.inQueue)titleText+=' <span class="queue-badge">QUEUE</span>';
+        if(titleEl.innerHTML!==titleText)titleEl.innerHTML=titleText;
+        const newClass='scene-card '+(v.status==='done'?'done':v.status==='error'?'error':v.status==='queued'?'queued':v.status==='retrying'?'retrying':(v.status==='loading'||v.status==='pending')?'generating':'');
         if(card.className!==newClass)card.className=newClass;
         if(v.status==='done'&&v.url){
             if(card.dataset.url!==v.url||!bodyEl.querySelector('video')){
@@ -797,12 +776,12 @@ function renderVideos(){
                 const dl=document.createElement('a');dl.className='scene-download';dl.href=v.url;dl.target='_blank';dl.rel='noopener noreferrer';dl.setAttribute('download','scene-'+(i+1)+'.mp4');dl.textContent='⬇ Télécharger';bodyEl.appendChild(dl);
                 card.dataset.url=v.url;
             }
-        } else if(v.status==='error'||v.status==='retrying'){
-            if(card.dataset.status!==v.status){
-                statusEl.innerHTML=v.status==='retrying'?'<span class="spinner-mini"></span>':'<span style="color:var(--err);">✕</span>';
-                bodyEl.innerHTML='<div class="scene-placeholder" style="color:'+(v.status==='retrying'?'var(--warn)':'var(--err)')+';">'+
-                    (v.status==='retrying'?'Retry en cours…':'Échec : '+esc((v.error||'').slice(0,80)))+
-                    '</div>'+
+        } else if(v.status==='error'||v.status==='retrying'||v.status==='queued'){
+            if(card.dataset.status!==v.status||card.dataset.progress!==(v.progress||'')){
+                let color = v.status==='error' ? 'var(--err)' : (v.status==='queued' ? '#4a7bc8' : 'var(--warn)');
+                let label = v.status==='queued' ? v.progress : (v.status==='retrying' ? 'Retry en cours…' : 'Échec : '+esc((v.error||'').slice(0,80)));
+                statusEl.innerHTML = v.status==='error' ? '<span style="color:var(--err);">✕</span>' : '<span class="spinner-mini"></span>';
+                bodyEl.innerHTML='<div class="scene-placeholder" style="color:'+color+';">'+label+'</div>'+
                     '<button type="button" class="scene-retry-btn" data-retry="'+i+'">↻ Réessayer cette scène</button>';
                 const btn=bodyEl.querySelector('[data-retry]');
                 if(btn)btn.addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();manualRetryScene(i)});
@@ -826,7 +805,6 @@ async function callChatCompletion(systemPrompt,userPrompt,label,maxTokens,temper
     const res=await apiFetch(API_BASE+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},label,4);
     const data=await res.json();const choice=data.choices&&data.choices[0];const msg=choice&&choice.message;
     let content=msg&&msg.content;if(!content&&msg&&msg.reasoning_content)content=msg.reasoning_content;
-    debugLog('response',label,'len='+((content&&content.length)||0));
     return content;
 }
 
@@ -850,13 +828,12 @@ async function createStory(){
     document.getElementById('images-grid').innerHTML='';
     document.getElementById('videos-grid').innerHTML='';
     renderStory();renderImages();renderVideos();updateButtons();
-    const nKeys=state.keyPool.filter(k=>k.active).length;
     const totalSec=Math.round(state.sceneCount*state.durationFrames/24);
-    journalLog('Création lancée. '+nKeys+' clé(s), '+state.sceneCount+' scènes, ~'+totalSec+'s.','highlight');
+    journalLog('Création lancée. '+state.sceneCount+' scènes, ~'+totalSec+'s.','highlight');
 
     try{
-        setStatus('Étape 1/5 — L\'IA écrit l\'histoire adulte…');
-        journalLog('L\'IA invente l\'histoire et les personnages adultes…','story');
+        setStatus('Étape 1/4 — L\'IA écrit l\'histoire adulte…');
+        journalLog('L\'IA invente l\'histoire et les personnages…','story');
         const story=await llmCreateStory(storyInput,state.sceneCount);
         state.story=story;
         renderStory();revealSection('section-story');
@@ -864,27 +841,18 @@ async function createStory(){
         await sleep(500);
         if(state.stopRequested)throw new Error('Arrêt demandé');
 
-        setStatus('Étape 2/5 — Génération des images (référence personnage)…');
-        journalLog('Génération des '+(story.scenes||[]).length+' images…','image');
+        setStatus('Étape 2/4 — Génération des images (référence verrouillée)…');
+        journalLog('Génération des images avec référence stricte…','image');
         revealSection('section-images');
         await generateAllImages(story);
         if(state.stopRequested)throw new Error('Arrêt demandé');
 
-        setStatus('Étape 3/5 — Cohérence des personnages…');
-        if(state.images.length>0&&state.images[0].status==='done'&&state.images[0].url){
-            state.characterReferenceUrl=state.images[0].url;
-            journalLog('Image de référence définie (Scène 1) — utilisée pour toutes les vidéos.','ref');
-        } else {
-            journalLog('Aucune image de référence disponible — les vidéos seront générées sans ancrage.','warn');
-        }
-        renderImages();
-
-        setStatus('Étape 4/5 — Génération des vidéos (retry auto ×'+VIDEO_AUTO_RETRY_MAX+')…');
-        journalLog('Génération des vidéos avec référence de personnage…','video');
+        setStatus('Étape 3/4 — Génération des vidéos (séquentiel strict)…');
+        journalLog('Génération des vidéos — la scène N ne démarre qu\'après succès de la scène N-1.','video');
         revealSection('section-videos');
         await generateAllVideos(story);
 
-        setStatus('Étape 5/5 — Film prêt ✦');
+        setStatus('Étape 4/4 — Film prêt ✦');
         journalLog('Film complet prêt.','success');
         document.getElementById('section-player').classList.remove('hidden');
         document.getElementById('section-player').classList.add('open');
@@ -899,14 +867,14 @@ async function createStory(){
 
 async function llmCreateStory(storyInput,sceneCount){
     const prompt=buildStoryPrompt(storyInput,sceneCount);
-    const systemPrompt='Tu es un scénariste de séries adultes (HBO/Netflix). Tu écris des drames urbains crus, violents, adultes. Les personnages sont des HUMAINS ADULTES avec un VISAGE DE FRUIT (corps humain, vêtements adultes, visage de fruit uniquement). Tu retournes TOUJOURS un JSON valide, sans markdown.';
-    for(let attempt=1;attempt<=2;attempt++){
+    const systemPrompt='Tu es un scénariste de séries adultes (HBO/Netflix). Tu écris des drames urbains crus, violents, sensuels, adultes. Les personnages sont des HUMAINS ADULTES : hommes charismatiques et femmes très sexy. Aucun fruit, aucun cartoon. Tu retournes TOUJOURS un JSON valide, sans markdown.';
+    for(let attempt=1;attempt<=3;attempt++){
         try{
             const content=await callChatCompletion(systemPrompt,prompt,'Histoire (essai '+attempt+')',8000,attempt===1?0.85:0.5);
             if(!content)continue;
             const story=extractJson(content);
             if(story&&story.scenes&&Array.isArray(story.scenes)){
-                if(!story.characters||!story.characters.length)story.characters=[{name:'Marco',fruit_face:'orange',age:34,job:'videur',personality:'colérique',outfit:'blouson de cuir',physical_description:'adult human man with an orange fruit face, human eyes, leather jacket, jeans, athletic build'}];
+                if(!story.characters||!story.characters.length)story.characters=[{name:'Marco',gender:'homme',age:34,job:'videur',personality:'colérique',outfit:'costume noir',physical_description:'handsome charismatic adult man, athletic build, black suit'}];
                 story.scenes.forEach((sc,i)=>{
                     if(!sc.dialogue||!sc.dialogue.line_fr)sc.dialogue={speaker:story.characters[0].name,line_fr:'...'};
                     if(!sc.scene_number)sc.scene_number=i+1;
@@ -916,88 +884,107 @@ async function llmCreateStory(storyInput,sceneCount){
             }
         }catch(e){debugLog('warn','HISTOIRE','Essai '+attempt+' échoué : '+e.message)}
     }
-    throw new Error('Impossible de générer l\'histoire après 2 tentatives');
+    throw new Error('Impossible de générer l\'histoire après 3 tentatives');
 }
 
+// Images SÉQUENTIELLES avec référence stricte
 async function generateAllImages(story){
     const scenes=story.scenes||[];
     state.images=scenes.map(()=>({status:'pending',url:null,prompt:null}));
     renderImages();
-    const queue=createRateLimitedQueue(3,3400);
-    const tasks=[];
     for(let i=0;i<scenes.length;i++){
+        if(state.stopRequested)break;
         const idx=i;const scene=scenes[idx];
         state.images[idx].status='loading';renderImages();
-        tasks.push(queue.add(async()=>{
-            if(state.stopRequested)return;
+        let success=false;
+        for(let attempt=1;attempt<=3&&!success;attempt++){
             try{
+                const refUrl = (idx===0) ? null : state.characterReferenceUrl;
                 const prompt=buildImagePrompt(scene,story,idx===0);
-                const url=await generateImage(prompt);
+                const url=await generateImage(prompt, refUrl);
                 state.images[idx]={status:'done',url:url,prompt:prompt};renderImages();
-                if(idx===0){state.characterReferenceUrl=url;debugLog('success','REF','Image de référence définie : Scène 1')}
-            }catch(e){if(e.message==='Arrêt demandé')return;state.images[idx]={status:'error',url:null,prompt:null};renderImages();debugLog('error','IMAGE '+(idx+1),e.message)}
-        }));
+                if(idx===0){state.characterReferenceUrl=url;debugLog('success','REF','Image de référence définie : Scène 1 (verrouillée)')}
+                success=true;
+            }catch(e){
+                if(e.message==='Arrêt demandé')break;
+                debugLog('warn','IMAGE '+(idx+1),'Essai '+attempt+' échoué : '+e.message);
+                if(attempt<3)await sleep(3000);
+                else{state.images[idx]={status:'error',url:null,prompt:null};renderImages();}
+            }
+        }
     }
-    await Promise.allSettled(tasks);await queue.idle();
     const ok=state.images.filter(i=>i.status==='done').length;
     journalLog('Images : '+ok+'/'+scenes.length+' prêtes.',ok===scenes.length?'success':'warn');
 }
 
+// Vidéos SÉQUENTIELLES STRICTES — pas de passage à la scène suivante si la précédente échoue
 async function generateAllVideos(story){
     state.isGeneratingVideos=true;
     const scenes=story.scenes||[];
-    state.videos=scenes.map(()=>({status:'pending',url:null,prompt:'',progress:'En attente…',retryCount:0,error:null}));
+    state.videos=scenes.map(()=>({status:'pending',url:null,prompt:'',progress:'En attente…',retryCount:0,error:null,inQueue:false}));
     renderVideos();
-    const workerCount=Math.max(1,state.keyPool.filter(k=>k.active).length);
-    journalLog('Lancement de '+workerCount+' worker(s) sur '+scenes.length+' scènes. Référence : '+(state.characterReferenceUrl?'Scène 1':'aucune')+'.','video');
-    const queue=scenes.map((sc,index)=>({sc,index}));
-    const workers=[];
-    for(let w=0;w<workerCount;w++)workers.push(videoWorker(w,queue,story));
-    await Promise.all(workers);
+    journalLog('Génération séquentielle stricte : scène 1 → scène '+scenes.length,'video');
+    for(let i=0;i<scenes.length;i++){
+        if(state.stopRequested)break;
+        journalLog('▶ Scène '+(i+1)+'/'+scenes.length+' — démarrage','highlight');
+        await generateOneVideoStrict(scenes[i],i,story);
+        // On ne passe à la suivante QUE si celle-ci est done
+        if(state.videos[i].status!=='done'){
+            journalLog('Scène '+(i+1)+' non générée — on arrête pour ne pas casser le film.','error');
+            break;
+        }
+    }
     state.isGeneratingVideos=false;updateButtons();
     const done=state.videos.filter(v=>v.status==='done').length;
-    const failed=state.videos.filter(v=>v.status==='error').length;
-    journalLog('Vidéos : '+done+'/'+scenes.length+' prêtes'+(failed?' ('+failed+' échec(s) — bouton Retry disponible)':''),done===scenes.length?'success':'warn');
+    const allDone=done===scenes.length;
+    journalLog('Vidéos : '+done+'/'+scenes.length+(allDone?' — film complet ✓':' — film incomplet'),allDone?'success':'warn');
 }
 
-async function videoWorker(workerId,queue,story){
-    while(queue.length>0&&!state.stopRequested){const task=queue.shift();if(!task)break;await generateOneVideo(task.sc,task.index,story,workerId)}
-}
-
-async function generateOneVideo(scene,index,story,workerId,isManualRetry){
+// Génère UNE vidéo avec retry infini (sauf arrêt manuel)
+async function generateOneVideoStrict(scene,index,story){
     if(state.stopRequested)return;
     const prompt=buildVideoPrompt(scene,story);
     state.videos[index].status='loading';
     state.videos[index].prompt=prompt;
     state.videos[index].progress='Initialisation…';
-    if(isManualRetry)state.videos[index].retryCount=(state.videos[index].retryCount||0)+1;
+    state.videos[index].inQueue=false;
     renderVideos();
 
-    try{
-        const img=state.images[index];
-        const imageUrl=img&&img.url?img.url:(state.characterReferenceUrl||null);
-        const videoIdObj=await createVideoTask(prompt,imageUrl,state.durationFrames);
-        const videoUrl=await pollVideo(videoIdObj,(prog)=>{state.videos[index].progress=prog;renderVideos()});
-        state.videos[index]={status:'done',url:videoUrl,prompt,retryCount:state.videos[index].retryCount||0,error:null};
-        renderVideos();
-        journalLog('W'+(workerId+1)+' → Scène '+(index+1)+' prête ✓','success');
-        return true;
-    }catch(e){
-        if(e.message==='Arrêt demandé')return false;
-        const retryCount=state.videos[index].retryCount||0;
-        if(retryCount<VIDEO_AUTO_RETRY_MAX && !isManualRetry){
+    let attempt=0;
+    while(true){
+        if(state.stopRequested)return false;
+        attempt++;
+        state.videos[index].retryCount=attempt-1;
+        try{
+            const img=state.images[index];
+            const imageUrl=img&&img.url?img.url:state.characterReferenceUrl;
+            const videoIdObj=await createVideoTask(prompt,imageUrl,state.durationFrames);
+            const videoUrl=await pollVideo(videoIdObj,(prog)=>{state.videos[index].progress=prog;renderVideos()});
+            state.videos[index]={status:'done',url:videoUrl,prompt,retryCount:attempt-1,error:null,inQueue:false};
+            addVideoSeconds(state.durationFrames/24);
+            renderVideos();
+            journalLog('Scène '+(index+1)+' prête ✓ (essai '+attempt+')','success');
+            return true;
+        }catch(e){
+            if(e.message==='Arrêt demandé')return false;
+
+            if(e.isQueueFull){
+                state.videos[index].status='queued';
+                state.videos[index].inQueue=true;
+                state.videos[index].progress='File Agnes pleine — attente 45s puis retry (essai '+attempt+')';
+                renderVideos();
+                journalLog('Scène '+(index+1)+' — file Agnes pleine, retry dans 45s','queue');
+                await sleep(VIDEO_QUEUE_RETRY_INTERVAL_MS);
+                continue;
+            }
+
+            // Erreur normale : retry avec backoff
             state.videos[index].status='retrying';
-            state.videos[index].progress='Retry auto '+(retryCount+1)+'/'+VIDEO_AUTO_RETRY_MAX+' dans '+(VIDEO_RETRY_DELAY_MS/1000)+'s…';
-            state.videos[index].retryCount=retryCount+1;
+            state.videos[index].progress='Retry '+(attempt+1)+' dans 15s… ('+(e.message||'erreur').slice(0,60)+')';
             renderVideos();
-            journalLog('W'+(workerId+1)+' → Scène '+(index+1)+' échec, retry auto '+(retryCount+1)+'/'+VIDEO_AUTO_RETRY_MAX,'warn');
+            journalLog('Scène '+(index+1)+' échec (essai '+attempt+') : '+(e.message||'').slice(0,80)+' — retry dans 15s','warn');
             await sleep(VIDEO_RETRY_DELAY_MS);
-            return await generateOneVideo(scene,index,story,workerId,false);
-        } else {
-            state.videos[index]={status:'error',url:null,prompt,retryCount,error:e.message};
-            renderVideos();
-            journalLog('W'+(workerId+1)+' → Scène '+(index+1)+' ÉCHEC DÉFINITIF : '+e.message.slice(0,60),'error');
-            return false;
+            // continue la boucle : retry infini
         }
     }
 }
@@ -1008,8 +995,7 @@ async function manualRetryScene(index){
     if(!hasActiveKey()){showToast('Ajoutez une clé API','error');return}
     state.isRunning=true;state.stopRequested=false;updateButtons();
     journalLog('Retry manuel — Scène '+(index+1),'retry');
-    state.videos[index].status='loading';state.videos[index].progress='Retry manuel…';renderVideos();
-    await generateOneVideo(state.story.scenes[index],index,state.story,0,true);
+    await generateOneVideoStrict(state.story.scenes[index],index,state.story);
     state.isRunning=false;updateButtons();
 }
 
@@ -1020,26 +1006,12 @@ async function manualRetryAllFailed(){
     if(failedIndices.length===0){showToast('Aucune scène échouée','success');return}
     if(!hasActiveKey()){showToast('Ajoutez une clé API','error');return}
     state.isRunning=true;state.stopRequested=false;updateButtons();
-    journalLog('Retry manuel global — '+failedIndices.length+' scène(s)','retry');
+    journalLog('Retry manuel — '+failedIndices.length+' scène(s)','retry');
     for(const idx of failedIndices){
         if(state.stopRequested)break;
-        state.videos[idx].status='loading';state.videos[idx].progress='Retry manuel…';renderVideos();
-        await generateOneVideo(state.story.scenes[idx],idx,state.story,0,true);
+        await generateOneVideoStrict(state.story.scenes[idx],idx,state.story);
     }
     state.isRunning=false;updateButtons();
-}
-
-function createRateLimitedQueue(maxConcurrent,minIntervalMs){
-    let running=0,lastStart=0;const queue=[];let resolveIdle=null;
-    function tryNext(){
-        if(running>=maxConcurrent)return;
-        if(queue.length===0){if(running===0&&resolveIdle){resolveIdle();resolveIdle=null}return}
-        const now=Date.now();const wait=Math.max(0,lastStart+minIntervalMs-now);
-        if(wait>0){setTimeout(tryNext,wait);return}
-        const task=queue.shift();running++;lastStart=Date.now();
-        task().finally(()=>{running--;setTimeout(tryNext,0)});
-    }
-    return{add(fn){return new Promise((resolve,reject)=>{queue.push(()=>fn().then(resolve,reject));setTimeout(tryNext,0)})},idle(){return new Promise(r=>{if(running===0&&queue.length===0)return r();resolveIdle=r})}}
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1047,7 +1019,7 @@ function createRateLimitedQueue(maxConcurrent,minIntervalMs){
 // ══════════════════════════════════════════════════════════════════
 let ttsVoice=null;
 function pickFrenchVoice(){if(!('speechSynthesis' in window))return null;const voices=window.speechSynthesis.getVoices();if(!voices||voices.length===0)return null;const fr=voices.filter(v=>v.lang&&v.lang.toLowerCase().startsWith('fr'));if(fr.length===0)return null;const preferred=fr.find(v=>/premium|enhanced|amelie|thomas|audrey|marie/i.test(v.name));return preferred||fr[0]}
-function initTTS(){if(!('speechSynthesis' in window))return;const update=()=>{ttsVoice=pickFrenchVoice();if(ttsVoice)debugLog('success','TTS','Voix : '+ttsVoice.name)};update();window.speechSynthesis.onvoiceschanged=update}
+function initTTS(){if(!('speechSynthesis' in window))return;const update=()=>{ttsVoice=pickFrenchVoice()};update();window.speechSynthesis.onvoiceschanged=update}
 function speakFR(text){if(!state.voiceEnabled)return;if(!('speechSynthesis' in window))return;if(!text)return;try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=1.0;u.pitch=1.0;if(ttsVoice)u.voice=ttsVoice;window.speechSynthesis.speak(u);state.currentUtterance=u;journalLog('🔊 « '+text.slice(0,80)+(text.length>80?'…':'')+' »','voice')}catch(e){}}
 function stopTTS(){try{if('speechSynthesis' in window)window.speechSynthesis.cancel()}catch(e){}state.currentUtterance=null}
 
@@ -1065,16 +1037,15 @@ async function playFilm(){
     const ctx=canvas.getContext('2d');
     overlay.classList.add('visible');hint.classList.remove('hidden');setTimeout(()=>hint.classList.add('hidden'),3000);
     try{if('speechSynthesis' in window){const u0=new SpeechSynthesisUtterance(' ');u0.volume=0;window.speechSynthesis.speak(u0)}}catch(e){}
-    journalLog('Diffusion du film…','play');
+    journalLog('Diffusion…','play');
     const story=state.story||{scenes:[]};const scenes=story.scenes||[];
     const readyWithScene=ready.map(v=>{const origIndex=state.videos.indexOf(v);return{video:v,scene:scenes[origIndex]||{}}});
     for(let i=0;i<readyWithScene.length;i++){
         if(!state.isPlayingFilm)break;
         const{video,scene}=readyWithScene[i];
-        journalLog('Scène '+(i+1)+'/'+readyWithScene.length,'play');
         await playOneScene(video,scene,ctx,canvas,dpr);
     }
-    stopFilmPlayback();journalLog('Diffusion terminée.','success');
+    stopFilmPlayback();
 }
 
 function playOneScene(videoObj,scene,ctx,canvas,dpr){
@@ -1122,35 +1093,18 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
 // INIT
 // ══════════════════════════════════════════════════════════════════
 (function init(){
-    // ══ VERROUILLAGE ══
-    if(isAppUnlocked()){
-        hideLockScreen();
-    } else {
-        showLockScreen();
-    }
+    if(isAppUnlocked()){hideLockScreen()}else{showLockScreen()}
     var lockBtn = document.getElementById('lock-btn');
     var lockInput = document.getElementById('lock-code');
     if(lockBtn){
         var newBtn = lockBtn.cloneNode(true);
         lockBtn.parentNode.replaceChild(newBtn, lockBtn);
         newBtn.type = 'button';
-        newBtn.addEventListener('click', function(ev){
-            ev.preventDefault();
-            ev.stopPropagation();
-            console.log('[Unlock] clic bouton');
-            tryUnlock();
-        });
-        console.log('[Unlock] bouton listener attaché');
+        newBtn.addEventListener('click', function(ev){ev.preventDefault();ev.stopPropagation();tryUnlock();});
     }
     if(lockInput){
-        lockInput.addEventListener('keydown', function(e){
-            if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }
-        });
-        lockInput.addEventListener('input', function(e){
-            var v = e.target.value.replace(/\D/g,'');
-            e.target.value = v;
-            if(v.length === 4 && v === APP_LOCK_CODE){ tryUnlock(); }
-        });
+        lockInput.addEventListener('keydown', function(e){if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }});
+        lockInput.addEventListener('input', function(e){var v = e.target.value.replace(/\D/g,'');e.target.value = v;if(v.length === 4 && v === APP_LOCK_CODE){ tryUnlock(); }});
     }
 
     document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
@@ -1159,7 +1113,7 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     const chips=document.getElementById('theme-chips');
     if(chips){chips.innerHTML=THEME_PRESETS.map((p,i)=>'<button type="button" class="preset-chip" data-theme="'+i+'">'+p.emoji+' '+p.label+'</button>').join('');chips.querySelectorAll('.preset-chip').forEach(chip=>{chip.addEventListener('click',()=>{const idx=parseInt(chip.dataset.theme,10);const p=THEME_PRESETS[idx];if(!p)return;document.getElementById('story-input').value=p.prompt;showToast('Thème : '+p.label,'success')})})}
     document.getElementById('launch-btn').addEventListener('click',createStory);
-    document.getElementById('stop-btn').addEventListener('click',()=>{state.stopRequested=true;stopTTS();debugLog('warn','STOP','Arrêt demandé');journalLog('Arrêt demandé…','warn');setStatus('Arrêt en cours…')});
+    document.getElementById('stop-btn').addEventListener('click',()=>{state.stopRequested=true;stopTTS();journalLog('Arrêt demandé…','warn');setStatus('Arrêt en cours…')});
     document.getElementById('retry-all-btn').addEventListener('click',manualRetryAllFailed);
     document.getElementById('play-film-btn').addEventListener('click',playFilm);
     document.getElementById('replay-btn').addEventListener('click',playFilm);
@@ -1171,10 +1125,9 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     document.getElementById('debug-clear-btn').addEventListener('click',e=>{e.stopPropagation();clearDebug()});
     document.getElementById('debug-copy-btn').addEventListener('click',e=>{e.stopPropagation();copyDebug()});
     document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse()});
-    refreshKeyPool();updateApiPanel();updateButtons();initTTS();
+    refreshKeyPool();updateApiPanel();updateButtons();initTTS();updateQuotaDisplay();
     setInterval(renderKeysStatus,1000);
-    debugLog('success','INIT','Fruit Tales Studio (adulte + cohérence) prêt');
-    journalLog('Prêt. La Scène 1 servira de référence visuelle pour toutes les vidéos.','highlight');
+    journalLog('Prêt. La Scène 1 est verrouillée comme référence visuelle absolue.','highlight');
 })();
 </script>
 </body>
