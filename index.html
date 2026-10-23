@@ -176,13 +176,13 @@ select option{background:var(--bg2);color:var(--ink)}
 
 <header>
 <h1>Fruit Tales Studio</h1>
-<p class="subtitle">Films adultes · Agnes Video 2.5 Flash · Cohérence verrouillée</p>
+<p class="subtitle">Films adultes · Agnes Video 2.5 Flash · Polling adaptatif</p>
 </header>
 
 <div class="banner">
 <strong>🔒 Verrouillage absolu.</strong> Visage ET habits décrits mot pour mot. Référence transmise à chaque image et vidéo.
-<strong>⚙️ Agnes 2.5 Flash.</strong> Modèle officiel : <code>agnes-video-2.5-flash</code>, <code>seconds</code> string "4"-"12", <code>size: "720P"</code>, mode <code>reference</code> pour la cohérence.
-<strong>🔄 Séquentiel strict.</strong> La scène N ne démarre jamais avant la N-1. Retry infini.
+<strong>⚙️ Agnes 2.5 Flash.</strong> Modèle officiel <code>agnes-video-2.5-flash</code>, <code>seconds</code> string "4"-"12", <code>size: "720P"</code>, mode <code>reference</code>.
+<strong>📡 Polling adaptatif.</strong> Démarre à 5s, ralentit à 30s après un 429, accélère après plusieurs 200. La clé n'est plus bloquée en cooldown.
 </div>
 
 <div class="panel" id="api-panel">
@@ -320,8 +320,7 @@ select option{background:var(--bg2);color:var(--ink)}
 <script>
 // ══════════════════════════════════════════════════════════════════
 // VERROUILLAGE
-// ══════════════════════════════════════════════════════════════════
-const APP_LOCK_CODE = '1992';
+// ══════════════════════════════════════════════════════════════════const APP_LOCK_CODE = '1992';
 const LOCK_STORAGE_KEY = 'fruit_tales_unlocked_session';
 function isAppUnlocked(){try{return sessionStorage.getItem(LOCK_STORAGE_KEY)==='1'}catch(e){return false}}
 function setAppUnlocked(){try{sessionStorage.setItem(LOCK_STORAGE_KEY,'1')}catch(e){}}
@@ -331,17 +330,20 @@ function tryUnlock(){var input=document.getElementById('lock-code');var err=docu
 window.tryUnlock = tryUnlock;
 
 // ══════════════════════════════════════════════════════════════════
-// CONFIG — AGNES 2.5 FLASH
+// CONFIG — AGNES 2.5 FLASH + POLLING ADAPTATIF
 // ══════════════════════════════════════════════════════════════════
 const API_BASE = 'https://apihub.agnes-ai.com/v1';
 const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
 const MODEL_TEXT = 'agnes-2.5-flash';
 const MODEL_IMAGE = 'agnes-image-2.1-flash';
-const MODEL_VIDEO = 'agnes-video-2.5-flash'; // ← NOUVEAU MODÈLE OFFICIEL
+const MODEL_VIDEO = 'agnes-video-2.5-flash';
 const FRAME_RATE = 24;
 
 const VIDEO_FIRST_POLL_DELAY_SEC = 40;
-const VIDEO_POLL_INTERVAL_MS = 2000; // 2s recommandé par la doc
+// Polling adaptatif
+const VIDEO_POLL_INTERVAL_START_MS = 5000;
+const VIDEO_POLL_INTERVAL_MAX_MS = 15000;
+const VIDEO_POLL_INTERVAL_BACKOFF_429_MS = 30000;
 const VIDEO_MAX_POLL_ATTEMPTS = 150;
 const VIDEO_RETRY_DELAY_MS = 15000;
 const VIDEO_QUEUE_RETRY_INTERVAL_MS = 45000;
@@ -372,7 +374,7 @@ const state = {
     stopRequested: false,
     storyInput: '',
     sceneCount: 8,
-    durationSeconds: 7, // secondes (pas frames)
+    durationSeconds: 7,
     intensity: 'strong',
     story: null,
     images: [],
@@ -495,25 +497,20 @@ async function generateImage(prompt, referenceUrl){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// VIDEO — AGNES 2.5 FLASH (NOUVEAU PROTOCOLE)
+// VIDEO — AGNES 2.5 FLASH
 // ══════════════════════════════════════════════════════════════════
 async function createVideoTask(prompt, imageUrl){
-    // ⚠️ PROTOCOLE 2.5 FLASH : seconds (string), size "720P", mode "reference", images[]
     const secondsStr = String(Math.min(12, Math.max(4, state.durationSeconds)));
     const body = {
         model: MODEL_VIDEO,
         prompt: sanitizeForApi(prompt),
-        mode: 'reference',
+        mode: imageUrl ? 'reference' : 'text',
         seconds: secondsStr,
         size: '720P',
         aspect_ratio: '9:16',
         n: 1
     };
-    if(imageUrl){
-        body.images = [imageUrl]; // mode reference : images[] max 5
-    } else {
-        body.mode = 'text'; // fallback si pas d'image
-    }
+    if(imageUrl) body.images = [imageUrl];
     debugLog('ai','PROMPT VIDÉO','Mode '+body.mode+' · '+body.seconds+'s · size '+body.size+' · images='+(body.images?body.images.length:0));
     const res=await apiFetch(API_BASE+'/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Video Task',4);
     const data=await res.json();
@@ -523,45 +520,65 @@ async function createVideoTask(prompt, imageUrl){
     return compositeId;
 }
 
+// Polling adaptatif : 5s start, 30s après 429, 15s max
 async function pollVideo(videoId, onProgress){
-    // ⚠️ PROTOCOLE 2.5 FLASH : polling avec model_name OBLIGATOIRE pour reference/keyframe
-    const minWait = VIDEO_FIRST_POLL_DELAY_SEC;
-    let rem = minWait;
+    let rem = VIDEO_FIRST_POLL_DELAY_SEC;
     while(rem > 0){
         if(state.stopRequested) throw new Error('Arrêt demandé');
         onProgress('Préparation — '+rem+'s');
         await sleep(1000); rem--;
     }
+    let pollInterval = VIDEO_POLL_INTERVAL_START_MS;
+    let consecutiveOk = 0;
+    let consecutive429 = 0;
     for(let attempt = 0; attempt < VIDEO_MAX_POLL_ATTEMPTS; attempt++){
         if(state.stopRequested) throw new Error('Arrêt demandé');
-        if(attempt > 0){
-            let r = Math.ceil(VIDEO_POLL_INTERVAL_MS / 1000);
-            while(r > 0){
-                if(state.stopRequested) throw new Error('Arrêt demandé');
-                onProgress('Création — '+r+'s');
-                await sleep(1000); r--;
-            }
+        let r = Math.ceil(pollInterval / 1000);
+        while(r > 0){
+            if(state.stopRequested) throw new Error('Arrêt demandé');
+            onProgress('Création — '+r+'s');
+            await sleep(1000); r--;
         }
         const url = POLL_BASE + '?video_id=' + encodeURIComponent(videoId) + '&model_name=' + encodeURIComponent(MODEL_VIDEO);
-        try{
-            const res = await apiFetch(url, {method:'GET'}, 'Polling', 2);
+        try {
+            const keyObj = getReadyKey().key;
+            if(!keyObj){ await sleep(5000); continue; }
+            const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + keyObj.key } });
+            if(res.status === 429){
+                consecutive429++; consecutiveOk = 0;
+                pollInterval = VIDEO_POLL_INTERVAL_BACKOFF_429_MS;
+                debugLog('warn','POLLING','429 rate limit — on ralentit à '+(pollInterval/1000)+'s');
+                onProgress('Limite API — pause '+(pollInterval/1000)+'s');
+                continue;
+            }
+            if(!res.ok){
+                pollInterval = Math.min(pollInterval * 1.5, VIDEO_POLL_INTERVAL_MAX_MS);
+                debugLog('warn','POLLING','HTTP '+res.status+' — intervalle '+Math.round(pollInterval/1000)+'s');
+                continue;
+            }
+            consecutiveOk++; consecutive429 = 0;
+            if(consecutiveOk >= 3){
+                pollInterval = Math.max(pollInterval * 0.8, VIDEO_POLL_INTERVAL_START_MS);
+                consecutiveOk = 0;
+            }
             const d = await res.json();
             const status = d.status || 'unknown';
             const progress = d.progress || 0;
             onProgress('Création — '+progress+'%');
-            debugLog('info','POLLING','status='+status+' progress='+progress);
+            debugLog('info','POLLING','status='+status+' progress='+progress+' intervalle='+Math.round(pollInterval/1000)+'s');
             if(status === 'completed' || status === 'succeeded' || status === 'done'){
                 const videoUrl = d.url || (d.metadata && d.metadata.url) || (d.output && d.output.url);
                 if(!videoUrl) throw new Error('Terminé mais pas d\'url');
                 return videoUrl;
             }
             if(status === 'failed' || status === 'error' || status === 'cancelled'){
-                throw new Error('Échec ('+status+')'+(d.error?(' : '+(d.error.message||d.error)):''));
+                throw new Error('Échec ('+status+')');
             }
-        }catch(e){
+        } catch(e){
             if(e.message === 'Arrêt demandé') throw e;
-            if(e.status === 404){ debugLog('warn','POLLING','404 — la tâche n\'existe pas encore'); continue; }
-            debugLog('warn','POLLING','Erreur : '+e.message);
+            if(e.message.startsWith('Échec') || e.message === 'Terminé mais pas d\'url') throw e;
+            pollInterval = Math.min(pollInterval * 1.5, VIDEO_POLL_INTERVAL_MAX_MS);
+            debugLog('warn','POLLING','Erreur réseau — intervalle '+Math.round(pollInterval/1000)+'s');
         }
     }
     throw new Error('Délai maximal dépassé');
@@ -579,26 +596,23 @@ function buildStoryPrompt(storyInput, sceneCount){
         storyInput,
         '',
         'CONTRAINTES :',
-        '- Crée 3 à 5 PERSONNAGES HUMAINS ADULTES : hommes charismatiques (bad boy élégant, mystérieux, dangereux, séducteur) et femmes très sexy (femme fatale, sensuelle, assurée, magnétique).',
+        '- Crée 3 à 5 PERSONNAGES HUMAINS ADULTES : hommes charismatiques et femmes très sexy.',
         '- Chaque personnage a : un prénom adulte, un âge (25-50), un métier, une personnalité complexe.',
-        '- Écris un scénario de '+sceneCount+' scènes qui forment une histoire ADULTE complète : tension, montée en puissance, affrontement, résolution.',
+        '- Écris un scénario de '+sceneCount+' scènes qui forment une histoire ADULTE complète.',
         '- Chaque scène dure 7 secondes.',
-        '- Chaque scène contient UN SEUL dialogue court (8-15 mots), CRU, DIRECT, avec des insultes stylisées si l\'histoire s\'y prête.',
-        '- Registre : adulte, sensuel, tendu, violent si nécessaire.',
+        '- Chaque scène contient UN SEUL dialogue court (8-15 mots), CRU, DIRECT.',
         '',
         'RENDU DES PERSONNAGES — RÈGLE ABSOLUE DE COHÉRENCE :',
         'Ce sont des HUMAINS ADULTES NORMAUX. Pas de fruit, pas de costume, pas de cartoon.',
-        'Les HOMMES sont charismatiques, élégants, dangereux, séduisants.',
-        'Les FEMMES sont très sexy, sensuelles, sûres d\'elles, magnétiques.',
         '',
         '🔒 RÈGLE DE VERROUILLAGE — TRÈS IMPORTANT :',
         'Pour chaque personnage, tu DOIS fournir :',
-        '- "face_lock" : description PRÉCISE et STABLE du visage (forme, yeux, cheveux, barbe, cicatrices). Cette description sera répétée MOT POUR MOT dans chaque scène.',
-        '- "outfit_lock" : description PRÉCISE et STABLE des habits (couleur, matière, coupe, accessoires). Cette description sera répétée MOT POUR MOT dans chaque scène.',
+        '- "face_lock" : description PRÉCISE et STABLE du visage.',
+        '- "outfit_lock" : description PRÉCISE et STABLE des habits.',
         '',
         'FORMAT JSON STRICT (retourne UNIQUEMENT ce JSON) :',
         '{',
-        '  "title": "titre adulte de l\'histoire",',
+        '  "title": "titre adulte",',
         '  "logline": "résumé en une phrase",',
         '  "characters": [',
         '    {',
@@ -607,16 +621,16 @@ function buildStoryPrompt(storyInput, sceneCount){
         '      "age": 34,',
         '      "job": "métier",',
         '      "personality": "trait de caractère",',
-        '      "face_lock": "sharp jawline, deep brown eyes, short dark hair, three-day stubble, small scar on left eyebrow",',
-        '      "outfit_lock": "black tailored suit, open white shirt, silver chain, black leather shoes",',
-        '      "physical_description": "a handsome charismatic adult man, around 34, athletic tall build, sharp jawline, deep brown eyes, short dark hair, three-day stubble, small scar on left eyebrow, wearing a black tailored suit, open white shirt, silver chain, black leather shoes, dark cinematic lighting"',
+        '      "face_lock": "sharp jawline, deep brown eyes, short dark hair, three-day stubble",',
+        '      "outfit_lock": "black tailored suit, open white shirt, silver chain",',
+        '      "physical_description": "a handsome charismatic adult man, around 34, athletic tall build, sharp jawline, deep brown eyes, short dark hair, three-day stubble, wearing a black tailored suit, open white shirt, silver chain"',
         '    }',
         '  ],',
         '  "scenes": [',
         '    {',
         '      "scene_number": 1,',
-        '      "description": "description visuelle de la scène",',
-        '      "image_prompt": "english prompt for the image, pastel cinematic style, adult humans",',
+        '      "description": "description visuelle",',
+        '      "image_prompt": "english prompt for the image",',
         '      "action": "english description of the action",',
         '      "dialogue": { "speaker": "Prénom", "line_fr": "phrase courte ADULTE (8-15 mots)" },',
         '      "emotion": "colère"',
@@ -624,7 +638,7 @@ function buildStoryPrompt(storyInput, sceneCount){
         '  ]',
         '}',
         '',
-        'RÈGLES JSON : clés entre guillemets, virgules sauf dernière, pas de markdown, apostrophes non échappées.'
+        'RÈGLES JSON : clés entre guillemets, virgules sauf dernière, pas de markdown.'
     ].join('\n');
 }
 
@@ -648,7 +662,7 @@ function buildImagePrompt(scene, story, isFirstImage){
         refBlock,
         '🔒 LOCKED IDENTITY — DO NOT CHANGE FACE OR OUTFIT:',
         identityLock,
-        'CRITICAL: Do not alter, recolor, or replace any facial feature or clothing item. This is the SAME person in a new scene.',
+        'CRITICAL: Do not alter, recolor, or replace any facial feature or clothing item.',
         '',
         'CHARACTERS — ADULT HUMANS:',
         charList,
@@ -828,7 +842,7 @@ async function createStory(){
     document.getElementById('images-grid').innerHTML='';
     document.getElementById('videos-grid').innerHTML='';
     renderStory();renderImages();renderVideos();updateButtons();
-    journalLog('Création lancée. '+state.sceneCount+' scènes × '+state.durationSeconds+'s = '+Math.round(state.sceneCount*state.durationSeconds)+'s. Modèle vidéo : '+MODEL_VIDEO,'lock');
+    journalLog('Création lancée. '+state.sceneCount+' scènes × '+state.durationSeconds+'s = '+Math.round(state.sceneCount*state.durationSeconds)+'s. Modèle : '+MODEL_VIDEO,'lock');
 
     try{
         setStatus('Étape 1/4 — L\'IA écrit l\'histoire…');
@@ -863,7 +877,7 @@ async function createStory(){
 
 async function llmCreateStory(storyInput,sceneCount){
     const prompt=buildStoryPrompt(storyInput,sceneCount);
-    const systemPrompt='Tu es un scénariste de séries adultes (HBO/Netflix). Tu écris des drames urbains crus, violents, sensuels, adultes. Les personnages sont des HUMAINS ADULTES : hommes charismatiques et femmes très sexy. Pour chaque personnage, tu DOIS fournir face_lock (visage stable) et outfit_lock (habits stables). Tu retournes TOUJOURS un JSON valide, sans markdown.';
+    const systemPrompt='Tu es un scénariste de séries adultes (HBO/Netflix). Tu écris des drames urbains crus, violents, sensuels, adultes. Les personnages sont des HUMAINS ADULTES : hommes charismatiques et femmes très sexy. Pour chaque personnage, tu DOIS fournir face_lock et outfit_lock. Tu retournes TOUJOURS un JSON valide, sans markdown.';
     for(let attempt=1;attempt<=3;attempt++){
         try{
             const content=await callChatCompletion(systemPrompt,prompt,'Histoire (essai '+attempt+')',8000,attempt===1?0.85:0.5);
@@ -872,7 +886,7 @@ async function llmCreateStory(storyInput,sceneCount){
             if(story&&story.scenes&&Array.isArray(story.scenes)){
                 if(!story.characters||!story.characters.length)story.characters=[{name:'Marco',gender:'homme',age:34,job:'videur',personality:'colérique',face_lock:'sharp jawline, dark eyes, short dark hair, stubble',outfit_lock:'black tailored suit, open white shirt',physical_description:'handsome charismatic adult man, black suit'}];
                 story.characters.forEach(c=>{
-                    if(!c.face_lock)c.face_lock='stable adult face, '+(c.physical_description||'').slice(0,80);
+                    if(!c.face_lock)c.face_lock='stable adult face';
                     if(!c.outfit_lock)c.outfit_lock=c.outfit||'elegant adult clothing';
                 });
                 story.scenes.forEach((sc,i)=>{
@@ -961,7 +975,6 @@ async function generateOneVideoStrict(scene,index,story){
             return true;
         }catch(e){
             if(e.message==='Arrêt demandé')return false;
-
             if(e.isQueueFull){
                 state.videos[index].status='queued';
                 state.videos[index].inQueue=true;
@@ -971,7 +984,6 @@ async function generateOneVideoStrict(scene,index,story){
                 await sleep(VIDEO_QUEUE_RETRY_INTERVAL_MS);
                 continue;
             }
-
             state.videos[index].status='retrying';
             state.videos[index].progress='Retry '+(attempt+1)+' dans 15s… ('+(e.message||'erreur').slice(0,60)+')';
             renderVideos();
@@ -1107,7 +1119,7 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse()});
     refreshKeyPool();updateApiPanel();updateButtons();initTTS();updateQuotaDisplay();
     setInterval(renderKeysStatus,1000);
-    journalLog('Prêt. Modèle vidéo : '+MODEL_VIDEO+' (Agnes 2.5 Flash).','lock');
+    journalLog('Prêt. Modèle : '+MODEL_VIDEO+' · polling adaptatif (5s→30s si 429).','lock');
 })();
 </script>
 </body>
