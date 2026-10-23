@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Fruit Tales Studio — Films adultes (Agnes 2.5 Flash)</title>
+<title>Fruit Tales Studio — Tes répliques, notre film</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -99,7 +99,6 @@ select option{background:var(--bg2);color:var(--ink)}
 .ref-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.15);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .queue-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,123,200,.15);color:#4a7bc8;font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .keyframe-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.2);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
-.dialogue-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(139,95,196,.2);color:#b8a0e0;font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .spinner-mini{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .player-overlay{position:fixed;inset:0;background:#000;z-index:2000;display:none;align-items:center;justify-content:center;cursor:pointer}
@@ -176,12 +175,12 @@ select option{background:var(--bg2);color:var(--ink)}
 
 <header>
 <h1>Fruit Tales Studio</h1>
-<p class="subtitle">Films adultes · Scénario en 2 passes · Dialogues contextuels</p>
+<p class="subtitle">Tes répliques · L'IA invente l'histoire autour</p>
 </header>
 
 <div class="banner">
-<strong>📖 Scénario en 2 passes.</strong> Passe 1 : structure narrative (résumé de chaque scène, sans dialogue). Passe 2 : génération des dialogues scène par scène, en fonction de l'action précédente.
-<strong>🎬 Keyframes.</strong> La dernière image de la scène N est le first_frame de la scène N+1. Continuité visuelle parfaite.
+<strong>💬 Tes répliques d'abord.</strong> Colle tes dialogues (un par ligne). L'IA construit une histoire cohérente où chaque réplique trouve sa place.
+<strong>🎬 Keyframes.</strong> La fin de chaque scène est le début de la suivante.
 </div>
 
 <div class="panel" id="api-panel">
@@ -197,27 +196,38 @@ select option{background:var(--bg2);color:var(--ink)}
 <div class="hint">Clés gratuites sur <a href="https://platform.agnes-ai.com" target="_blank">platform.agnes-ai.com</a></div>
 </div>
 
-<div class="section open" id="section-idea">
-<div class="section-header" data-toggle="section-idea">
-<span class="section-title">🎬 Votre histoire <span class="badge">obligatoire</span></span>
+<div class="section open" id="section-dialogues">
+<div class="section-header" data-toggle="section-dialogues">
+<span class="section-title">💬 Tes répliques <span class="badge">obligatoire</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
 <div class="control-row">
-<label class="control-label">Décrivez l'histoire en une ou deux phrases</label>
-<textarea id="story-input" placeholder="Ex : Une femme fatale et un homme charismatique se rencontrent dans un bar de nuit. La tension monte, les insultes fusent, ça finit en bagarre.">Une femme fatale et un homme charismatique se rencontrent dans un bar de nuit. La tension monte, les insultes fusent, ça finit en bagarre.</textarea>
+<label class="control-label">Colle tes répliques (une par ligne)</label>
+<textarea id="dialogue-input" placeholder="Tu m'as menti.&#10;Et je le savais depuis le début.&#10;Rends-moi ce que tu m'as pris.&#10;Je t'ai fait confiance.&#10;Tu m'as trahi." style="min-height:140px;">Tu m'as menti.
+Et je le savais depuis le début.
+Rends-moi ce que tu m'as pris.
+Je t'ai fait confiance.
+Tu m'as trahi.
+Maintenant tu vas payer.</textarea>
+<div class="hint" style="margin-top:.4rem;">💡 Chaque ligne = une réplique = une scène. Maximum 10 mots par ligne.</div>
 </div>
 <div class="control-row">
-<label class="control-label">Ou choisissez un thème</label>
+<label class="control-label">Contexte de l'histoire (optionnel)</label>
+<textarea id="context-input" placeholder="Ex : Deux anciens amis dans un bar de nuit. L'un a trahi l'autre pour de l'argent." style="min-height:70px;"></textarea>
+</div>
+</div></div>
+</div>
+
+<div class="section open" id="section-idea">
+<div class="section-header" data-toggle="section-idea">
+<span class="section-title">🎬 Ambiance <span class="badge">obligatoire</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="control-row">
+<label class="control-label">Thème visuel</label>
 <div class="preset-chips" id="theme-chips"></div>
-</div>
-<div class="control-row">
-<label class="control-label">Nombre de scènes</label>
-<select id="scene-count-select">
-<option value="8" selected>8 scènes — 56 secondes (recommandé)</option>
-<option value="9">9 scènes — 63 secondes</option>
-<option value="10">10 scènes — 70 secondes</option>
-</select>
 </div>
 <div class="control-row">
 <label class="control-label">Durée de chaque vidéo (secondes)</label>
@@ -244,7 +254,7 @@ select option{background:var(--bg2);color:var(--ink)}
 
 <div class="section hidden" id="section-story">
 <div class="section-header" data-toggle="section-story">
-<span class="section-title">📖 Histoire & Personnages <span class="badge" id="story-badge">—</span></span>
+<span class="section-title">📖 Histoire construite <span class="badge" id="story-badge">—</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
@@ -349,8 +359,8 @@ const VIDEO_MAX_POLL_ATTEMPTS = 150;
 const VIDEO_RETRY_DELAY_MS = 15000;
 const VIDEO_QUEUE_RETRY_INTERVAL_MS = 45000;
 
-const API_KEYS_STORAGE = 'fruit_tales_api_keys_v3';
-const QUOTA_STORAGE = 'fruit_tales_quota_v3';
+const API_KEYS_STORAGE = 'fruit_tales_api_keys_v4';
+const QUOTA_STORAGE = 'fruit_tales_quota_v4';
 const DEBUG_MAX = 600;
 
 const PASTEL_PALETTE = {
@@ -359,22 +369,24 @@ const PASTEL_PALETTE = {
 };
 
 const THEME_PRESETS = [
-    { emoji: '💋', label: 'Femme fatale', prompt: 'Une femme fatale et un homme charismatique se rencontrent dans un bar de nuit. La tension monte, les insultes fusent, ça finit en bagarre.' },
-    { emoji: '🥃', label: 'Trahison', prompt: 'Un homme élégant découvre que sa meilleure amie l\'a trahi pour de l\'argent.' },
-    { emoji: '🌹', label: 'Vengeance', prompt: 'Une femme mystérieuse prépare une vengeance froide contre celui qui l\'a humiliée.' },
-    { emoji: '🚬', label: 'Rupture', prompt: 'Une femme annonce à son amant qu\'elle le quitte après dix ans.' },
-    { emoji: '🎲', label: 'Dette', prompt: 'Un homme endetté doit de l\'argent à un caïd de la pègre.' },
-    { emoji: '🖤', label: 'Rivalité', prompt: 'Deux sœurs se déchirent pour un héritage familial.' },
-    { emoji: '🔓', label: 'Rédemption', prompt: 'Un homme sort de prison et essaie de retrouver sa place.' },
-    { emoji: '💼', label: 'Corruption', prompt: 'Un flic ripou est confronté à ses propres crimes.' }
+    { emoji: '💋', label: 'Femme fatale', prompt: 'Une femme fatale et un homme charismatique se rencontrent dans un bar de nuit.' },
+    { emoji: '🥃', label: 'Trahison', prompt: 'Un homme élégant découvre que sa meilleure amie l\'a trahi.' },
+    { emoji: '🌹', label: 'Vengeance', prompt: 'Une femme mystérieuse prépare une vengeance froide.' },
+    { emoji: '🚬', label: 'Rupture', prompt: 'Une femme annonce à son amant qu\'elle le quitte.' },
+    { emoji: '🎲', label: 'Dette', prompt: 'Un homme endetté face à un caïd de la pègre.' },
+    { emoji: '🖤', label: 'Rivalité', prompt: 'Deux sœurs se déchirent pour un héritage.' },
+    { emoji: '🔓', label: 'Rédemption', prompt: 'Un homme sort de prison et cherche sa place.' },
+    { emoji: '💼', label: 'Corruption', prompt: 'Un flic ripou confronté à ses crimes.' }
 ];
 
 const state = {
     keyPool: [],
     isRunning: false,
     stopRequested: false,
-    storyInput: '',
-    sceneCount: 8,
+    dialogues: [],
+    context: '',
+    themePrompt: '',
+    sceneCount: 0,
     durationSeconds: 7,
     intensity: 'strong',
     story: null,
@@ -498,27 +510,18 @@ async function generateImage(prompt, referenceUrl){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// VIDEO — KEYFRAME MODE
+// VIDEO — KEYFRAME
 // ══════════════════════════════════════════════════════════════════
 async function createVideoTask(prompt, firstFrameUrl, lastFrameUrl){
     const secondsStr = String(Math.min(12, Math.max(4, state.durationSeconds)));
-    const body = {
-        model: MODEL_VIDEO,
-        prompt: sanitizeForApi(prompt),
-        mode: 'keyframe',
-        seconds: secondsStr,
-        size: '720P',
-        aspect_ratio: '9:16',
-        n: 1
-    };
+    const body = {model: MODEL_VIDEO, prompt: sanitizeForApi(prompt), mode: 'keyframe', seconds: secondsStr, size: '720P', aspect_ratio: '9:16', n: 1};
     if(firstFrameUrl) body.first_frame = firstFrameUrl;
     if(lastFrameUrl) body.last_frame = lastFrameUrl;
-    debugLog('ai','PROMPT VIDÉO','Mode KEYFRAME · '+body.seconds+'s · first='+(firstFrameUrl?'oui':'non')+' · last='+(lastFrameUrl?'oui':'non'));
+    debugLog('ai','PROMPT VIDÉO','KEYFRAME · '+body.seconds+'s · first='+(firstFrameUrl?'oui':'non')+' · last='+(lastFrameUrl?'oui':'non'));
     const res=await apiFetch(API_BASE+'/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Video Task',4);
     const data=await res.json();
     const compositeId=data.video_id||data.id||data.task_id;
     if(!compositeId)throw new Error('Pas de video_id');
-    debugLog('success','VIDÉO CRÉÉE','video_id='+String(compositeId).slice(0,50)+'…');
     return compositeId;
 }
 
@@ -531,7 +534,6 @@ async function pollVideo(videoId, onProgress){
     }
     let pollInterval = VIDEO_POLL_INTERVAL_START_MS;
     let consecutiveOk = 0;
-    let consecutive429 = 0;
     for(let attempt = 0; attempt < VIDEO_MAX_POLL_ATTEMPTS; attempt++){
         if(state.stopRequested) throw new Error('Arrêt demandé');
         let r = Math.ceil(pollInterval / 1000);
@@ -546,18 +548,15 @@ async function pollVideo(videoId, onProgress){
             if(!keyObj){ await sleep(5000); continue; }
             const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + keyObj.key } });
             if(res.status === 429){
-                consecutive429++; consecutiveOk = 0;
                 pollInterval = VIDEO_POLL_INTERVAL_BACKOFF_429_MS;
-                debugLog('warn','POLLING','429 rate limit — on ralentit à '+(pollInterval/1000)+'s');
                 onProgress('Limite API — pause '+(pollInterval/1000)+'s');
                 continue;
             }
             if(!res.ok){
                 pollInterval = Math.min(pollInterval * 1.5, VIDEO_POLL_INTERVAL_MAX_MS);
-                debugLog('warn','POLLING','HTTP '+res.status+' — intervalle '+Math.round(pollInterval/1000)+'s');
                 continue;
             }
-            consecutiveOk++; consecutive429 = 0;
+            consecutiveOk++;
             if(consecutiveOk >= 3){
                 pollInterval = Math.max(pollInterval * 0.8, VIDEO_POLL_INTERVAL_START_MS);
                 consecutiveOk = 0;
@@ -566,55 +565,44 @@ async function pollVideo(videoId, onProgress){
             const status = d.status || 'unknown';
             const progress = d.progress || 0;
             onProgress('Création — '+progress+'%');
-            debugLog('info','POLLING','status='+status+' progress='+progress+' intervalle='+Math.round(pollInterval/1000)+'s');
             if(status === 'completed' || status === 'succeeded' || status === 'done'){
                 const videoUrl = d.url || (d.metadata && d.metadata.url) || (d.output && d.output.url);
                 if(!videoUrl) throw new Error('Terminé mais pas d\'url');
                 return videoUrl;
             }
-            if(status === 'failed' || status === 'error' || status === 'cancelled'){
-                throw new Error('Échec ('+status+')');
-            }
+            if(status === 'failed' || status === 'error' || status === 'cancelled') throw new Error('Échec ('+status+')');
         } catch(e){
             if(e.message === 'Arrêt demandé') throw e;
             if(e.message.startsWith('Échec') || e.message === 'Terminé mais pas d\'url') throw e;
             pollInterval = Math.min(pollInterval * 1.5, VIDEO_POLL_INTERVAL_MAX_MS);
-            debugLog('warn','POLLING','Erreur réseau — intervalle '+Math.round(pollInterval/1000)+'s');
         }
     }
     throw new Error('Délai maximal dépassé');
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS — SCÉNARIO EN 2 PASSES
+// PROMPTS — CONSTRUCTION AUTOUR DES RÉPLIQUES
 // ══════════════════════════════════════════════════════════════════
 
-// PASSE 1 : Structure narrative (personnages + résumé de chaque scène, SANS dialogue)
-function buildStructurePrompt(storyInput, sceneCount){
+// Construction de l'histoire AUTOUR des répliques fournies
+function buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount){
+    const dialogueList = dialogues.map((d, i) => (i+1) + '. "' + d + '"').join('\n');
     return [
         'Tu es un scénariste de séries adultes (HBO / Netflix). Tu écris des drames urbains crus, violents, sensuels.',
         '',
-        'HISTOIRE DEMANDÉE :',
-        storyInput,
+        'L\'UTILISATEUR A FOURNI CES RÉPLIQUES (dans cet ordre, une par scène) :',
+        dialogueList,
         '',
-        'MISSION : Génère UNIQUEMENT la structure narrative. PAS de dialogues pour l\'instant.',
+        context ? ('CONTEXTE FOURNI PAR L\'UTILISATEUR :\n' + context + '\n') : '',
+        'MISSION : Construis une histoire COHÉRENTE où chaque réplique trouve sa place naturelle.',
         '',
-        'CONTRAINTES :',
-        '- Crée 3 à 5 PERSONNAGES HUMAINS ADULTES : hommes charismatiques et femmes très sexy.',
-        '- Chaque personnage a : un prénom, un genre, un âge (25-50), un métier, une personnalité complexe.',
-        '- Pour chaque personnage, fournis "face_lock" (description stable du visage) et "outfit_lock" (description stable des habits).',
-        '- Écris '+sceneCount+' scènes. Chaque scène a :',
-        '  * "scene_number"',
-        '  * "summary" : résumé de l\'action en 2-3 phrases (ce qui se passe, qui fait quoi, quelle est la conséquence)',
-        '  * "action" : description de l\'action physique en anglais (pour le prompt vidéo)',
-        '  * "emotion" : émotion dominante de la scène',
-        '',
-        'STRUCTURE NARRATIVE OBLIGATOIRE :',
-        '- Scène 1 : Situation initiale + premier signe de tension.',
-        '- Scènes 2-3 : Montée de la tension, premiers conflits.',
-        '- Scènes 4-5 : Point de rupture (bagarre, trahison, révélation).',
-        '- Scènes 6-7 : Conséquences, tentatives de résolution.',
-        '- Scène 8 : Résolution (ouverte ou fermée).',
+        'RÈGLES ABSOLUES :',
+        '- Il y a exactement ' + sceneCount + ' scènes, une par réplique.',
+        '- La scène N utilise EXACTEMENT la réplique N (mot pour mot, sans la modifier).',
+        '- Tu dois inventer les personnages, les lieux, les actions et les événements qui justifient chaque réplique.',
+        '- L\'histoire doit avoir une progression logique : situation initiale → montée de tension → point de rupture → résolution.',
+        '- Chaque scène doit avoir un "summary" (résumé de ce qui se passe) et une "action" (description physique en anglais pour le prompt vidéo).',
+        '- Chaque personnage a : un prénom, un genre, un âge, un métier, une personnalité, un "face_lock" (visage stable) et un "outfit_lock" (habits stables).',
         '',
         'FORMAT JSON STRICT (retourne UNIQUEMENT ce JSON) :',
         '{',
@@ -624,83 +612,11 @@ function buildStructurePrompt(storyInput, sceneCount){
         '    { "name": "Prénom", "gender": "homme ou femme", "age": 34, "job": "métier", "personality": "trait", "face_lock": "...", "outfit_lock": "..." }',
         '  ],',
         '  "scenes": [',
-        '    { "scene_number": 1, "summary": "résumé de l\'action", "action": "english action description", "emotion": "colère" }',
+        '    { "scene_number": 1, "summary": "ce qui se passe", "action": "english action description", "emotion": "colère", "speaker": "Nom du personnage qui dit la réplique 1" }',
         '  ]',
         '}',
         '',
         'RÈGLES JSON : clés entre guillemets, virgules sauf dernière, pas de markdown.'
-    ].join('\n');
-}
-
-// PASSE 2 : Dialogue pour UNE scène, en fonction de l'action précédente
-function buildDialoguePrompt(scene, previousScene, story, sceneIndex){
-    const charList = (story.characters||[]).map(c => c.name + ' (' + c.gender + ', ' + c.age + ' ans, ' + c.job + ')').join(' | ');
-    const previousContext = previousScene 
-        ? 'SCÈNE PRÉCÉDENTE (ce qui vient de se passer) :\n' + previousScene.summary + '\n\n'
-        : 'C\'est la PREMIÈRE scène. Aucune scène précédente.\n\n';
-    const isLast = sceneIndex === (story.scenes||[]).length - 1;
-    
-    return [
-        'Tu es un scénariste de séries adultes (HBO / Netflix).',
-        '',
-        'PERSONNAGES :',
-        charList,
-        '',
-        previousContext,
-        'SCÈNE ACTUELLE (scène ' + (sceneIndex + 1) + ') :',
-        'Résumé : ' + (scene.summary || ''),
-        'Action : ' + (scene.action || ''),
-        'Émotion : ' + (scene.emotion || ''),
-        '',
-        'MISSION : Écris UN SEUL dialogue pour cette scène.',
-        '',
-        'RÈGLES ABSOLUES :',
-        '- Le dialogue doit être une RÉACTION DIRECTE à ce qui s\'est passé dans la scène précédente (ou à la situation initiale si c\'est la scène 1).',
-        '- Le dialogue doit faire AVANCER l\'histoire : révéler un secret, créer un conflit, sceller une alliance, trahir, etc.',
-        '- Le dialogue doit être PRÉCIS et lié à CE QUI VIENT DE SE PASSER.',
-        '- INTERDIT TOTAL : les phrases génériques ("Je ne sais pas", "On doit y aller", "C\'est compliqué").',
-        '- INTERDIT : les dialogues qui décrivent la scène ("Il fait beau", "Nous sommes dans un bar").',
-        '- Maximum 10 mots. Court, cru, direct.',
-        isLast ? '- C\'est la DERNIÈRE scène : le dialogue doit offrir une résolution (ouverte ou fermée).' : '',
-        '',
-        'EXEMPLES DE BONS DIALOGUES :',
-        '- "Tu m\'as menti, et je le savais depuis le début."',
-        '- "Rends-moi ce que tu m\'as pris. Maintenant."',
-        '- "Je t\'ai fait confiance. Tu m\'as trahi."',
-        '',
-        'FORMAT JSON (retourne UNIQUEMENT ce JSON) :',
-        '{',
-        '  "speaker": "Nom du personnage qui parle",',
-        '  "line_fr": "phrase de dialogue (max 10 mots)"',
-        '}'
-    ].filter(Boolean).join('\n');
-}
-
-// Construction du prompt IMAGE (avec verrouillage)
-function buildImagePrompt(scene, story, isFirstImage){
-    const charList=(story.characters||[]).map(c=>c.name+' ('+c.age+' ans, '+c.job+', '+c.gender+'): '+c.physical_description).join(' | ');
-    const identityLock = buildIdentityLockBlock(story);
-    const refBlock = (state.characterReferenceUrl && !isFirstImage)
-        ? 'REFERENCE IMAGE — USE THE PROVIDED CHARACTER REFERENCE IMAGE. The characters must look EXACTLY like the reference. Same face, same outfit, same body.\n'
-        : '';
-    return [
-        'PASTEL CINEMATIC KEYFRAME — 35MM FILM, ADULT CINEMA.',
-        'STYLE : pastel cinematic, perfect bilateral symmetry, 35mm film grain.',
-        'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'.',
-        '',
-        refBlock,
-        '🔒 LOCKED IDENTITY — DO NOT CHANGE FACE OR OUTFIT:',
-        identityLock,
-        'CRITICAL: Do not alter, recolor, or replace any facial feature or clothing item.',
-        '',
-        'CHARACTERS — ADULT HUMANS:',
-        charList,
-        'NO fruit body. NO cartoon. NO kawaii. NO children.',
-        '',
-        'SCENE : '+(scene.image_prompt||scene.summary||scene.description||''),
-        'ACTION : '+(scene.action||''),
-        '',
-        'FORMAT : portrait 9:16 vertical. No text, no watermarks.'
     ].filter(Boolean).join('\n');
 }
 
@@ -710,34 +626,57 @@ function buildIdentityLockBlock(story){
     }).join('\n');
 }
 
-// Construction du prompt VIDÉO (avec dialogue contextuel + keyframe)
+function buildImagePrompt(scene, story, isFirstImage){
+    const charList=(story.characters||[]).map(c=>c.name+' ('+c.age+' ans, '+c.job+', '+c.gender+'): '+c.physical_description).join(' | ');
+    const identityLock = buildIdentityLockBlock(story);
+    const refBlock = (state.characterReferenceUrl && !isFirstImage)
+        ? 'REFERENCE IMAGE — USE THE PROVIDED CHARACTER REFERENCE IMAGE. The characters must look EXACTLY like the reference.\n'
+        : '';
+    return [
+        'PASTEL CINEMATIC KEYFRAME — 35MM FILM, ADULT CINEMA.',
+        'STYLE : pastel cinematic, perfect bilateral symmetry, 35mm film grain.',
+        'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'.',
+        '',
+        refBlock,
+        '🔒 LOCKED IDENTITY:',
+        identityLock,
+        '',
+        'CHARACTERS — ADULT HUMANS:',
+        charList,
+        'NO fruit body. NO cartoon. NO kawaii.',
+        '',
+        'SCENE : '+(scene.summary||''),
+        'ACTION : '+(scene.action||''),
+        '',
+        'FORMAT : portrait 9:16 vertical. No text, no watermarks.'
+    ].filter(Boolean).join('\n');
+}
+
 function buildVideoPrompt(scene, story, previousScene, dialogue){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.gender+', '+c.age+'): '+c.physical_description).join(' | ');
     const identityLock = buildIdentityLockBlock(story);
-    const intensityMap={subtle:'very subtle and slow movement',moderate:'slow and elegant movement',strong:'dynamic yet controlled movement, tense, sensual energy'};
-    const prevAction = previousScene ? ('The scene starts EXACTLY where the previous scene ended: '+(previousScene.action||'')+'. ') : '';
+    const intensityMap={subtle:'very subtle and slow movement',moderate:'slow and elegant movement',strong:'dynamic yet controlled movement, tense'};
+    const prevAction = previousScene ? ('Starts exactly where previous scene ended: '+(previousScene.action||'')+'. ') : '';
     
     let dialogueBlock = '';
-    if(dialogue && dialogue.line_fr){
+    if(dialogue){
         const speakerChar = (story.characters||[]).find(c => c.name === dialogue.speaker);
         const speakerIdentity = speakerChar ? (speakerChar.outfit_lock || speakerChar.face_lock || dialogue.speaker) : dialogue.speaker;
         dialogueBlock = 'DIALOGUE — SPEAKER: ' + speakerIdentity + ' says: "' + dialogue.line_fr + '". Mouth moving naturally. ONLY this character speaks.';
     }
     
     return [
-        'PASTEL CINEMATIC ADULT SHORT FILM — '+state.durationSeconds+'-SECOND SCENE. TIKTOK 9:16 VERTICAL.',
+        'PASTEL CINEMATIC ADULT SHORT FILM — '+state.durationSeconds+'-SECOND SCENE. TIKTOK 9:16.',
         '',
         'STYLE : Wes Anderson meets Nicolas Winding Refn. Pastel cinematic, perfect symmetry, 35mm film grain.',
         'PALETTE : '+PASTEL_PALETTE.colors.join(', ')+'.',
         '',
         prevAction,
-        '🔒 LOCKED IDENTITY — DO NOT CHANGE FACE OR OUTFIT:',
+        '🔒 LOCKED IDENTITY:',
         identityLock,
-        'CRITICAL: The face and outfit MUST be identical to the previous scene and to the reference image.',
         '',
         'ADULT HUMANS:',
         charList,
-        'Charismatic men, very sexy women. NOT cartoon. NOT kawaii.',
         '',
         'CAMERA : one continuous shot, no cuts. Slow dolly-in OR static locked-off.',
         'ACTION : '+(scene.action||''),
@@ -745,9 +684,9 @@ function buildVideoPrompt(scene, story, previousScene, dialogue){
         '',
         dialogueBlock,
         '',
-        'AUDIO : No music. Only tension ambience, footsteps, breathing, fabric.',
+        'AUDIO : No music. Only tension ambience, footsteps, breathing.',
         '',
-        'CONSTRAINTS : vertical 9:16, '+state.durationSeconds+' seconds, no text, no watermarks.'
+        'CONSTRAINTS : vertical 9:16, '+state.durationSeconds+' seconds, no text.'
     ].filter(Boolean).join('\n');
 }
 
@@ -800,7 +739,7 @@ function renderImages(){
         if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
         if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
         const isRef = i===0 && state.characterReferenceUrl;
-        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(isRef?' <span class="ref-badge">🔒 RÉFÉRENCE</span>':' <span class="lock-badge">🔒 LOCKED</span>')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
+        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(isRef?' <span class="ref-badge">🔒 RÉFÉRENCE</span>':'')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
     }).join('');
     const c=document.getElementById('images-badge');if(c)c.textContent=state.images.filter(i=>i.status==='done').length+'/'+state.images.length;
 }
@@ -819,7 +758,7 @@ function renderVideos(){
         let titleText='🎬 Scène '+(i+1);
         if(v.retryCount)titleText+=' · retry '+v.retryCount;
         if(v.inQueue)titleText+=' <span class="queue-badge">QUEUE</span>';
-        if(i>0)titleText+=' <span class="keyframe-badge">🔗 KEYFRAME</span>';
+        if(i>0)titleText+=' <span class="keyframe-badge">🔗</span>';
         if(titleEl.innerHTML!==titleText)titleEl.innerHTML=titleText;
         const newClass='scene-card '+(v.status==='done'?'done':v.status==='error'?'error':v.status==='queued'?'queued':v.status==='retrying'?'retrying':(v.status==='loading'||v.status==='pending')?'generating':'');
         if(card.className!==newClass)card.className=newClass;
@@ -829,8 +768,7 @@ function renderVideos(){
                 const video=document.createElement('video');video.src=v.url;video.controls=true;video.preload='metadata';video.setAttribute('playsinline','');bodyEl.appendChild(video);
                 const dl=document.createElement('button');
                 dl.className='scene-download';
-                dl.textContent='📥 Enregistrer la vidéo';
-                dl.style.cursor='pointer';
+                dl.textContent='📥 Enregistrer';
                 dl.addEventListener('click', async (e) => {
                     e.preventDefault();e.stopPropagation();
                     try {
@@ -853,7 +791,7 @@ function renderVideos(){
                 let label = v.status==='queued' ? v.progress : (v.status==='retrying' ? 'Retry en cours…' : 'Échec : '+esc((v.error||'').slice(0,80)));
                 statusEl.innerHTML = v.status==='error' ? '<span style="color:var(--err);">✕</span>' : '<span class="spinner-mini"></span>';
                 bodyEl.innerHTML='<div class="scene-placeholder" style="color:'+color+';">'+label+'</div>'+
-                    '<button type="button" class="scene-retry-btn" data-retry="'+i+'">↻ Réessayer cette scène</button>';
+                    '<button type="button" class="scene-retry-btn" data-retry="'+i+'">↻ Réessayer</button>';
                 const btn=bodyEl.querySelector('[data-retry]');
                 if(btn)btn.addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();manualRetryScene(i)});
             }
@@ -884,240 +822,234 @@ async function callChatCompletion(systemPrompt,userPrompt,label,maxTokens,temper
 // ══════════════════════════════════════════════════════════════════
 async function createStory(){
     if(state.isRunning)return;if(!hasActiveKey()){showToast('Ajoutez au moins une clé API','error');return}
-    const storyInput=document.getElementById('story-input').value.trim();
-    if(storyInput.length<10){showToast('Décrivez votre histoire (10 caractères minimum)','error');return}
-    state.isRunning=true;state.stopRequested=false;state.storyInput=storyInput;
-    state.sceneCount=parseInt(document.getElementById('scene-count-select').value,10);
-    state.durationSeconds=parseInt(document.getElementById('duration-select').value,10);
-    state.intensity=document.getElementById('intensity-select').value;
-    state.story=null;state.images=[];state.videos=[];state.characterReferenceUrl=null;
+    
+    const dialogueInput = document.getElementById('dialogue-input').value.trim();
+    if(dialogueInput.length < 5){showToast('Collez au moins une réplique','error');return}
+    
+    const dialogues = dialogueInput.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+    if(dialogues.length === 0){showToast('Aucune réplique valide','error');return}
+    
+    state.dialogues = dialogues;
+    state.sceneCount = dialogues.length;
+    state.context = document.getElementById('context-input').value.trim();
+    state.durationSeconds = parseInt(document.getElementById('duration-select').value,10);
+    state.intensity = document.getElementById('intensity-select').value;
+    state.story = null;
+    state.images = [];
+    state.videos = [];
+    state.characterReferenceUrl = null;
+    
     document.getElementById('section-story').classList.add('hidden');
     document.getElementById('section-images').classList.add('hidden');
     document.getElementById('section-videos').classList.add('hidden');
     document.getElementById('section-player').classList.add('hidden');
-    document.getElementById('story-view').innerHTML='';
-    document.getElementById('images-grid').innerHTML='';
-    document.getElementById('videos-grid').innerHTML='';
-    renderStory();renderImages();renderVideos();updateButtons();
-    journalLog('Création lancée. '+state.sceneCount+' scènes × '+state.durationSeconds+'s = '+Math.round(state.sceneCount*state.durationSeconds)+'s. Scénario en 2 passes.','lock');
+    document.getElementById('story-view').innerHTML = '';
+    document.getElementById('images-grid').innerHTML = '';
+    document.getElementById('videos-grid').innerHTML = '';
+    renderStory(); renderImages(); renderVideos(); updateButtons();
+    
+    state.isRunning = true;
+    state.stopRequested = false;
+    
+    journalLog('Création lancée. ' + state.sceneCount + ' répliques → ' + state.sceneCount + ' scènes × ' + state.durationSeconds + 's.', 'lock');
 
     try{
-        setStatus('Étape 1/5 — Structure narrative (personnages + scènes)…');
-        journalLog('PASSE 1 : Structure narrative…','story');
-        const structure = await llmCreateStructure(storyInput, state.sceneCount);
-        state.story = structure;
-        renderStory();revealSection('section-story');
-        journalLog('Structure prête : « '+structure.title+' »','success');
+        setStatus('Étape 1/4 — L\'IA construit l\'histoire autour de tes répliques…');
+        journalLog('Construction de l\'histoire à partir de ' + state.sceneCount + ' répliques...', 'story');
+        const story = await llmBuildStoryAroundDialogues(state.dialogues, state.context, state.sceneCount);
+        state.story = story;
+        renderStory(); revealSection('section-story');
+        journalLog('Histoire prête : « ' + story.title + ' »', 'success');
         await sleep(500);
-        if(state.stopRequested)throw new Error('Arrêt demandé');
+        if(state.stopRequested) throw new Error('Arrêt demandé');
 
-        setStatus('Étape 2/5 — Dialogues contextuels (scène par scène)…');
-        journalLog('PASSE 2 : Génération des dialogues…','dialogue');
-        await generateAllDialogues(structure);
-        renderStory();
-        journalLog('Dialogues générés.','success');
-        await sleep(500);
-        if(state.stopRequested)throw new Error('Arrêt demandé');
-
-        setStatus('Étape 3/5 — Génération des images…');
+        setStatus('Étape 2/4 — Génération des images…');
         revealSection('section-images');
-        await generateAllImages(structure);
-        if(state.stopRequested)throw new Error('Arrêt demandé');
+        await generateAllImages(story);
+        if(state.stopRequested) throw new Error('Arrêt demandé');
 
-        setStatus('Étape 4/5 — Génération des vidéos (keyframe)…');
-        journalLog('Génération séquentielle KEYFRAME.','keyframe');
+        setStatus('Étape 3/4 — Génération des vidéos (keyframe)…');
+        journalLog('Génération séquentielle KEYFRAME...', 'keyframe');
         revealSection('section-videos');
-        await generateAllVideos(structure);
+        await generateAllVideos(story);
 
-        setStatus('Étape 5/5 — Film prêt ✦');
+        setStatus('Étape 4/4 — Film prêt ✦');
         document.getElementById('section-player').classList.remove('hidden');
         document.getElementById('section-player').classList.add('open');
         revealSection('section-player');
-        await sleep(1200);setStatus(null);
+        await sleep(1200); setStatus(null);
     }catch(e){
         if(e.message==='Arrêt demandé'){journalLog('Arrêt demandé.','warn');setStatus('Arrêté.');await sleep(1000);setStatus(null)}
         else{journalLog('Erreur : '+e.message,'error');debugLog('error','PIPELINE',e.message);setStatus('Erreur — voir console.');await sleep(2000);setStatus(null)}
     }
-    state.isRunning=false;state.stopRequested=false;updateButtons();
+    state.isRunning = false;
+    state.stopRequested = false;
+    updateButtons();
 }
 
-async function llmCreateStructure(storyInput, sceneCount){
-    const prompt = buildStructurePrompt(storyInput, sceneCount);
-    const systemPrompt = 'Tu es un scénariste de séries adultes (HBO/Netflix). Tu génères UNIQUEMENT la structure narrative : personnages avec face_lock et outfit_lock, et résumés de scènes SANS dialogue. Tu retournes TOUJOURS un JSON valide, sans markdown.';
-    for(let attempt=1;attempt<=3;attempt++){
+async function llmBuildStoryAroundDialogues(dialogues, context, sceneCount){
+    const prompt = buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount);
+    const systemPrompt = 'Tu es un scénariste de séries adultes (HBO/Netflix). On te donne des répliques. Tu construis une histoire cohérente AUTOUR d\'elles. Chaque réplique trouve sa place naturelle dans une scène. Tu retournes TOUJOURS un JSON valide, sans markdown.';
+    
+    for(let attempt=1; attempt<=3; attempt++){
         try{
-            const content = await callChatCompletion(systemPrompt, prompt, 'Structure (essai '+attempt+')', 8000, attempt===1?0.85:0.5);
-            if(!content)continue;
-            const structure = extractJson(content);
-            if(structure && structure.scenes && Array.isArray(structure.scenes)){
-                if(!structure.characters || !structure.characters.length){
-                    structure.characters = [{name:'Marco', gender:'homme', age:34, job:'videur', personality:'colérique', face_lock:'sharp jawline, dark eyes, short dark hair, stubble', outfit_lock:'black tailored suit, open white shirt', physical_description:'handsome charismatic adult man, black suit'}];
+            const content = await callChatCompletion(systemPrompt, prompt, 'Histoire (essai '+attempt+')', 8000, attempt===1?0.85:0.5);
+            if(!content) continue;
+            const story = extractJson(content);
+            if(story && story.scenes && Array.isArray(story.scenes)){
+                // Fallback personnages
+                if(!story.characters || !story.characters.length){
+                    story.characters = [{name:'Marco', gender:'homme', age:34, job:'videur', personality:'colérique', face_lock:'sharp jawline, dark eyes, short dark hair, stubble', outfit_lock:'black tailored suit, open white shirt', physical_description:'handsome charismatic adult man, black suit'}];
                 }
-                structure.characters.forEach(c => {
+                story.characters.forEach(c => {
                     if(!c.face_lock) c.face_lock = 'stable adult face';
                     if(!c.outfit_lock) c.outfit_lock = c.outfit || 'elegant adult clothing';
                     if(!c.physical_description) c.physical_description = c.name + ', ' + (c.gender||'adult') + ', ' + (c.age||30) + ' ans, ' + (c.outfit_lock||'');
                 });
-                if(structure.scenes.length > sceneCount) structure.scenes = structure.scenes.slice(0, sceneCount);
-                while(structure.scenes.length < sceneCount){
-                    structure.scenes.push({ scene_number: structure.scenes.length+1, summary: '...', action: '...', emotion: 'neutre' });
+                
+                // S'assurer qu'il y a exactement sceneCount scènes
+                if(story.scenes.length > sceneCount) story.scenes = story.scenes.slice(0, sceneCount);
+                while(story.scenes.length < sceneCount){
+                    story.scenes.push({ scene_number: story.scenes.length+1, summary: '...', action: '...', emotion: 'neutre' });
                 }
-                return structure;
+                
+                // Injecter les répliques fournies par l'utilisateur
+                story.scenes.forEach((sc, i) => {
+                    sc.scene_number = i+1;
+                    sc.dialogue = {
+                        speaker: sc.speaker || story.characters[0].name,
+                        line_fr: dialogues[i] || '...'
+                    };
+                });
+                
+                return story;
             }
-        }catch(e){ debugLog('warn','STRUCTURE','Essai '+attempt+' échoué : '+e.message); }
+        }catch(e){ debugLog('warn','HISTOIRE','Essai '+attempt+' échoué : '+e.message); }
     }
-    throw new Error('Impossible de générer la structure après 3 tentatives');
-}
-
-async function generateAllDialogues(story){
-    const scenes = story.scenes || [];
-    for(let i=0; i<scenes.length; i++){
-        if(state.stopRequested) break;
-        const scene = scenes[i];
-        const previousScene = i > 0 ? scenes[i-1] : null;
-        
-        try {
-            const prompt = buildDialoguePrompt(scene, previousScene, story, i);
-            const content = await callChatCompletion(
-                'Tu es un scénariste de séries adultes. Tu écris UN SEUL dialogue court, cru, qui réagit DIRECTEMENT à l\'action précédente. Tu retournes UNIQUEMENT {"speaker":"...","line_fr":"..."}.',
-                prompt, 'Dialogue scène '+(i+1), 500, 0.7
-            );
-            if(content){
-                const parsed = extractJson(content);
-                if(parsed && parsed.line_fr){
-                    scene.dialogue = { speaker: parsed.speaker || story.characters[0].name, line_fr: parsed.line_fr };
-                }
-            }
-        } catch(e) {
-            debugLog('warn','DIALOGUE','Scène '+(i+1)+' : '+e.message);
-            if(!scene.dialogue) scene.dialogue = { speaker: story.characters[0].name, line_fr: '...' };
-        }
-        await sleep(300);
-    }
-    // Fallback pour les scènes sans dialogue
-    scenes.forEach(sc => {
-        if(!sc.dialogue || !sc.dialogue.line_fr){
-            sc.dialogue = { speaker: story.characters[0].name, line_fr: '...' };
-        }
-    });
+    throw new Error('Impossible de construire l\'histoire après 3 tentatives');
 }
 
 async function generateAllImages(story){
-    const scenes=story.scenes||[];
-    state.images=scenes.map(()=>({status:'pending',url:null,prompt:null}));
+    const scenes = story.scenes || [];
+    state.images = scenes.map(() => ({status:'pending', url:null, prompt:null}));
     renderImages();
-    for(let i=0;i<scenes.length;i++){
-        if(state.stopRequested)break;
-        const idx=i;const scene=scenes[idx];
-        state.images[idx].status='loading';renderImages();
-        let success=false;
-        for(let attempt=1;attempt<=3&&!success;attempt++){
+    for(let i=0; i<scenes.length; i++){
+        if(state.stopRequested) break;
+        const idx = i;
+        const scene = scenes[idx];
+        state.images[idx].status = 'loading';
+        renderImages();
+        let success = false;
+        for(let attempt=1; attempt<=3 && !success; attempt++){
             try{
-                const refUrl = (idx===0) ? null : state.characterReferenceUrl;
-                const prompt=buildImagePrompt(scene,story,idx===0);
-                const url=await generateImage(prompt, refUrl);
-                state.images[idx]={status:'done',url:url,prompt:prompt};renderImages();
-                if(idx===0){state.characterReferenceUrl=url;debugLog('success','REF','Image de référence définie : Scène 1')}
-                success=true;
+                const refUrl = (idx === 0) ? null : state.characterReferenceUrl;
+                const prompt = buildImagePrompt(scene, story, idx === 0);
+                const url = await generateImage(prompt, refUrl);
+                state.images[idx] = {status:'done', url:url, prompt:prompt};
+                renderImages();
+                if(idx === 0) state.characterReferenceUrl = url;
+                success = true;
             }catch(e){
-                if(e.message==='Arrêt demandé')break;
-                debugLog('warn','IMAGE '+(idx+1),'Essai '+attempt+' échoué : '+e.message);
-                if(attempt<3)await sleep(3000);
-                else{state.images[idx]={status:'error',url:null,prompt:null};renderImages();}
+                if(e.message === 'Arrêt demandé') break;
+                if(attempt < 3) await sleep(3000);
+                else { state.images[idx] = {status:'error', url:null, prompt:null}; renderImages(); }
             }
         }
     }
-    const ok=state.images.filter(i=>i.status==='done').length;
-    journalLog('Images : '+ok+'/'+scenes.length+' prêtes.',ok===scenes.length?'success':'warn');
+    const ok = state.images.filter(i => i.status === 'done').length;
+    journalLog('Images : ' + ok + '/' + scenes.length + ' prêtes.', ok === scenes.length ? 'success' : 'warn');
 }
 
 async function generateAllVideos(story){
-    state.isGeneratingVideos=true;
-    const scenes=story.scenes||[];
-    state.videos=scenes.map(()=>({status:'pending',url:null,prompt:'',progress:'En attente…',retryCount:0,error:null,inQueue:false}));
+    state.isGeneratingVideos = true;
+    const scenes = story.scenes || [];
+    state.videos = scenes.map(() => ({status:'pending', url:null, prompt:'', progress:'En attente…', retryCount:0, error:null, inQueue:false}));
     renderVideos();
-    for(let i=0;i<scenes.length;i++){
-        if(state.stopRequested)break;
-        journalLog('▶ Scène '+(i+1)+'/'+scenes.length+' — KEYFRAME','highlight');
-        await generateOneVideoKeyframe(scenes[i],i,story);
-        if(state.videos[i].status!=='done'){
-            journalLog('Scène '+(i+1)+' non générée — on arrête pour ne pas casser le film.','error');
+    for(let i=0; i<scenes.length; i++){
+        if(state.stopRequested) break;
+        journalLog('▶ Scène ' + (i+1) + '/' + scenes.length + ' — KEYFRAME', 'highlight');
+        await generateOneVideoKeyframe(scenes[i], i, story);
+        if(state.videos[i].status !== 'done'){
+            journalLog('Scène ' + (i+1) + ' non générée — on arrête.', 'error');
             break;
         }
     }
-    state.isGeneratingVideos=false;updateButtons();
-    const done=state.videos.filter(v=>v.status==='done').length;
-    journalLog('Vidéos : '+done+'/'+scenes.length+(done===scenes.length?' — film complet ✓':' — film incomplet'),done===scenes.length?'success':'warn');
+    state.isGeneratingVideos = false;
+    updateButtons();
+    const done = state.videos.filter(v => v.status === 'done').length;
+    journalLog('Vidéos : ' + done + '/' + scenes.length, done === scenes.length ? 'success' : 'warn');
 }
 
-async function generateOneVideoKeyframe(scene,index,story){
-    if(state.stopRequested)return;
+async function generateOneVideoKeyframe(scene, index, story){
+    if(state.stopRequested) return;
     const firstFrameUrl = (index === 0) ? state.characterReferenceUrl : (state.images[index-1] && state.images[index-1].url);
     const lastFrameUrl = state.images[index] && state.images[index].url;
     const previousScene = index > 0 ? story.scenes[index-1] : null;
-    const prompt=buildVideoPrompt(scene,story,previousScene,scene.dialogue);
+    const prompt = buildVideoPrompt(scene, story, previousScene, scene.dialogue);
     
-    state.videos[index].status='loading';
-    state.videos[index].prompt=prompt;
-    state.videos[index].progress='Initialisation…';
-    state.videos[index].inQueue=false;
+    state.videos[index].status = 'loading';
+    state.videos[index].prompt = prompt;
+    state.videos[index].progress = 'Initialisation…';
     renderVideos();
 
-    let attempt=0;
+    let attempt = 0;
     while(true){
-        if(state.stopRequested)return false;
+        if(state.stopRequested) return false;
         attempt++;
-        state.videos[index].retryCount=attempt-1;
+        state.videos[index].retryCount = attempt-1;
         try{
-            const videoId=await createVideoTask(prompt,firstFrameUrl,lastFrameUrl);
-            const videoUrl=await pollVideo(videoId,(prog)=>{state.videos[index].progress=prog;renderVideos()});
-            state.videos[index]={status:'done',url:videoUrl,prompt,retryCount:attempt-1,error:null,inQueue:false};
+            const videoId = await createVideoTask(prompt, firstFrameUrl, lastFrameUrl);
+            const videoUrl = await pollVideo(videoId, (prog) => { state.videos[index].progress = prog; renderVideos(); });
+            state.videos[index] = {status:'done', url:videoUrl, prompt, retryCount:attempt-1, error:null, inQueue:false};
             addVideoSeconds(state.durationSeconds);
             renderVideos();
-            journalLog('Scène '+(index+1)+' prête ✓ (essai '+attempt+')','success');
+            journalLog('Scène ' + (index+1) + ' prête ✓', 'success');
             return true;
         }catch(e){
-            if(e.message==='Arrêt demandé')return false;
+            if(e.message === 'Arrêt demandé') return false;
             if(e.isQueueFull){
-                state.videos[index].status='queued';
-                state.videos[index].inQueue=true;
-                state.videos[index].progress='File Agnes pleine — retry dans 45s (essai '+attempt+')';
+                state.videos[index].status = 'queued';
+                state.videos[index].inQueue = true;
+                state.videos[index].progress = 'File Agnes pleine — retry dans 45s';
                 renderVideos();
-                journalLog('Scène '+(index+1)+' — file Agnes pleine, retry dans 45s','queue');
                 await sleep(VIDEO_QUEUE_RETRY_INTERVAL_MS);
                 continue;
             }
-            state.videos[index].status='retrying';
-            state.videos[index].progress='Retry '+(attempt+1)+' dans 15s… ('+(e.message||'erreur').slice(0,60)+')';
+            state.videos[index].status = 'retrying';
+            state.videos[index].progress = 'Retry ' + (attempt+1) + ' dans 15s…';
             renderVideos();
-            journalLog('Scène '+(index+1)+' échec (essai '+attempt+') : '+(e.message||'').slice(0,80)+' — retry dans 15s','warn');
             await sleep(VIDEO_RETRY_DELAY_MS);
         }
     }
 }
 
 async function manualRetryScene(index){
-    if(state.isRunning)return;
-    if(!state.story||!state.story.scenes||!state.story.scenes[index]){showToast('Scène introuvable','error');return}
-    if(!hasActiveKey()){showToast('Ajoutez une clé API','error');return}
-    state.isRunning=true;state.stopRequested=false;updateButtons();
-    journalLog('Retry manuel — Scène '+(index+1),'retry');
-    await generateOneVideoKeyframe(state.story.scenes[index],index,state.story);
-    state.isRunning=false;updateButtons();
+    if(state.isRunning) return;
+    if(!state.story || !state.story.scenes || !state.story.scenes[index]) return;
+    if(!hasActiveKey()) return;
+    state.isRunning = true;
+    state.stopRequested = false;
+    updateButtons();
+    await generateOneVideoKeyframe(state.story.scenes[index], index, state.story);
+    state.isRunning = false;
+    updateButtons();
 }
 
 async function manualRetryAllFailed(){
-    if(state.isRunning)return;
-    if(!state.story||!state.story.scenes)return;
-    const failedIndices=state.videos.map((v,i)=>v.status==='error'?i:-1).filter(i=>i>=0);
-    if(failedIndices.length===0){showToast('Aucune scène échouée','success');return}
-    if(!hasActiveKey()){showToast('Ajoutez une clé API','error');return}
-    state.isRunning=true;state.stopRequested=false;updateButtons();
+    if(state.isRunning) return;
+    if(!state.story || !state.story.scenes) return;
+    const failedIndices = state.videos.map((v,i) => v.status === 'error' ? i : -1).filter(i => i >= 0);
+    if(failedIndices.length === 0) return;
+    if(!hasActiveKey()) return;
+    state.isRunning = true;
+    state.stopRequested = false;
+    updateButtons();
     for(const idx of failedIndices){
-        if(state.stopRequested)break;
-        await generateOneVideoKeyframe(state.story.scenes[idx],idx,state.story);
+        if(state.stopRequested) break;
+        await generateOneVideoKeyframe(state.story.scenes[idx], idx, state.story);
     }
-    state.isRunning=false;updateButtons();
+    state.isRunning = false;
+    updateButtons();
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1131,61 +1063,114 @@ function stopTTS(){try{if('speechSynthesis' in window)window.speechSynthesis.can
 function getSceneSpeechLine(scene){if(scene.dialogue&&scene.dialogue.line_fr)return scene.dialogue.line_fr;return ''}
 
 async function playFilm(){
-    const ready=state.videos.filter(v=>v.status==='done'&&v.url);
-    if(ready.length===0){showToast('Aucune vidéo','error');return}
-    if(state.isPlayingFilm)return;
-    state.isPlayingFilm=true;updateButtons();
-    const overlay=document.getElementById('player-overlay');const canvas=document.getElementById('player-canvas');const hint=document.getElementById('player-hint-overlay');
-    if(!overlay||!canvas)return;
-    const dpr=Math.min(window.devicePixelRatio||1,2);const cssW=window.innerWidth;const cssH=window.innerHeight;
-    canvas.width=Math.round(cssW*dpr);canvas.height=Math.round(cssH*dpr);canvas.style.width=cssW+'px';canvas.style.height=cssH+'px';
-    const ctx=canvas.getContext('2d');
-    overlay.classList.add('visible');hint.classList.remove('hidden');setTimeout(()=>hint.classList.add('hidden'),3000);
+    const ready = state.videos.filter(v => v.status === 'done' && v.url);
+    if(ready.length === 0) return;
+    if(state.isPlayingFilm) return;
+    state.isPlayingFilm = true;
+    updateButtons();
+    const overlay = document.getElementById('player-overlay');
+    const canvas = document.getElementById('player-canvas');
+    const hint = document.getElementById('player-hint-overlay');
+    if(!overlay || !canvas) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    const ctx = canvas.getContext('2d');
+    overlay.classList.add('visible');
+    hint.classList.remove('hidden');
+    setTimeout(() => hint.classList.add('hidden'), 3000);
     try{if('speechSynthesis' in window){const u0=new SpeechSynthesisUtterance(' ');u0.volume=0;window.speechSynthesis.speak(u0)}}catch(e){}
-    const story=state.story||{scenes:[]};const scenes=story.scenes||[];
-    const readyWithScene=ready.map(v=>{const origIndex=state.videos.indexOf(v);return{video:v,scene:scenes[origIndex]||{}}});
-    for(let i=0;i<readyWithScene.length;i++){
-        if(!state.isPlayingFilm)break;
-        const{video,scene}=readyWithScene[i];
-        await playOneScene(video,scene,ctx,canvas,dpr);
+    const story = state.story || {scenes:[]};
+    const scenes = story.scenes || [];
+    const readyWithScene = ready.map(v => {
+        const origIndex = state.videos.indexOf(v);
+        return { video: v, scene: scenes[origIndex] || {} };
+    });
+    for(let i = 0; i < readyWithScene.length; i++){
+        if(!state.isPlayingFilm) break;
+        const { video, scene } = readyWithScene[i];
+        await playOneScene(video, scene, ctx, canvas, dpr);
     }
     stopFilmPlayback();
 }
 
-function playOneScene(videoObj,scene,ctx,canvas,dpr){
-    return new Promise((resolve)=>{
-        const video=document.createElement('video');video.src=videoObj.url;video.playsInline=true;video.muted=true;
-        let ttsFired=false,finished=false;
-        const finish=()=>{if(finished)return;finished=true;resolve()};
-        const startTTS=()=>{if(ttsFired)return;ttsFired=true;const line=getSceneSpeechLine(scene);if(line)speakFR(line)};
-        const ttsGuard=setTimeout(()=>{startTTS()},1500);
-        const drawOverlay=(w,h)=>{
-            const t=video.currentTime||0;const dur=video.duration||state.durationSeconds;
-            let alpha=1;if(t<0.4)alpha=t/0.4;else if(dur-t<0.5)alpha=Math.max(0,(dur-t)/0.5);if(alpha<=0)return;
-            const pad=Math.round(Math.min(24*dpr,w*0.03));const bandH=Math.round(Math.min(80*dpr,h*0.14));const bandY=h-bandH-pad;const bandX=pad;const bandW=w-pad*2;
-            ctx.save();ctx.globalAlpha=alpha;
-            const grad=ctx.createLinearGradient(bandX,bandY,bandX,bandY+bandH);
-            grad.addColorStop(0,'rgba(10,10,18,0.0)');grad.addColorStop(0.35,'rgba(10,10,18,0.85)');grad.addColorStop(1,'rgba(10,10,18,0.95)');
-            ctx.fillStyle=grad;ctx.fillRect(bandX,bandY,bandW,bandH);
-            ctx.fillStyle='#e87b35';ctx.fillRect(bandX,bandY+Math.round(bandH*0.15),Math.round(4*dpr),bandH-Math.round(bandH*0.3));
-            const speaker=(scene.dialogue&&scene.dialogue.speaker)||'';
-            const nameSize=Math.round(Math.min(13*dpr,h*0.02));const textSize=Math.round(Math.min(18*dpr,h*0.028));
-            if(speaker){ctx.fillStyle='#e87b35';ctx.font='700 '+nameSize+'px -apple-system,sans-serif';ctx.textBaseline='top';ctx.fillText(speaker.toUpperCase(),bandX+Math.round(bandH*0.22),bandY+Math.round(bandH*0.18))}
-            const text=(scene.dialogue&&scene.dialogue.line_fr)||'';
-            if(text){ctx.fillStyle='#f5f0e1';ctx.font='500 '+textSize+'px -apple-system,sans-serif';let txt=text;const maxW=bandW-Math.round(bandH*0.4);while(ctx.measureText(txt).width>maxW&&txt.length>4){txt=txt.slice(0,-4)+'…'}ctx.fillText(txt,bandX+Math.round(bandH*0.22),bandY+Math.round(bandH*0.5))}
+function playOneScene(videoObj, scene, ctx, canvas, dpr){
+    return new Promise((resolve) => {
+        const video = document.createElement('video');
+        video.src = videoObj.url;
+        video.playsInline = true;
+        video.muted = true;
+        let ttsFired = false, finished = false;
+        const finish = () => { if(finished) return; finished = true; resolve(); };
+        const startTTS = () => { if(ttsFired) return; ttsFired = true; const line = getSceneSpeechLine(scene); if(line) speakFR(line); };
+        const ttsGuard = setTimeout(() => { startTTS(); }, 1500);
+        const drawOverlay = (w, h) => {
+            const t = video.currentTime || 0;
+            const dur = video.duration || state.durationSeconds;
+            let alpha = 1;
+            if(t < 0.4) alpha = t/0.4;
+            else if(dur - t < 0.5) alpha = Math.max(0, (dur-t)/0.5);
+            if(alpha <= 0) return;
+            const pad = Math.round(Math.min(24*dpr, w*0.03));
+            const bandH = Math.round(Math.min(80*dpr, h*0.14));
+            const bandY = h - bandH - pad;
+            const bandX = pad;
+            const bandW = w - pad*2;
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            const grad = ctx.createLinearGradient(bandX, bandY, bandX, bandY+bandH);
+            grad.addColorStop(0, 'rgba(10,10,18,0.0)');
+            grad.addColorStop(0.35, 'rgba(10,10,18,0.85)');
+            grad.addColorStop(1, 'rgba(10,10,18,0.95)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(bandX, bandY, bandW, bandH);
+            ctx.fillStyle = '#e87b35';
+            ctx.fillRect(bandX, bandY+Math.round(bandH*0.15), Math.round(4*dpr), bandH-Math.round(bandH*0.3));
+            const speaker = (scene.dialogue && scene.dialogue.speaker) || '';
+            const nameSize = Math.round(Math.min(13*dpr, h*0.02));
+            const textSize = Math.round(Math.min(18*dpr, h*0.028));
+            if(speaker){
+                ctx.fillStyle = '#e87b35';
+                ctx.font = '700 ' + nameSize + 'px -apple-system,sans-serif';
+                ctx.textBaseline = 'top';
+                ctx.fillText(speaker.toUpperCase(), bandX+Math.round(bandH*0.22), bandY+Math.round(bandH*0.18));
+            }
+            const text = (scene.dialogue && scene.dialogue.line_fr) || '';
+            if(text){
+                ctx.fillStyle = '#f5f0e1';
+                ctx.font = '500 ' + textSize + 'px -apple-system,sans-serif';
+                let txt = text;
+                const maxW = bandW - Math.round(bandH*0.4);
+                while(ctx.measureText(txt).width > maxW && txt.length > 4){ txt = txt.slice(0,-4) + '…'; }
+                ctx.fillText(txt, bandX+Math.round(bandH*0.22), bandY+Math.round(bandH*0.5));
+            }
             ctx.restore();
         };
-        const draw=()=>{
-            ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);
-            const vw=video.videoWidth||720;const vh=video.videoHeight||1280;const ar=vw/vh;const car=canvas.width/canvas.height;
-            let dw,dh,dx,dy;if(ar>car){dw=canvas.width;dh=canvas.width/ar;dx=0;dy=(canvas.height-dh)/2}else{dh=canvas.height;dw=canvas.height*ar;dx=(canvas.width-dw)/2;dy=0}
-            try{ctx.drawImage(video,dx,dy,dw,dh)}catch(e){}drawOverlay(canvas.width,canvas.height);
+        const draw = () => {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const vw = video.videoWidth || 720;
+            const vh = video.videoHeight || 1280;
+            const ar = vw/vh;
+            const car = canvas.width/canvas.height;
+            let dw, dh, dx, dy;
+            if(ar > car){ dw = canvas.width; dh = canvas.width/ar; dx = 0; dy = (canvas.height-dh)/2; }
+            else { dh = canvas.height; dw = canvas.height*ar; dx = (canvas.width-dw)/2; dy = 0; }
+            try{ ctx.drawImage(video, dx, dy, dw, dh); }catch(e){}
+            drawOverlay(canvas.width, canvas.height);
         };
-        const loop=()=>{if(!state.isPlayingFilm){clearTimeout(ttsGuard);finish();return}if(video.paused||video.ended){clearTimeout(ttsGuard);finish();return}draw();state.playRAF=requestAnimationFrame(loop)};
-        video.onloadedmetadata=()=>{clearTimeout(ttsGuard);startTTS();video.play().then(()=>{loop()}).catch(()=>{startTTS();finish()})};
-        video.oncanplay=()=>{startTTS()};
-        video.onended=()=>{clearTimeout(ttsGuard);finish()};
-        video.onerror=()=>{startTTS();clearTimeout(ttsGuard);finish()};
+        const loop = () => {
+            if(!state.isPlayingFilm){ clearTimeout(ttsGuard); finish(); return; }
+            if(video.paused || video.ended){ clearTimeout(ttsGuard); finish(); return; }
+            draw();
+            state.playRAF = requestAnimationFrame(loop);
+        };
+        video.onloadedmetadata = () => { clearTimeout(ttsGuard); startTTS(); video.play().then(() => { loop(); }).catch(() => { startTTS(); finish(); }); };
+        video.oncanplay = () => { startTTS(); };
+        video.onended = () => { clearTimeout(ttsGuard); finish(); };
+        video.onerror = () => { startTTS(); clearTimeout(ttsGuard); finish(); };
         video.load();
     });
 }
@@ -1200,14 +1185,22 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     showLockScreen();
     var lockBtn = document.getElementById('lock-btn');
     var lockInput = document.getElementById('lock-code');
-    if(lockBtn){var newBtn=lockBtn.cloneNode(true);lockBtn.parentNode.replaceChild(newBtn,lockBtn);newBtn.type='button';newBtn.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();tryUnlock();});}
-    if(lockInput){lockInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();tryUnlock();}});lockInput.addEventListener('input',function(e){var v=e.target.value.replace(/\D/g,'');e.target.value=v;if(v.length===4&&v===APP_LOCK_CODE){tryUnlock();}});}
+    if(lockBtn){
+        var newBtn = lockBtn.cloneNode(true);
+        lockBtn.parentNode.replaceChild(newBtn, lockBtn);
+        newBtn.type = 'button';
+        newBtn.addEventListener('click', function(ev){ev.preventDefault();ev.stopPropagation();tryUnlock();});
+    }
+    if(lockInput){
+        lockInput.addEventListener('keydown', function(e){if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }});
+        lockInput.addEventListener('input', function(e){var v = e.target.value.replace(/\D/g,'');e.target.value = v;if(v.length === 4 && v === APP_LOCK_CODE){ tryUnlock(); }});
+    }
 
     document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
     document.getElementById('api-keys-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveKeysFromUI()}});
     document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
     const chips=document.getElementById('theme-chips');
-    if(chips){chips.innerHTML=THEME_PRESETS.map((p,i)=>'<button type="button" class="preset-chip" data-theme="'+i+'">'+p.emoji+' '+p.label+'</button>').join('');chips.querySelectorAll('.preset-chip').forEach(chip=>{chip.addEventListener('click',()=>{const idx=parseInt(chip.dataset.theme,10);const p=THEME_PRESETS[idx];if(!p)return;document.getElementById('story-input').value=p.prompt;showToast('Thème : '+p.label,'success')})})}
+    if(chips){chips.innerHTML=THEME_PRESETS.map((p,i)=>'<button type="button" class="preset-chip" data-theme="'+i+'">'+p.emoji+' '+p.label+'</button>').join('');chips.querySelectorAll('.preset-chip').forEach(chip=>{chip.addEventListener('click',()=>{const idx=parseInt(chip.dataset.theme,10);const p=THEME_PRESETS[idx];if(!p)return;document.getElementById('context-input').value=p.prompt;showToast('Thème : '+p.label,'success')})})}
     document.getElementById('launch-btn').addEventListener('click',createStory);
     document.getElementById('stop-btn').addEventListener('click',()=>{state.stopRequested=true;stopTTS();journalLog('Arrêt demandé…','warn');setStatus('Arrêt en cours…')});
     document.getElementById('retry-all-btn').addEventListener('click',manualRetryAllFailed);
@@ -1223,7 +1216,7 @@ function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAni
     document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse()});
     refreshKeyPool();updateApiPanel();updateButtons();initTTS();updateQuotaDisplay();
     setInterval(renderKeysStatus,1000);
-    journalLog('Prêt. Scénario en 2 passes : Structure → Dialogues contextuels.','lock');
+    journalLog('Prêt. Colle tes répliques, l\'IA construit l\'histoire autour.','lock');
 })();
 </script>
 </body>
