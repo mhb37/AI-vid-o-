@@ -66,7 +66,6 @@ select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.o
 .scene-placeholder{width:100%;aspect-ratio:9/16;background:#0a0a12;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.68rem;flex-direction:column;text-align:center;padding:.4rem}
 .scene-card-body video, .scene-card-body img{width:100%;border-radius:2px;display:block;aspect-ratio:9/16;object-fit:cover}
 .scene-download{display:block;width:100%;margin-top:.4rem;font-size:.72rem;color:#0a0a12;text-align:center;padding:.55rem;border:1px solid var(--acc2);border-radius:3px;background:var(--acc2);cursor:pointer;font-family:inherit;font-weight:700}
-.queue-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(74,123,200,.15);color:#4a7bc8;font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .status-bar{position:fixed;bottom:40px;left:0;right:0;background:var(--bg3);border-top:1px solid var(--border);color:var(--ink);padding:.65rem 1rem;font-size:.72rem;display:flex;align-items:center;gap:.6rem;transform:translateY(200%);transition:transform .3s;z-index:150;font-family:var(--fm)}
 .status-bar.visible{transform:translateY(0)}
 .spinner{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite}
@@ -365,7 +364,7 @@ async function callImage(prompt, isRegen){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS
+// PROMPTS (AVEC DIRECTIVE SEXY)
 // ══════════════════════════════════════════════════════════════════
 function buildStoryPrompt(dialogues, context, sceneCount){
     return `Tu es un scénariste de séries adultes (HBO/Netflix). Voici les répliques imposées (dans l'ordre) :
@@ -376,13 +375,14 @@ Contexte optionnel : ${context||'Aucun'}
 MISSION :
 Construis une histoire cohérente de ${sceneCount} scènes. Chaque scène correspond à une réplique.
 Tu dois définir UN SEUL lieu physique (environment_lock) où toute l'histoire se passe.
+**DIRECTIVE CRÉATIVE IMPORTANTE :** Les personnages doivent être ULTRA SEXY et charismatiques. Les femmes doivent être décrites comme très attirantes, avec une silhouette voluptueuse, des tenues élégantes et sensuelles (robes moulantes, décolletés, talons hauts). Les hommes doivent être virils, bien habillés et mystérieux.
 
 FORMAT JSON STRICT :
 {
   "title": "Titre",
   "environment_lock": "English detailed description of the room (walls, colors, lights, furniture)",
   "characters": [
-    { "name": "Nom", "gender": "homme/femme", "age": 30, "face_lock": "English physical description", "outfit_lock": "English clothing description" }
+    { "name": "Nom", "gender": "homme/femme", "age": 30, "face_lock": "English physical description (beautiful face, flawless makeup, sensual lips)", "outfit_lock": "English clothing description (sexy tight dress, high heels, deep cleavage)" }
   ],
   "scenes": [
     { "scene_number": 1, "summary": "Résumé de l'action en français", "action": "English action description for video AI", "speaker": "Nom du personnage" }
@@ -395,9 +395,9 @@ function buildImagePrompt(story, isRef){
     const env = story.environment_lock || 'consistent location';
     return `PASTEL CINEMATIC 35MM. REFERENCE SCENE.
 ENVIRONMENT (DO NOT CHANGE): ${env}
-CHARACTERS: ${chars}
+CHARACTERS (ULTRA SEXY, ALLURING, SENSUAL): ${chars}
 ACTION: ${story.scenes[0].action}
-CONSTRAINTS: portrait 9:16, no text, high quality.`;
+CONSTRAINTS: portrait 9:16, no text, high quality, beautiful lighting.`;
 }
 
 function buildVideoPrompt(scene, story, prev, dialogue){
@@ -407,7 +407,7 @@ function buildVideoPrompt(scene, story, prev, dialogue){
     let prompt = `PASTEL CINEMATIC 35MM. SCENE ${scene.scene_number}.
 ${prevAct}
 ENVIRONMENT LOCK (DO NOT CHANGE): ${story.environment_lock}
-CHARACTERS LOCK: ${chars}
+CHARACTERS (ULTRA SEXY, ALLURING, SENSUAL): ${chars}
 ACTION: ${scene.action}
 CAMERA: slow continuous movement. Portrait 9:16.`;
 
@@ -510,8 +510,7 @@ async function startVideoGeneration(){
         const prevScene = i>0 ? state.story.scenes[i-1] : null;
         
         state.videos[i].status = 'loading'; renderVideos();
-        set prevStatus(`Scène ${i+Scene, dialogue);
-               1}/${state.story.scenes.length}…`);
+        setStatus(`Scène ${i+1}/${state.story.scenes.length}…`);
         
         let attempts = 0;
         let success = false;
@@ -519,7 +518,8 @@ async function startVideoGeneration(){
         while(attempts < 5 && !success && !state.stopRequested){
             attempts++;
             try {
-                const prompt = buildVideoPrompt(scene, state.story, const taskId = await createVideoTask(prompt, state.characterRef, state.characterRef);
+                const prompt = buildVideoPrompt(scene, state.story, prevScene, dialogue);
+                const taskId = await createVideoTask(prompt, state.characterRef, state.characterRef);
                 
                 let vUrl = null;
                 let pollCount = 0;
@@ -552,7 +552,7 @@ async function startVideoGeneration(){
                     renderVideos();
                     debugLog(`File Agnes pleine. Attente 45s.`);
                     await sleep(45000);
-                    attempts--; // On ne pénalise pas l'essai, c'est juste une file d'attente
+                    attempts--;
                 } else {
                     debugLog(`Scène ${i+1} Échec (Essai ${attempts}) : ${e.message}`);
                     state.videos[i].status = 'loading';
@@ -667,12 +667,20 @@ async function downloadVideo(url, index){
 // ══════════════════════════════════════════════════════════════════
 (function init(){
     if(sessionStorage.getItem('unlocked')==='1') document.getElementById('lock-screen').style.display='none';
-    document.getElementById('lock-btn').onclick = () => {
-        if(document.getElementById('lock-code').value === APP_LOCK_CODE){
-            sessionStorage.setItem('unlocked','1');
-            document.getElementById('lock-screen').style.display='none';
-        } else document.getElementById('lock-error').textContent='Code incorrect';
-    };
+    
+    // CORRECTION DU BOUTON DE DÉVERROUILLAGE
+    const lockBtn = document.getElementById('lock-btn');
+    if(lockBtn){
+        lockBtn.onclick = () => {
+            const codeInput = document.getElementById('lock-code').value;
+            if(codeInput === APP_LOCK_CODE){
+                sessionStorage.setItem('unlocked','1');
+                document.getElementById('lock-screen').style.display='none';
+            } else {
+                document.getElementById('lock-error').textContent='Code incorrect';
+            }
+        };
+    }
 
     const keys = loadKeys();
     if(keys.length > 0){
