@@ -131,12 +131,12 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc2)}
 
 <header>
 <h1>TikTok Moneymaker</h1>
-<p class="subtitle">Mode Auto · 10 Photos au choix · Cohérence Renforcée · 9:16</p>
+<p class="subtitle">Mode Reference · 10 Photos · Cohérence Renforcée</p>
 </header>
 
 <div class="banner">
-<strong>🔐 Clé chiffrée.</strong> Ta clé API est protégée par une passphrase.<br>
-<strong>📸 10 Photos.</strong> L'IA génère 10 photos, tu choisis la meilleure.<br>
+<strong>🔐 Clé chiffrée.</strong> Ta clé API est protégée.<br>
+<strong>🎬 Mode Reference.</strong> L'IA utilise ton image comme référence d'identité (pas comme première frame).<br>
 <strong>🧬 Cohérence.</strong> Character Bible + Environment Lock pour éviter les dérives.
 </div>
 
@@ -264,7 +264,7 @@ Maintenant tu vas payer.</textarea>
 <div class="clip-list" id="clip-list"></div>
 <div id="final-download-area" style="display:none;margin-top:1rem;">
 <button type="button" class="btn btn-primary" id="download-all-btn">📥 Télécharger tous les clips</button>
-<div class="hint" style="margin-top:.5rem;">Sur iPhone : utilise Partager → Enregistrer la vidéo pour chaque clip.</div>
+<div class="hint" style="margin-top:.5rem;">Sur iPhone : le partage ne fonctionne qu'une fois par session. Si le menu ne s'ouvre pas, utilise "Enregistrer dans Fichiers" depuis l'onglet.</div>
 </div>
 </div></div>
 </div>
@@ -462,15 +462,13 @@ async function generateImage(prompt){
     const data=await res.json();return data.data[0].url;
 }
 
-// KEYFRAME uniquement (rapide et cohérent)
-async function createVideoTaskKeyframe(prompt, firstFrameUrl){
-    const safeFirstFrame = firstFrameUrl || state.masterImageUrl;
-    if(!safeFirstFrame) throw new Error('Aucune image de départ disponible');
+// MODE REFERENCE : utilise <Picture 1> pour l'identité, pas pour la première frame
+async function createVideoTaskReference(prompt, referenceImages){
     const body = {
         model: MODEL_VIDEO, prompt: sanitizeForApi(prompt),
-        mode: 'keyframe', seconds: String(state.clipDuration),
+        mode: 'reference', seconds: String(state.clipDuration),
         size: '720P', aspect_ratio: '9:16', n: 1,
-        first_frame: safeFirstFrame
+        images: referenceImages.slice(0, 5)
     };
     const res = await apiFetch(API_BASE+'/videos', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}, 'Video', 4);
     if(res.status === 503) { const text = await res.text(); if(text.toLowerCase().includes('queue')) { const err = new Error('QUEUE_FULL'); err.isQueueFull = true; throw err; } }
@@ -480,7 +478,7 @@ async function createVideoTaskKeyframe(prompt, firstFrameUrl){
 }
 
 // =================================================================
-// POLLING (video_id + model_name obligatoires)
+// POLLING
 // =================================================================
 async function pollVideo(videoId, onProgress){
     await sleep(POLL_INITIAL_WAIT_MS);
@@ -530,7 +528,7 @@ const STYLE_BLOCKS = {
 };
 
 // =================================================================
-// PROMPTS RENFORCÉS
+// PROMPTS
 // =================================================================
 function buildCharacterRefPrompt(variation){
     const desc = state.characterDesc ? state.characterDesc : 'a very attractive adult woman with an alluring gaze, confident posture, elegant sexy outfit';
@@ -565,7 +563,7 @@ function buildStoryPromptAuto(){
 IDÉE DE L'UTILISATEUR : "${state.autoIdea}"
 
 MISSION : Écris toi-même le script complet (5 à 8 répliques percutantes) et découpe-le en segments de ~${state.clipDuration} secondes.
-Tu dois définir UN SEUL lieu physique (environment_lock) TRÈS DÉTAILLÉ en anglais : type de pièce, couleurs des murs, meubles visibles, éclairage (direction et couleur), objets au premier plan ET à l'arrière-plan. Plus c'est précis, moins l'IA variera le décor.
+Tu dois définir UN SEUL lieu physique (environment_lock) TRÈS DÉTAILLÉ en anglais : type de pièce, couleurs des murs, meubles visibles, éclairage (direction et couleur), objets au premier plan ET à l'arrière-plan.
 
 DIRECTIVE CRÉATIVE : Les personnages doivent être ULTRA SEXY et charismatiques. Les femmes très attirantes, silhouette voluptueuse, tenues sensuelles. Les hommes virils.
 
@@ -623,7 +621,8 @@ ${scene.action || 'standing, looking at camera'}
 CONSTRAINTS: portrait 9:16, no text, no logo, no watermark. High quality, vibrant colors.`;
 }
 
-function buildVideoPrompt(clip, story, prevClip){
+// PROMPT REFERENCE : utilise <Picture 1> pour l'identité, pas pour la première frame
+function buildVideoPromptReference(clip, story, prevClip){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.gender+', '+c.age+'): '+c.face_lock+', '+c.outfit_lock).join(' | ');
     const identityLock = (story.characters||[]).map(c => 
         `${c.name} — IDENTITY LOCK: ${c.face_lock} | ${c.outfit_lock}`
@@ -636,16 +635,16 @@ function buildVideoPrompt(clip, story, prevClip){
         dialogueBlock = `DIALOGUE: The character says exactly: "${clip.lines.join(' ')}". Mouth moves naturally. No other dialogue.`;
     }
     
+    // INSTRUCTION CLÉ : <Picture 1> est une référence d'identité, PAS une première frame
+    const refInstruction = `Use <Picture 1> as the character identity reference (face, hair, outfit). DO NOT use it as the first frame. The character must be moving, speaking, or gesturing from the very first frame.`;
+    
     let continuityBlock = '';
     if (prevClip) {
-        continuityBlock = `🔗 CONTINUITY: This clip starts EXACTLY where the previous ended. Same camera angle, same lighting, same character position. NO jump cut. NO reset.`;
+        continuityBlock = `CONTINUITY: This clip starts where the previous ended. Same location, same lighting.`;
     }
     
-    const actionStart = `CRITICAL: Action starts in frame 1. Do NOT hold the first image. Character is already moving, speaking, or gesturing from the very first frame.`;
-    const motionControl = `CAMERA: locked-off or slow dolly-in ONLY. No handheld shake. No rapid pan. No zoom. Minimal character movement to preserve facial identity.`;
-    
     return `${styleBlock}
-${actionStart}
+${refInstruction}
 ${continuityBlock}
 
 🔒 CHARACTER BIBLE (DO NOT ALTER):
@@ -654,7 +653,7 @@ ${identityLock}
 🔒 ENVIRONMENT LOCK (DO NOT ALTER):
 ${envLock}
 
-${motionControl}
+CAMERA: locked-off or slow dolly-in ONLY. No handheld shake. Minimal character movement to preserve facial identity.
 
 ACTION: ${clip.action || 'continuing the scene'}
 
@@ -798,50 +797,34 @@ function renderClips(){
     }).join('');
 }
 
-// Téléchargement iOS corrigé : navigator.share avec files uniquement
+// Téléchargement iOS : tentative de partage natif
 window.downloadClip = async function(index){
     const clip = state.clips[index];
     if(!clip || !clip.url) return;
     
-    // Si le blob est déjà pré-chargé, on partage immédiatement
-    if (clip._blob) {
+    // Si le blob est pré-chargé, on tente le partage natif
+    if (clip._blob && navigator.share && navigator.canShare) {
         try {
             const file = new File([clip._blob], `clip-${index+1}.mp4`, { type: 'video/mp4' });
-            // IMPORTANT iOS : passer UNIQUEMENT files
-            await navigator.share({ files: [file] });
-            journalLog('Clip ' + (index+1) + ' partagé.', 'download');
-            return;
+            if (navigator.canShare({ files: [file] })) {
+                await navigator.share({ files: [file] });
+                journalLog('Clip ' + (index+1) + ' partagé.', 'download');
+                return;
+            }
         } catch(e) {
             if (e.name === 'AbortError') return;
             debugLog('warn', 'SHARE', e.message);
         }
     }
     
-    // Fallback : fetch puis partage
-    try {
-        setStatus('Préparation du fichier…');
-        const res = await fetch(clip.url);
-        const blob = await res.blob();
-        clip._blob = blob;
-        setStatus(null);
-        
-        const file = new File([blob], `clip-${index+1}.mp4`, { type: 'video/mp4' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({ files: [file] });
-            journalLog('Clip ' + (index+1) + ' partagé.', 'download');
-        } else {
-            window.open(clip.url, '_blank');
-        }
-    } catch(e) {
-        setStatus(null);
-        if (e.name !== 'AbortError') {
-            debugLog('warn', 'DOWNLOAD', e.message);
-            window.open(clip.url, '_blank');
-        }
-    }
+    // Fallback : ouvrir dans un onglet (iOS permet "Enregistrer dans Fichiers")
+    setStatus('Ouverture dans un onglet…');
+    window.open(clip.url, '_blank');
+    setTimeout(() => setStatus(null), 1500);
+    journalLog('Clip ' + (index+1) + ' ouvert dans un onglet. Utilise "Partager → Enregistrer dans Fichiers".', 'download');
 };
 
-// Pré-charger le blob pour le partage iOS
+// Pré-charger le blob (peut échouer à cause du CORS Agnes)
 async function preloadClipBlob(index, videoUrl){
     if (state.clips[index]._blob) return;
     try {
@@ -869,13 +852,8 @@ window.retryClip = async function(index){
     setStatus(`Régénération clip ${index+1}…`);
     
     try {
-        let previousFrameUrl = state.masterImageUrl;
-        if(index > 0 && state.clips[index-1].url){
-            try { previousFrameUrl = await extractLastFrame(state.clips[index-1].url); } catch(e) {}
-        }
-        
-        const prompt = buildVideoPrompt(clip, state.story, prevClip);
-        const videoId = await createVideoTaskKeyframe(prompt, previousFrameUrl);
+        const prompt = buildVideoPromptReference(clip, state.story, prevClip);
+        const videoId = await createVideoTaskReference(prompt, [state.masterImageUrl]);
         
         const vUrl = await pollVideo(videoId, (prog) => {
             state.clips[index].progress = prog;
@@ -1016,9 +994,9 @@ async function confirmStoryAndTest(){
     try {
         const scene0 = state.story.clips[0] || { action: 'standing' };
         const testClip = { lines: state.story.clips[0]?.lines || [state.scriptLines[0]], action: scene0.action };
-        const testPrompt = buildVideoPrompt(testClip, state.story, null);
+        const testPrompt = buildVideoPromptReference(testClip, state.story, null);
         
-        const videoId = await createVideoTaskKeyframe(testPrompt, state.masterImageUrl);
+        const videoId = await createVideoTaskReference(testPrompt, [state.masterImageUrl]);
         const testUrl = await pollVideo(videoId, (prog) => setStatus('Clip test — ' + prog));
         
         state.validationClipUrl = testUrl;
@@ -1068,12 +1046,6 @@ async function generateFullFilm(){
     document.getElementById('section-progress').classList.remove('hidden');
     document.getElementById('section-progress').classList.add('open');
     
-    let previousFrameUrl = state.masterImageUrl;
-    if(state.validationClipUrl){
-        try { previousFrameUrl = await extractLastFrame(state.validationClipUrl); }
-        catch(e) { journalLog('Continuité inter-clip perdue (CORS).', 'warn'); }
-    }
-    
     let allDone = true;
     const startIndex = state.validationClipUrl ? 1 : 0;
     
@@ -1092,8 +1064,8 @@ async function generateFullFilm(){
         while(attempts < 4 && !success && !state.stopRequested){
             attempts++;
             try {
-                const prompt = buildVideoPrompt(clip, state.story, i>0 ? state.story.clips[i-1] : null);
-                const videoId = await createVideoTaskKeyframe(prompt, previousFrameUrl);
+                const prompt = buildVideoPromptReference(clip, state.story, i>0 ? state.story.clips[i-1] : null);
+                const videoId = await createVideoTaskReference(prompt, [state.masterImageUrl]);
                 
                 const vUrl = await pollVideo(videoId, (prog) => {
                     state.clips[i].progress = prog;
@@ -1108,9 +1080,6 @@ async function generateFullFilm(){
                 addVideoSeconds(state.clipDuration);
                 journalLog(`Clip ${i+1} prêt.`,'video');
                 preloadClipBlob(i, vUrl);
-                
-                try { previousFrameUrl = await extractLastFrame(vUrl); }
-                catch(e) { journalLog('Continuité inter-clip perdue (CORS).', 'warn'); previousFrameUrl = state.masterImageUrl; }
                 
                 renderClips(); renderProgress();
             } catch(e) {
@@ -1155,29 +1124,6 @@ async function generateFullFilm(){
     } else {
         showToast('Certains clips ont échoué.','warn');
     }
-}
-
-function extractLastFrame(videoUrl){
-    return new Promise((resolve, reject) => {
-        const video = document.createElement('video');
-        video.crossOrigin = 'anonymous';
-        video.src = videoUrl;
-        video.preload = 'auto';
-        video.muted = true;
-        video.onloadedmetadata = () => { video.currentTime = Math.max(0, video.duration - 0.1); };
-        video.onseeked = () => {
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth || 720;
-                canvas.height = video.videoHeight || 1280;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/jpeg', 0.85));
-            } catch(e) { reject(e); }
-        };
-        video.onerror = () => reject(new Error('Erreur chargement vidéo'));
-        setTimeout(() => reject(new Error('Timeout extraction')), 15000);
-    });
 }
 
 // =================================================================
