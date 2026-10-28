@@ -54,6 +54,9 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc2)}
 .section-content{padding:0 1rem 1rem}
 .control-row{margin-bottom:.9rem}
 .control-label{display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600}
+.mode-toggle{display:flex;gap:.4rem;margin-bottom:1rem}
+.mode-btn{flex:1;padding:.7rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--dim);font-size:.75rem;font-weight:600;cursor:pointer;text-align:center;transition:all .2s}
+.mode-btn.active{border-color:var(--acc2);background:rgba(232,123,53,.12);color:var(--acc2)}
 .story-view{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.8rem;margin-top:.4rem;font-size:.8rem;line-height:1.6;max-height:420px;overflow-y:auto}
 .env-card{background:rgba(232,123,53,.06);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.6rem;font-size:.72rem;border-left:2px solid var(--acc2);color:var(--dim);font-family:var(--fm)}
 .character-card{background:var(--bg3);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.4rem;font-size:.75rem;border-left:2px solid var(--acc2)}
@@ -121,13 +124,13 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc2)}
 
 <header>
 <h1>TikTok Moneymaker</h1>
-<p class="subtitle">Génère ton film viral · Photo IA · Chaînage</p>
+<p class="subtitle">Mode Auto · Photo IA · Chaînage · Video Reference</p>
 </header>
 
 <div class="banner">
-<strong>🎬 Film Long.</strong> Une seule vidéo de 1m à 1m10, découpée en clips chaînés.<br>
+<strong>🤖 Mode Auto.</strong> Donne une idée, l'IA écrit le script et génère tout.<br>
 <strong>🎨 Photo IA.</strong> L'IA crée ton personnage sexy, tu peux régénérer.<br>
-<strong>🔊 Audio Natif.</strong> La voix est générée avec l'image.
+<strong>🔗 Continuité.</strong> Mode reference + chaînage par frame pour une vidéo fluide.
 </div>
 
 <div class="panel" id="api-panel">
@@ -138,50 +141,56 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc2)}
 <div class="quota-line"><span>📊 Vidéo générée : <span class="q-val" id="video-quota-used">0</span>s</span></div>
 </div>
 
-<div class="section open" id="section-character">
-<div class="section-header" data-toggle="section-character">
-<span class="section-title">🎨 Personnage & Description</span>
+<!-- MODE AUTO / MANUEL -->
+<div class="section open" id="section-mode">
+<div class="section-header">
+<span class="section-title">🎛️ Mode de génération</span>
+</div>
+<div class="section-content">
+<div class="mode-toggle">
+<button type="button" class="mode-btn active" id="mode-auto-btn" onclick="setMode('auto')">🤖 Auto (IA écrit tout)</button>
+<button type="button" class="mode-btn" id="mode-manual-btn" onclick="setMode('manual')">✍️ Manuel (mon script)</button>
+</div>
+</div>
+</div>
+
+<!-- MODE AUTO -->
+<div class="section open" id="section-auto">
+<div class="section-header" data-toggle="section-auto">
+<span class="section-title">🤖 Idée de l'IA</span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
-<p class="hint" style="margin-bottom:1rem;">Décris ton personnage (ou laisse vide pour que l'IA invente un personnage sexy). L'IA génèrera une photo de référence que tu pourras régénérer.</p>
-<div class="control-row">
-<label class="control-label">Description du personnage (optionnel)</label>
-<textarea id="character-desc" placeholder="Ex : Femme brune aux yeux verts, robe noire moulante, talons hauts, sourire mystérieux..." style="min-height:70px"></textarea>
-</div>
-<button type="button" class="btn btn-secondary" id="generate-ref-btn">🎨 Générer la photo de référence</button>
-<div id="ref-container" style="margin-top:.8rem;"></div>
+<p class="hint" style="margin-bottom:1rem;">Donne une idée, un thème ou un concept. L'IA écrira le script complet, les paroles et découpera en clips.</p>
+<textarea id="auto-idea" placeholder="Ex : Une femme fatale se venge de son ex qui l'a trahie dans un bar de nuit." style="min-height:80px"></textarea>
 </div></div>
 </div>
 
-<div class="section open" id="section-dialogues">
-<div class="section-header" data-toggle="section-dialogues">
-<span class="section-title">💬 Script & Direction <span class="badge">obligatoire</span></span>
+<!-- MODE MANUEL -->
+<div class="section open" id="section-manual" style="display:none;">
+<div class="section-header" data-toggle="section-manual">
+<span class="section-title">✍️ Ton script</span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
-<div class="control-row">
-<label class="control-label">Script / Répliques (une par ligne)</label>
-<textarea id="dialogue-input" style="min-height:140px">Tu m'as menti.
+<textarea id="manual-script" style="min-height:140px">Tu m'as menti.
 Et je le savais depuis le début.
 Rends-moi ce que tu m'as pris.
 Je t'ai fait confiance.
 Tu m'as trahi.
 Maintenant tu vas payer.</textarea>
-</div>
-<div class="control-row">
-<label class="control-label">Contexte / Direction (optionnel)</label>
-<textarea id="context-input" placeholder="Ex : Style cartoon 3D, couleurs pop, deux amis dans un diner rétro..." style="min-height:60px"></textarea>
-</div>
 </div></div>
 </div>
 
-<div class="section open" id="section-idea">
-<div class="section-header" data-toggle="section-idea">
-<span class="section-title">🎬 Paramètres du Film</span>
+<!-- PERSONNAGE -->
+<div class="section open" id="section-character">
+<div class="section-header" data-toggle="section-character">
+<span class="section-title">🎨 Personnage & Style</span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
+<p class="hint" style="margin-bottom:1rem;">Décris ton personnage (ou laisse vide pour que l'IA invente un personnage sexy).</p>
+<textarea id="character-desc" placeholder="Ex : Femme brune aux yeux verts, robe noire moulante, talons hauts..." style="min-height:60px"></textarea>
 <div class="control-row">
 <label class="control-label">Style visuel</label>
 <select id="style-select">
@@ -199,7 +208,7 @@ Maintenant tu vas payer.</textarea>
 </select>
 </div>
 <div class="control-row">
-<label class="control-label">Durée par clip (secondes)</label>
+<label class="control-label">Durée par clip</label>
 <select id="clip-duration">
 <option value="6">6s (meilleur lip-sync)</option>
 <option value="8">8s</option>
@@ -207,6 +216,8 @@ Maintenant tu vas payer.</textarea>
 <option value="12">12s (max Agnes)</option>
 </select>
 </div>
+<button type="button" class="btn btn-secondary" id="generate-ref-btn">🎨 Générer la photo de référence</button>
+<div id="ref-container" style="margin-top:.8rem;"></div>
 </div></div>
 </div>
 
@@ -279,6 +290,8 @@ const DEBUG_MAX = 600;
 
 const state = {
     keyPool: [], isRunning: false, stopRequested: false,
+    mode: 'auto', // 'auto' ou 'manual'
+    autoIdea: '', manualScript: '',
     scriptLines: [], context: '',
     story: null, masterImageUrl: null,
     refImageUrl: null,
@@ -303,6 +316,18 @@ let debugEntries=[];
 function debugLog(level,category,message,data){const body=document.getElementById('tech-body');if(!body)return;const time=nowTime();const entry=document.createElement('div');entry.className='debug-entry '+level;let html='<span class="debug-time">'+time+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';if(data!==undefined&&data!==null){let ds=typeof data==='string'?data:JSON.stringify(data,null,2);if(ds.length>2500)ds=ds.slice(0,2500)+'…';html+='<pre class="debug-data">'+esc(ds)+'</pre>'}entry.innerHTML=html;body.appendChild(entry);debugEntries.push({time,level,category,message});if(debugEntries.length>DEBUG_MAX)debugEntries.shift();while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild);body.scrollTop=body.scrollHeight;}
 function toggleDebugCollapse(){const p=document.getElementById('debug-panel');const b=document.getElementById('debug-collapse-btn');if(!p||!b)return;const c=p.classList.toggle('collapsed');b.textContent=c?'+':'−'}
 function switchTab(tab){const j=document.getElementById('journal-body');const t=document.getElementById('tech-body');const tj=document.getElementById('tab-journal');const tt=document.getElementById('tab-tech');if(!j||!t)return;if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active')}else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight}}
+
+// =================================================================
+// MODE AUTO / MANUEL
+// =================================================================
+window.setMode = function(mode){
+    state.mode = mode;
+    document.getElementById('mode-auto-btn').classList.toggle('active', mode === 'auto');
+    document.getElementById('mode-manual-btn').classList.toggle('active', mode === 'manual');
+    document.getElementById('section-auto').style.display = mode === 'auto' ? 'block' : 'none';
+    document.getElementById('section-manual').style.display = mode === 'manual' ? 'block' : 'none';
+    journalLog('Mode : ' + (mode === 'auto' ? 'Auto (IA écrit)' : 'Manuel'), 'info');
+};
 
 // =================================================================
 // QUOTA & CLÉS
@@ -359,11 +384,22 @@ async function generateImage(prompt){
     const data=await res.json();return data.data[0].url;
 }
 
-async function createVideoTask(prompt, firstFrameUrl, lastFrameUrl){
-    const body = {model: MODEL_VIDEO, prompt: sanitizeForApi(prompt), mode: 'keyframe', seconds: String(state.clipDuration), size: '720P', aspect_ratio: '9:16', n: 1, first_frame: firstFrameUrl, last_frame: lastFrameUrl};
-    const res=await apiFetch(API_BASE+'/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Video Task',4);
+// NOUVEAU : Mode reference d'Agnes (au lieu de keyframe)
+async function createVideoTaskReference(prompt, referenceImages){
+    const body = {
+        model: MODEL_VIDEO,
+        prompt: sanitizeForApi(prompt),
+        mode: 'reference',
+        seconds: String(state.clipDuration),
+        size: '720P',
+        aspect_ratio: '9:16',
+        n: 1,
+        images: referenceImages.slice(0, 5) // Max 5 images [citation:1]
+    };
+    const res = await apiFetch(API_BASE+'/videos', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}, 'Video Task', 4);
     if(res.status === 503) { const text = await res.text(); if(text.toLowerCase().includes('queue')) { const err = new Error('QUEUE_FULL'); err.isQueueFull = true; throw err; } }
-    const data=await res.json();return data.video_id||data.id;
+    const data = await res.json();
+    return data.video_id || data.id;
 }
 
 // =================================================================
@@ -390,7 +426,28 @@ Full body or 3/4 portrait, centered, looking at camera.
 CONSTRAINTS: portrait 9:16, no text, high quality, vibrant colors.`;
 }
 
-function buildStoryPrompt(){
+function buildStoryPromptAuto(){
+    const styleBlock = STYLE_BLOCKS[state.style] || STYLE_BLOCKS.popart;
+    return `Tu es un scénariste de contenus viraux TikTok. Tu écris des histoires courtes et impactantes.
+IDÉE DE L'UTILISATEUR : "${state.autoIdea}"
+
+MISSION : Écris toi-même le script complet (5 à 8 répliques percutantes) et découpe-le en segments de ~${state.clipDuration} secondes (environ 20-25 mots par segment).
+Tu dois définir UN SEUL lieu physique (environment_lock) TRÈS DÉTAILLÉ en anglais.
+
+DIRECTIVE CRÉATIVE IMPORTANTE : Les personnages doivent être ULTRA SEXY et charismatiques. Les femmes doivent être décrites comme très attirantes, silhouette voluptueuse, tenues élégantes et sensuelles. Les hommes virils et bien habillés.
+
+STYLE VISUEL : ${styleBlock}
+
+FORMAT JSON STRICT :
+{
+  "title": "Titre",
+  "environment_lock": "English detailed description: room type, wall colors, furniture, lighting direction, foreground and background objects",
+  "characters": [ { "name": "Nom", "gender": "homme/femme", "age": 25, "face_lock": "skin tone, face shape, hairstyle, eye color, attractive features", "outfit_lock": "exact colors, fabrics, style, sexy details" } ],
+  "clips": [ { "clip_number": 1, "lines": ["réplique 1", "réplique 2"], "action": "English action for video AI — pose, movement, camera" } ]
+}`;
+}
+
+function buildStoryPromptManual(){
     return `Tu es un scénariste de contenus viraux TikTok. Tu écris des histoires courtes et impactantes.
 VOICI LE SCRIPT FOURNI (une réplique par ligne) :
 ${state.scriptLines.join('\n')}
@@ -425,11 +482,12 @@ ACTION: ${scene.action || 'standing, looking at camera'}
 CONSTRAINTS: portrait 9:16, no text, high quality.`;
 }
 
-function buildVideoPrompt(clip, story, prevClip){
+function buildVideoPromptReference(clip, story, prevClip){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.gender+', '+c.age+'): '+c.face_lock+', '+c.outfit_lock).join(' | ');
     const identityLock = (story.characters||[]).map(c => `${c.name} — FACE: ${c.face_lock} | OUTFIT: ${c.outfit_lock}`).join('\n');
     const envLock = story.environment_lock || 'consistent location';
     const styleBlock = STYLE_BLOCKS[state.style] || STYLE_BLOCKS.popart;
+    
     let dialogueBlock = '';
     if(clip.lines && clip.lines.length > 0){
         dialogueBlock = 'DIALOGUE — The character MUST say exactly: "' + clip.lines.join(' ') + '". Mouth moving naturally. ONLY this character speaks.';
@@ -459,15 +517,13 @@ function updateButtons(){
     const genRef=document.getElementById('generate-ref-btn');
     const hasKey=hasActiveKey();
     const hasRef=!!state.refImageUrl;
-    const hasScript=state.scriptLines.length>0;
     
     if(genRef) genRef.disabled = !hasKey || state.isRunning;
     
     if(validate){
-        validate.disabled = !hasKey || !hasRef || !hasScript || state.isRunning;
+        validate.disabled = !hasKey || !hasRef || state.isRunning;
         if(!hasKey) validate.innerHTML='🔑 Ajoutez une clé API';
         else if(!hasRef) validate.innerHTML='🎨 Générez d\'abord la photo';
-        else if(!hasScript) validate.innerHTML='💬 Ajoutez un script';
         else if(state.isRunning) validate.innerHTML='⏳ En cours…';
         else if(state.validated) validate.innerHTML='✅ Personnage validé';
         else validate.innerHTML='1. Valider le personnage (clip test)';
@@ -482,10 +538,7 @@ function updateButtons(){
 function renderRefImage(){
     const c = document.getElementById('ref-container');
     if(!c) return;
-    if(!state.refImageUrl){
-        c.innerHTML = '';
-        return;
-    }
+    if(!state.refImageUrl){ c.innerHTML = ''; return; }
     c.innerHTML = `
         <img src="${state.refImageUrl}" class="ref-image" alt="Photo de référence">
         <button class="btn btn-secondary" style="margin-top:.6rem;" onclick="regenerateRef()">🔄 Régénérer la photo</button>
@@ -579,7 +632,9 @@ async function generateRefImage(){
         showToast('Erreur : '+e.message, 'error');
     }
     
-    state.isRunning = false; updateButtons(); setStatus(null);
+    state.isRunning = false;
+    updateButtons();
+    setStatus(null);
 }
 
 // =================================================================
@@ -589,24 +644,36 @@ async function validateCharacter(){
     if(state.isRunning) return;
     if(!state.refImageUrl){ showToast('Générez d\'abord la photo','error'); return; }
     
-    state.scriptLines = document.getElementById('dialogue-input').value.split('\n').map(l=>l.trim()).filter(l=>l);
-    state.context = document.getElementById('context-input').value.trim();
     state.style = document.getElementById('style-select').value;
     state.targetDuration = parseInt(document.getElementById('target-duration').value);
     state.clipDuration = parseInt(document.getElementById('clip-duration').value);
     
-    if(state.scriptLines.length === 0){ showToast('Ajoutez un script','error'); return; }
+    // Récupération selon le mode
+    if(state.mode === 'auto'){
+        state.autoIdea = document.getElementById('auto-idea').value.trim();
+        if(!state.autoIdea){ showToast('Donnez une idée','error'); return; }
+    } else {
+        state.manualScript = document.getElementById('manual-script').value;
+        state.scriptLines = state.manualScript.split('\n').map(l=>l.trim()).filter(l=>l);
+        state.context = document.getElementById('context-input') ? document.getElementById('context-input').value.trim() : '';
+        if(state.scriptLines.length === 0){ showToast('Ajoutez un script','error'); return; }
+    }
     
     state.isRunning = true; updateButtons(); setStatus('Génération du scénario…');
     
     try {
-        // 1. Scénario
-        const prompt = buildStoryPrompt();
+        // 1. Scénario (Auto ou Manuel)
+        const prompt = state.mode === 'auto' ? buildStoryPromptAuto() : buildStoryPromptManual();
         const jsonStr = await callChatCompletion('Tu es un scénariste. Réponds UNIQUEMENT en JSON.', prompt, 'Scénario', 4000, 0.7);
         state.story = extractJson(jsonStr);
         if(!state.story) throw new Error('JSON invalide');
         
-        // 2. Image maîtresse (utilise la photo de référence)
+        // Si mode Auto, on récupère les répliques générées
+        if(state.mode === 'auto' && state.story.clips){
+            state.scriptLines = state.story.clips.flatMap(c => c.lines || []);
+        }
+        
+        // 2. Image maîtresse
         setStatus('Génération de l\'image maîtresse…');
         const scene0 = state.story.clips[0] || { action: 'standing' };
         const imgPrompt = buildImagePrompt(scene0, state.story);
@@ -614,19 +681,12 @@ async function validateCharacter(){
         state.masterImageUrl = imgUrl;
         journalLog('Image maîtresse générée.','image');
         
-        // 3. Clip de validation (4s)
+        // 3. Clip de validation (4s, mode reference)
         setStatus('Génération du clip de validation (4s)…');
         const testClip = { lines: state.story.clips[0]?.lines || [state.scriptLines[0]], action: scene0.action };
-        const testPrompt = buildVideoPrompt(testClip, state.story, null);
+        const testPrompt = buildVideoPromptReference(testClip, state.story, null);
         
-        const testBody = {
-            model: MODEL_VIDEO, prompt: sanitizeForApi(testPrompt), mode: 'keyframe',
-            seconds: '4', size: '720P', aspect_ratio: '9:16', n: 1,
-            first_frame: imgUrl, last_frame: imgUrl
-        };
-        const testRes = await apiFetch(API_BASE+'/videos', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(testBody)}, 'Test Clip', 4);
-        const testData = await testRes.json();
-        const taskId = testData.video_id || testData.id;
+        const taskId = await createVideoTaskReference(testPrompt, [imgUrl]);
         
         let testUrl = null;
         for(let i=0; i<80; i++){
@@ -663,7 +723,7 @@ async function validateCharacter(){
 }
 
 // =================================================================
-// GÉNÉRATION FILM COMPLET
+// GÉNÉRATION FILM COMPLET (mode reference + chaînage)
 // =================================================================
 async function generateFullFilm(){
     if(state.isRunning || !state.validated) return;
@@ -698,10 +758,15 @@ async function generateFullFilm(){
         while(attempts < 4 && !success && !state.stopRequested){
             attempts++;
             try {
-                const prompt = buildVideoPrompt(clip, state.story, i>0 ? state.story.clips[i-1] : null);
-                const firstFrame = previousFrameUrl;
-                const lastFrame = state.masterImageUrl;
-                const taskId = await createVideoTask(prompt, firstFrame, lastFrame);
+                const prompt = buildVideoPromptReference(clip, state.story, i>0 ? state.story.clips[i-1] : null);
+                
+                // Images de référence : maîtresse + frame précédente (max 5)
+                const refImages = [state.masterImageUrl];
+                if (previousFrameUrl && previousFrameUrl !== state.masterImageUrl) {
+                    refImages.push(previousFrameUrl);
+                }
+                
+                const taskId = await createVideoTaskReference(prompt, refImages);
                 
                 let vUrl = null;
                 let pollCount = 0;
@@ -833,6 +898,9 @@ function extractLastFrame(videoUrl){
     document.getElementById('tab-journal').addEventListener('click', ()=>switchTab('journal'));
     document.getElementById('tab-tech').addEventListener('click', ()=>switchTab('tech'));
     document.getElementById('debug-collapse-btn').addEventListener('click', e=>{e.stopPropagation();toggleDebugCollapse()});
+    
+    // Mode par défaut : Auto
+    setMode('auto');
     
     refreshKeyPool(); updateApiPanel(); updateButtons(); updateQuotaDisplay();
     journalLog('TikTok Moneymaker prêt.','lock');
