@@ -125,20 +125,21 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc2)}
 
 <header>
 <h1>TikTok Moneymaker</h1>
-<p class="subtitle">Mode Auto · Photo IA · Reference/Keyframe · 9:16</p>
+<p class="subtitle">Mode Auto · Photo IA · Clé Chiffrée · 9:16</p>
 </header>
 
 <div class="banner">
-<strong>🤖 Mode Auto.</strong> Donne une idée, l'IA écrit le script.<br>
+<strong>🔐 Clé chiffrée.</strong> Ta clé API est protégée par une passphrase.<br>
 <strong>🎨 Photo IA.</strong> L'IA crée ton personnage sexy.<br>
-<strong>📱 9:16 garanti.</strong> Correction automatique du bug de rotation Flash.
+<strong>📱 9:16.</strong> Format vertical natif.
 </div>
 
 <div class="panel" id="api-panel">
-<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600;">Clés API Agnes</label>
-<textarea id="api-keys-input" placeholder="Collez votre clé API ici (une par ligne)" rows="2" spellcheck="false"></textarea>
-<button type="button" class="btn" id="api-save-btn">Enregistrer les clés</button>
-<div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé API</span></div>
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600;">Clé API Agnes (chiffrée)</label>
+<textarea id="api-keys-input" placeholder="Collez votre clé API ici" rows="1" spellcheck="false"></textarea>
+<button type="button" class="btn" id="api-save-btn">🔐 Chiffrer et enregistrer</button>
+<button type="button" class="btn btn-secondary" id="api-unlock-btn" style="display:none;">🔓 Déverrouiller la clé</button>
+<div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé configurée</span></div>
 <div class="quota-line"><span>📊 Vidéo générée : <span class="q-val" id="video-quota-used">0</span>s</span></div>
 </div>
 
@@ -276,6 +277,12 @@ Maintenant tu vas payer.</textarea>
 <div class="debug-body hidden" id="tech-body"></div>
 </div>
 
+<!-- byok-vault depuis CDN -->
+<script type="module">
+import { BYOKVault } from 'https://esm.sh/byok-vault@0.2.1';
+window.BYOKVault = BYOKVault;
+</script>
+
 <script>
 // =================================================================
 // VERROUILLAGE
@@ -298,13 +305,12 @@ const MODEL_TEXT = 'agnes-2.5-flash';
 const MODEL_IMAGE = 'agnes-image-2.1-flash';
 const MODEL_VIDEO = 'agnes-video-2.5-flash';
 const MODEL_VIDEO_NAME = 'agnes-video-2.5-flash';
-const API_KEYS_STORAGE = 'tiktok_moneymaker_keys';
 const QUOTA_STORAGE = 'tiktok_moneymaker_quota';
 const PROJECT_STORAGE = 'tiktok_moneymaker_project';
 const DEBUG_MAX = 600;
 
 const state = {
-    keyPool: [], isRunning: false, stopRequested: false,
+    isRunning: false, stopRequested: false,
     mode: 'auto',
     autoIdea: '', manualScript: '',
     scriptLines: [], context: '',
@@ -315,9 +321,10 @@ const state = {
     clips: [], validated: false, totalClips: 0,
     validationClipUrl: null, validationClipLines: null,
     storyPreviewed: false,
-    referenceModeWorks: true,
-    useKeyframeMode: false // Bascule décidée AVANT la chaîne
+    useKeyframeMode: false
 };
+
+let vault = null;
 
 // =================================================================
 // UTILS
@@ -337,72 +344,128 @@ function toggleDebugCollapse(){const p=document.getElementById('debug-panel');co
 function switchTab(tab){const j=document.getElementById('journal-body');const t=document.getElementById('tech-body');const tj=document.getElementById('tab-journal');const tt=document.getElementById('tab-tech');if(!j||!t)return;if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active')}else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight}}
 
 // =================================================================
-// SAUVEGARDE
+// VAULT : GESTION CHIFFRÉE DE LA CLÉ
 // =================================================================
-function saveProject(){try{const data={mode:state.mode,autoIdea:state.autoIdea,manualScript:state.manualScript,context:state.context,story:state.story,masterImageUrl:state.masterImageUrl,refImageUrl:state.refImageUrl,characterDesc:state.characterDesc,style:state.style,targetDuration:state.targetDuration,clipDuration:state.clipDuration,clips:state.clips.map(c=>({status:c.status,url:c.url,lines:c.lines,action:c.action})),validated:state.validated,validationClipUrl:state.validationClipUrl,validationClipLines:state.validationClipLines,useKeyframeMode:state.useKeyframeMode,timestamp:Date.now()};localStorage.setItem(PROJECT_STORAGE,JSON.stringify(data));journalLog('Projet sauvegardé.','save')}catch(e){debugLog('warn','SAVE','Échec : '+e.message)}}
-function loadProject(){try{const raw=localStorage.getItem(PROJECT_STORAGE);if(!raw)return null;const data=JSON.parse(raw);if(Date.now()-data.timestamp>24*60*60*1000){localStorage.removeItem(PROJECT_STORAGE);return null}return data}catch(e){return null}}
-function clearProject(){try{localStorage.removeItem(PROJECT_STORAGE)}catch(e){}}
+async function initVault() {
+    if (!window.BYOKVault) {
+        console.warn('byok-vault non chargé, fallback localStorage');
+        return;
+    }
+    vault = new window.BYOKVault();
+    const state = vault.getState();
+    updateApiPanelFromVault();
+}
 
-// =================================================================
-// MODE
-// =================================================================
-window.setMode = function(mode){
-    state.mode = mode;
-    document.getElementById('mode-auto-btn').classList.toggle('active', mode === 'auto');
-    document.getElementById('mode-manual-btn').classList.toggle('active', mode === 'manual');
-    document.getElementById('section-auto').style.display = mode === 'auto' ? 'block' : 'none';
-    document.getElementById('section-manual').style.display = mode === 'manual' ? 'block' : 'none';
-    invalidateValidation();
-    journalLog('Mode : ' + (mode === 'auto' ? 'Auto' : 'Manuel'), 'info');
-};
-
-function invalidateValidation(){
-    state.validated = false;
-    state.validationClipUrl = null;
-    state.validationClipLines = null;
-    state.storyPreviewed = false;
-    state.useKeyframeMode = false;
-    document.getElementById('section-preview').classList.add('hidden');
-    document.getElementById('section-clips').classList.add('hidden');
-    document.getElementById('generate-btn').style.display = 'none';
+function updateApiPanelFromVault() {
+    const text = document.getElementById('api-status-text');
+    const unlockBtn = document.getElementById('api-unlock-btn');
+    if (!vault) { text.textContent = 'byok-vault non chargé'; return; }
+    
+    const vs = vault.getState();
+    if (vs === 'none') {
+        text.textContent = 'Aucune clé configurée';
+        unlockBtn.style.display = 'none';
+        document.getElementById('api-panel').classList.remove('ok');
+    } else if (vs === 'locked') {
+        text.textContent = '🔒 Clé verrouillée — entrez la passphrase';
+        unlockBtn.style.display = 'block';
+        document.getElementById('api-panel').classList.remove('ok');
+    } else {
+        text.textContent = '✅ Clé déverrouillée (chiffrée)';
+        unlockBtn.style.display = 'none';
+        document.getElementById('api-panel').classList.add('ok');
+    }
     updateButtons();
 }
 
+async function saveKeysFromUI() {
+    if (!vault) { showToast('byok-vault non chargé', 'error'); return; }
+    const input = document.getElementById('api-keys-input');
+    const raw = (input.value || '').trim();
+    if (!raw) { showToast('Collez votre clé API', 'warn'); return; }
+    
+    const passphrase = prompt('Choisissez une passphrase pour chiffrer votre clé.\n(Elle ne sera JAMAIS stockée. Notez-la !)');
+    if (!passphrase || passphrase.length < 6) {
+        showToast('Passphrase trop courte (min 6 caractères)', 'error');
+        return;
+    }
+    
+    try {
+        await vault.setConfig({ apiKey: raw }, passphrase);
+        input.value = '';
+        updateApiPanelFromVault();
+        showToast('Clé chiffrée et enregistrée ✓');
+        journalLog('Clé API chiffrée avec byok-vault.', 'key');
+    } catch(e) {
+        showToast('Erreur de chiffrement : ' + e.message, 'error');
+    }
+}
+
+async function promptUnlock() {
+    if (!vault || vault.getState() === 'unlocked') return true;
+    if (vault.getState() === 'none') {
+        showToast('Configurez d\'abord votre clé API', 'error');
+        return false;
+    }
+    const pass = prompt('Entrez votre passphrase pour déverrouiller la clé API :');
+    if (!pass) return false;
+    try {
+        await vault.unlock(pass, { session: 'tab' });
+        updateApiPanelFromVault();
+        showToast('Clé déverrouillée ✓');
+        return true;
+    } catch(e) {
+        if (e.code === 'WRONG_PASSPHRASE') showToast('Passphrase incorrecte', 'error');
+        else showToast('Erreur de déverrouillage', 'error');
+        return false;
+    }
+}
+
+async function hasActiveKey() {
+    if (!vault) return false;
+    if (vault.getState() === 'unlocked') return true;
+    if (vault.getState() === 'locked') {
+        return await promptUnlock();
+    }
+    return false;
+}
+
 // =================================================================
-// QUOTA & CLÉS
+// QUOTA
 // =================================================================
 function getQuota(){try{const raw=localStorage.getItem(QUOTA_STORAGE);if(!raw)return{date:'',seconds:0};const q=JSON.parse(raw);const today=new Date().toISOString().slice(0,10);if(q.date!==today)return{date:today,seconds:0};return q}catch(e){return{date:new Date().toISOString().slice(0,10),seconds:0}}}
 function setQuota(q){try{localStorage.setItem(QUOTA_STORAGE,JSON.stringify(q))}catch(e){}}
 function addVideoSeconds(sec){const q=getQuota();q.seconds=(q.seconds||0)+sec;setQuota(q);updateQuotaDisplay()}
 function updateQuotaDisplay(){const el=document.getElementById('video-quota-used');if(!el)return;const q=getQuota();el.textContent=Math.round(q.seconds||0)}
 
-function getStoredKeys(){try{const raw=localStorage.getItem(API_KEYS_STORAGE);if(!raw)return[];const arr=JSON.parse(raw);if(!Array.isArray(arr))return[];return arr.filter(k=>typeof k==='string'&&k.trim().length>0)}catch(e){return[]}}
-function setStoredKeys(keys){try{localStorage.setItem(API_KEYS_STORAGE,JSON.stringify(keys))}catch(e){}}
-function refreshKeyPool(){const stored=getStoredKeys();const old=state.keyPool||[];state.keyPool=stored.map(k=>{const existing=old.find(p=>p.key===k);return existing||{key:k,lastUsed:0,cooldownUntil:0,active:true,errorCount:0}})}
-function hasActiveKey(){return state.keyPool.some(k=>k.active)}
-function getReadyKey(){const now=Date.now();const active=state.keyPool.filter(k=>k.active);if(active.length===0)return{key:null,waitMs:0};const ready=active.filter(k=>!k.cooldownUntil||k.cooldownUntil<=now);if(ready.length===0){const soonest=active.reduce((a,b)=>(a.cooldownUntil||0)<(b.cooldownUntil||0)?a:b);return{key:null,waitMs:Math.max(1000,(soonest.cooldownUntil||0)-now)}}ready.sort((a,b)=>(a.lastUsed||0)-(b.lastUsed||0));return{key:ready[0],waitMs:0}}
-async function acquireKey(label){while(true){if(state.stopRequested)throw new Error('Arrêt demandé');const{key,waitMs}=getReadyKey();if(key){key.lastUsed=Date.now();return key}if(waitMs===0)throw new Error('Aucune clé API active');debugLog('warn',label,'Cooldown — attente '+Math.round(waitMs/1000)+'s');setStatus('Clés en cooldown — attente '+Math.round(waitMs/1000)+'s');await sleep(waitMs)}}
-function saveKeysFromUI(){const input=document.getElementById('api-keys-input');if(!input)return;const raw=input.value||'';const keys=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);if(keys.length===0){setStoredKeys([]);refreshKeyPool();updateApiPanel();showToast('Aucune clé saisie','warn');return}setStoredKeys(keys);refreshKeyPool();updateApiPanel();showToast(keys.length+' clé(s) enregistrée(s) ✓','success');journalLog(keys.length+' clé(s) API active(s).','key')}
-function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');if(!panel||!input||!line||!text)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s)';input.value=state.keyPool.map(k=>k.key).join('\n')}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value=''}updateButtons();updateQuotaDisplay()}
-
 // =================================================================
-// FETCH & JSON
+// FETCH AVEC VAULT
 // =================================================================
 async function apiFetch(url, options, label, maxAttempts){
     options=options||{};label=label||'API';maxAttempts=maxAttempts||6;let lastErr=null;
+    
     for(let attempt=0;attempt<maxAttempts;attempt++){
         if(state.stopRequested)throw new Error('Arrêt demandé');
-        let keyObj=null;try{keyObj=await acquireKey(label)}catch(e){throw e}
-        const headers=Object.assign({},options.headers||{},{'Authorization':'Bearer '+keyObj.key});
-        try{
-            const res=await fetch(url,Object.assign({},options,{headers}));
-            if(res.ok){keyObj.errorCount=0;return res}
+        
+        // Vérifier que le vault est déverrouillé
+        if (!await hasActiveKey()) {
+            throw new Error('Clé API verrouillée');
+        }
+        
+        try {
+            const res = await vault.withKey(async (key) => {
+                const headers = Object.assign({}, options.headers||{}, {'Authorization': 'Bearer ' + key});
+                return await fetch(url, Object.assign({}, options, {headers}));
+            });
+            
+            if(res.ok){return res}
             let errorText='';try{errorText=(await res.clone().text()).slice(0,1000)}catch(e){}
+            
             if(res.status===400) throw new Error('HTTP 400 — ' + errorText.slice(0,200));
-            if(res.status===401||res.status===403){ keyObj.active=false; throw new Error('HTTP '+res.status+' — Clé API invalide.'); }
+            if(res.status===401||res.status===403){ throw new Error('HTTP '+res.status+' — Clé API invalide.'); }
             if(res.status===402) throw new Error('QUOTA_EPUISE');
             if(res.status===404) throw new Error('HTTP 404 — Ressource introuvable.');
-            if(res.status===429){ const wait=60; keyObj.cooldownUntil=Date.now()+wait*1000; debugLog('warn',label,'Rate limit. Cooldown 60s.'); continue; }
+            if(res.status===429){ debugLog('warn',label,'Rate limit. Attente 60s.'); await sleep(60000); continue; }
             await sleep(5000);
         }catch(e){
             if(e.message==='Arrêt demandé')throw e;
@@ -427,7 +490,7 @@ async function generateImage(prompt){
     const data=await res.json();return data.data[0].url;
 }
 
-// MODE REFERENCE (avec fallback décidé AVANT la chaîne)
+// MODE REFERENCE : retourne uniquement video_id (pas id ni task_id)
 async function createVideoTaskReference(prompt, referenceImages){
     const body = {
         model: MODEL_VIDEO, prompt: sanitizeForApi(prompt),
@@ -438,13 +501,14 @@ async function createVideoTaskReference(prompt, referenceImages){
     const res = await apiFetch(API_BASE+'/videos', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}, 'Video', 4);
     if(res.status === 503) { const text = await res.text(); if(text.toLowerCase().includes('queue')) { const err = new Error('QUEUE_FULL'); err.isQueueFull = true; throw err; } }
     const data = await res.json();
-    return data.video_id || data.id;
+    if (!data.video_id) throw new Error('video_id manquant dans la réponse');
+    return data.video_id; // UNIQUEMENT video_id
 }
 
-// KEYFRAME avec fallback explicite sur masterImageUrl
+// MODE KEYFRAME : retourne uniquement video_id
 async function createVideoTaskKeyframe(prompt, firstFrameUrl){
     const safeFirstFrame = firstFrameUrl || state.masterImageUrl;
-    if(!safeFirstFrame) throw new Error('Aucune image de départ disponible pour keyframe');
+    if(!safeFirstFrame) throw new Error('Aucune image de départ disponible');
     
     const body = {
         model: MODEL_VIDEO, prompt: sanitizeForApi(prompt),
@@ -455,10 +519,10 @@ async function createVideoTaskKeyframe(prompt, firstFrameUrl){
     const res = await apiFetch(API_BASE+'/videos', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}, 'Video', 4);
     if(res.status === 503) { const text = await res.text(); if(text.toLowerCase().includes('queue')) { const err = new Error('QUEUE_FULL'); err.isQueueFull = true; throw err; } }
     const data = await res.json();
-    return data.video_id || data.id;
+    if (!data.video_id) throw new Error('video_id manquant dans la réponse');
+    return data.video_id;
 }
 
-// Fonction unifiée qui choisit le bon mode
 async function createVideoTask(prompt, referenceImages, firstFrameUrl){
     if(state.useKeyframeMode){
         return createVideoTaskKeyframe(prompt, firstFrameUrl);
@@ -467,60 +531,53 @@ async function createVideoTask(prompt, referenceImages, firstFrameUrl){
 }
 
 // =================================================================
-// CORRECTION ROTATION 9:16 (BUG FLASH CONNU)
+// POLLING CORRIGÉ
 // =================================================================
-// Le bug : Flash peut retourner des frames "couchées" en 9:16.
-// Solution : détecter si width > height, et pivoter.
-async function ensurePortrait9x16(videoUrl){
-    return new Promise((resolve, reject) => {
-        const video = document.createElement('video');
-        video.crossOrigin = 'anonymous';
-        video.src = videoUrl;
-        video.preload = 'auto';
-        video.muted = true;
+async function pollVideo(videoId, onProgress){
+    const maxPolls = 180; // 15 min à 12s = 180 polls
+    for(let i=0; i<maxPolls; i++){
+        if(state.stopRequested) throw new Error('Arrêt demandé');
         
-        video.onloadedmetadata = () => {
-            const w = video.videoWidth;
-            const h = video.videoHeight;
-            
-            // Si la vidéo est déjà en portrait (h > w), pas de correction
-            if (h >= w) {
-                resolve({ url: videoUrl, rotated: false });
-                return;
+        await sleep(12000); // 12s pour respecter le RPM
+        
+        const progressText = `Clip ${Math.round((i+1)*12/60)}min ${(i+1)*12%60}s`;
+        if(onProgress) onProgress(progressText);
+        
+        try {
+            // Vérifier que le vault est déverrouillé
+            if (!await hasActiveKey()) {
+                throw new Error('Clé API verrouillée');
             }
             
-            // Vidéo "couchée" : on la pivote de 90° via canvas
-            journalLog('Rotation détectée (bug Flash 9:16). Correction en cours…', 'warn');
+            const pollRes = await vault.withKey(async (key) => {
+                const url = `${POLL_BASE}?video_id=${encodeURIComponent(videoId)}&model_name=${MODEL_VIDEO_NAME}`;
+                return await fetch(url, {headers:{'Authorization':'Bearer '+key}});
+            });
             
-            video.currentTime = 0;
-            video.onseeked = () => {
-                try {
-                    const canvas = document.createElement('canvas');
-                    // Après rotation, on swap width/height
-                    canvas.width = h;
-                    canvas.height = w;
-                    const ctx = canvas.getContext('2d');
-                    // Rotation 90° horaire
-                    ctx.translate(canvas.width, 0);
-                    ctx.rotate(Math.PI / 2);
-                    ctx.drawImage(video, 0, 0);
-                    
-                    // Convertir en blob et créer une URL blob
-                    canvas.toBlob((blob) => {
-                        if(!blob){ reject(new Error('Échec rotation canvas')); return; }
-                        const blobUrl = URL.createObjectURL(blob);
-                        journalLog('Vidéo pivotée en 9:16.', 'success');
-                        resolve({ url: blobUrl, rotated: true });
-                    }, 'video/mp4', 0.9);
-                } catch(e) {
-                    reject(e);
-                }
-            };
-        };
-        
-        video.onerror = () => reject(new Error('Erreur chargement vidéo pour rotation'));
-        setTimeout(() => reject(new Error('Timeout rotation')), 20000);
-    });
+            if(!pollRes.ok){
+                const errText = await pollRes.text();
+                debugLog('error', 'POLLING', 'HTTP ' + pollRes.status + ' — ' + errText.slice(0, 200));
+                if(pollRes.status === 404) throw new Error('Tâche introuvable (video_id invalide ?)');
+                if(pollRes.status === 401) throw new Error('Clé API invalide');
+                continue;
+            }
+            
+            const d = await pollRes.json();
+            debugLog('info', 'POLLING', 'Statut: ' + (d.status || 'unknown') + ' — progress: ' + (d.progress || 0));
+            
+            if(d.status === 'completed'){
+                const videoUrl = d.url || (d.metadata && d.metadata.url);
+                if(!videoUrl) throw new Error('Terminé mais pas d\'URL');
+                return videoUrl;
+            }
+            if(d.status === 'failed') throw new Error('Échec de génération');
+        } catch(e) {
+            if(e.message === 'Arrêt demandé') throw e;
+            debugLog('warn', 'POLLING', 'Erreur: ' + e.message);
+            if(e.message.includes('video_id invalide') || e.message.includes('Clé API invalide')) throw e;
+        }
+    }
+    throw new Error('Timeout (15 min)');
 }
 
 // =================================================================
@@ -643,14 +700,14 @@ function updateButtons(){
     const generate=document.getElementById('generate-btn');
     const stop=document.getElementById('stop-btn');
     const genRef=document.getElementById('generate-ref-btn');
-    const hasKey=hasActiveKey();
+    const vaultReady = vault && vault.getState() === 'unlocked';
     const hasRef=!!state.refImageUrl;
     
-    if(genRef) genRef.disabled = !hasKey || state.isRunning;
+    if(genRef) genRef.disabled = !vaultReady || state.isRunning;
     
     if(validate){
-        validate.disabled = !hasKey || !hasRef || state.isRunning;
-        if(!hasKey) validate.innerHTML='🔑 Ajoutez une clé API';
+        validate.disabled = !vaultReady || !hasRef || state.isRunning;
+        if(!vaultReady) validate.innerHTML='🔐 Déverrouillez la clé';
         else if(!hasRef) validate.innerHTML='🎨 Générez d\'abord la photo';
         else if(state.isRunning) validate.innerHTML='⏳ En cours…';
         else if(state.validated) validate.innerHTML='✅ Personnage validé';
@@ -756,7 +813,7 @@ window.downloadClip = async function(index){
 window.retryClip = async function(index){
     if(state.isRunning) return;
     if(!state.story || !state.story.clips[index]) return;
-    if(!hasActiveKey()){ showToast('Clé API requise','error'); return; }
+    if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
     
     state.isRunning = true; state.stopRequested = false; updateButtons();
     const clip = state.story.clips[index];
@@ -777,33 +834,18 @@ window.retryClip = async function(index){
         if (previousFrameUrl !== state.masterImageUrl) refImages.push(previousFrameUrl);
         
         const prompt = buildVideoPromptReference(clip, state.story, prevClip, refImages.length);
-        const taskId = await createVideoTask(prompt, refImages, previousFrameUrl);
+        const videoId = await createVideoTask(prompt, refImages, previousFrameUrl);
         
-        let vUrl = null;
-        for(let p=0; p<180; p++){
-            if(state.stopRequested) break;
-            await sleep(5000);
-            state.clips[index].progress = `Création… ${Math.round(p*5/60)}min`;
+        const vUrl = await pollVideo(videoId, (prog) => {
+            state.clips[index].progress = prog;
             renderClips();
-            const pollRes = await fetch(`${POLL_BASE}?video_id=${taskId}&model_name=${MODEL_VIDEO_NAME}`, {headers:{'Authorization':'Bearer '+getReadyKey().key.key}});
-            if(pollRes.ok){
-                const d = await pollRes.json();
-                if(d.status === 'completed'){ vUrl = d.url || d.metadata.url; break; }
-                if(d.status === 'failed') throw new Error('Échec');
-            }
-        }
+        });
         
-        if(vUrl){
-            // Vérifier et corriger la rotation
-            const { url: correctedUrl } = await ensurePortrait9x16(vUrl);
-            state.clips[index].status = 'done';
-            state.clips[index].url = correctedUrl;
-            state.clips[index].progress = '';
-            journalLog(`Clip ${index+1} régénéré.`,'video');
-            saveProject();
-        } else {
-            throw new Error('Timeout');
-        }
+        state.clips[index].status = 'done';
+        state.clips[index].url = vUrl;
+        state.clips[index].progress = '';
+        journalLog(`Clip ${index+1} régénéré.`,'video');
+        saveProject();
     } catch(e) {
         state.clips[index].status = 'error';
         state.clips[index].error = e.message;
@@ -819,7 +861,7 @@ window.retryClip = async function(index){
 // =================================================================
 async function generateRefImage(){
     if(state.isRunning) return;
-    if(!hasActiveKey()){ showToast('Ajoutez une clé API','error'); return; }
+    if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
     
     state.characterDesc = document.getElementById('character-desc').value.trim();
     state.style = document.getElementById('style-select').value;
@@ -837,7 +879,7 @@ async function generateRefImage(){
         journalLog('Photo de référence générée.','image');
     } catch(e) {
         debugLog('Erreur ref', e.message);
-        if(e.message === 'QUOTA_EPUISE') showToast('Quota Agnes épuisé. Rechargez votre compte.','error');
+        if(e.message === 'QUOTA_EPUISE') showToast('Quota Agnes épuisé.','error');
         else showToast('Erreur : '+e.message, 'error');
     }
     
@@ -850,6 +892,7 @@ async function generateRefImage(){
 async function validateCharacter(){
     if(state.isRunning) return;
     if(!state.refImageUrl){ showToast('Générez d\'abord la photo','error'); return; }
+    if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
     
     state.style = document.getElementById('style-select').value;
     state.targetDuration = parseInt(document.getElementById('target-duration').value);
@@ -901,10 +944,11 @@ async function validateCharacter(){
 }
 
 // =================================================================
-// CONFIRMATION SCÉNARIO → Génération clip test
+// CONFIRMATION SCÉNARIO → Clip test
 // =================================================================
 async function confirmStoryAndTest(){
     if(state.isRunning || !state.story) return;
+    if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
     
     state.isRunning = true; updateButtons(); setStatus('Génération du clip test…');
     
@@ -919,43 +963,26 @@ async function confirmStoryAndTest(){
         const testPrompt = buildVideoPromptReference(testClip, state.story, null, 1);
         
         // Test du mode reference pour décider AVANT la chaîne
-        let taskId;
+        let videoId;
         try {
-            taskId = await createVideoTaskReference(testPrompt, [imgUrl]);
+            videoId = await createVideoTaskReference(testPrompt, [imgUrl]);
             state.useKeyframeMode = false;
             journalLog('Mode reference validé pour la chaîne.', 'info');
         } catch(e) {
             if(e.message.startsWith('HTTP 400')){
-                journalLog('Mode reference refusé. Bascule sur keyframe pour toute la chaîne.', 'warn');
+                journalLog('Mode reference refusé. Bascule sur keyframe.', 'warn');
                 state.useKeyframeMode = true;
-                taskId = await createVideoTaskKeyframe(testPrompt, imgUrl);
+                videoId = await createVideoTaskKeyframe(testPrompt, imgUrl);
             } else {
                 throw e;
             }
         }
         
-        let testUrl = null;
-        for(let i=0; i<80; i++){
-            if(state.stopRequested) break;
-            await sleep(5000);
-            setStatus('Clip test — attente '+(i*5)+'s…');
-            const pollRes = await fetch(`${POLL_BASE}?video_id=${taskId}&model_name=${MODEL_VIDEO_NAME}`, {headers:{'Authorization':'Bearer '+getReadyKey().key.key}});
-            if(pollRes.ok){
-                const d = await pollRes.json();
-                if(d.status === 'completed'){ testUrl = d.url || d.metadata.url; break; }
-                if(d.status === 'failed') throw new Error('Échec test');
-            }
-        }
+        const testUrl = await pollVideo(videoId, (prog) => setStatus('Clip test — ' + prog));
         
-        if(!testUrl) throw new Error('Timeout test');
-        
-        // Vérifier et corriger la rotation
-        const { url: correctedUrl, rotated } = await ensurePortrait9x16(testUrl);
-        if(rotated) journalLog('Clip test pivoté en 9:16.', 'success');
-        
-        state.validationClipUrl = correctedUrl;
+        state.validationClipUrl = testUrl;
         state.validationClipLines = testClip.lines;
-        state.clips = [{ status:'done', url:correctedUrl, lines: testClip.lines, action: testClip.action }];
+        state.clips = [{ status:'done', url:testUrl, lines: testClip.lines, action: testClip.action }];
         renderClips();
         
         state.validated = true;
@@ -982,6 +1009,7 @@ async function confirmStoryAndTest(){
 // =================================================================
 async function generateFullFilm(){
     if(state.isRunning || !state.validated) return;
+    if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
     
     state.isRunning = true; state.stopRequested = false; updateButtons();
     
@@ -1002,7 +1030,7 @@ async function generateFullFilm(){
     let previousFrameUrl = state.masterImageUrl;
     if(state.validationClipUrl){
         try { previousFrameUrl = await extractLastFrame(state.validationClipUrl); }
-        catch(e) { journalLog('Continuité inter-clip perdue (CORS). Utilisation image maîtresse.', 'warn'); }
+        catch(e) { journalLog('Continuité inter-clip perdue (CORS).', 'warn'); }
     }
     
     let allDone = true;
@@ -1027,54 +1055,35 @@ async function generateFullFilm(){
                 if (previousFrameUrl && previousFrameUrl !== state.masterImageUrl) refImages.push(previousFrameUrl);
                 
                 const prompt = buildVideoPromptReference(clip, state.story, i>0 ? state.story.clips[i-1] : null, refImages.length);
-                const taskId = await createVideoTask(prompt, refImages, previousFrameUrl);
+                const videoId = await createVideoTask(prompt, refImages, previousFrameUrl);
                 
-                let vUrl = null;
-                let pollCount = 0;
-                const maxPolls = 180;
-                while(pollCount < maxPolls && !state.stopRequested){
-                    await sleep(5000); pollCount++;
-                    state.clips[i].progress = `Clip ${i+1} — ${Math.round(pollCount*5/60)}min`;
+                const vUrl = await pollVideo(videoId, (prog) => {
+                    state.clips[i].progress = prog;
                     renderClips();
-                    
-                    const pollRes = await fetch(`${POLL_BASE}?video_id=${taskId}&model_name=${MODEL_VIDEO_NAME}`, {headers:{'Authorization':'Bearer '+getReadyKey().key.key}});
-                    if(pollRes.ok){
-                        const d = await pollRes.json();
-                        if(d.status === 'completed'){ vUrl = d.url || d.metadata.url; break; }
-                        if(d.status === 'failed') throw new Error('Échec');
-                    }
-                }
+                });
                 
-                if(vUrl){
-                    // Correction rotation si nécessaire
-                    const { url: correctedUrl, rotated } = await ensurePortrait9x16(vUrl);
-                    if(rotated) journalLog(`Clip ${i+1} pivoté en 9:16.`, 'success');
-                    
-                    state.clips[i].status = 'done';
-                    state.clips[i].url = correctedUrl;
-                    state.clips[i].progress = '';
-                    success = true;
-                    addVideoSeconds(state.clipDuration);
-                    journalLog(`Clip ${i+1} prêt.`,'video');
-                    
-                    try { previousFrameUrl = await extractLastFrame(correctedUrl); }
-                    catch(e) { journalLog('Continuité inter-clip perdue (CORS).', 'warn'); previousFrameUrl = state.masterImageUrl; }
-                    
-                    renderClips(); renderProgress();
-                    saveProject();
-                } else {
-                    throw new Error('Timeout');
-                }
+                state.clips[i].status = 'done';
+                state.clips[i].url = vUrl;
+                state.clips[i].progress = '';
+                success = true;
+                addVideoSeconds(state.clipDuration);
+                journalLog(`Clip ${i+1} prêt.`,'video');
+                
+                try { previousFrameUrl = await extractLastFrame(vUrl); }
+                catch(e) { journalLog('Continuité inter-clip perdue (CORS).', 'warn'); previousFrameUrl = state.masterImageUrl; }
+                
+                renderClips(); renderProgress();
+                saveProject();
             } catch(e) {
                 if(e.isQueueFull || e.message === 'QUEUE_FULL'){
                     state.clips[i].progress = `File pleine. Attente 45s…`;
                     renderClips(); await sleep(45000); attempts--;
                 } else if(e.message === 'QUOTA_EPUISE') {
                     journalLog('Quota Agnes épuisé. Arrêt.', 'error');
-                    showToast('Quota Agnes épuisé. Rechargez votre compte.', 'error');
+                    showToast('Quota Agnes épuisé.','error');
                     state.stopRequested = true;
                     allDone = false;
-                } else if(e.message.startsWith('HTTP 4')) {
+                } else if(e.message.startsWith('HTTP 4') || e.message.includes('video_id invalide')) {
                     journalLog(`Clip ${i+1} erreur définitive : ${e.message}`, 'error');
                     state.clips[i].status = 'error';
                     state.clips[i].error = e.message;
@@ -1136,7 +1145,7 @@ function extractLastFrame(videoUrl){
 // =================================================================
 // INIT
 // =================================================================
-(function init(){
+async function init(){
     clearAppUnlock();
     showLockScreen();
     
@@ -1149,7 +1158,12 @@ function extractLastFrame(videoUrl){
         lockInput.addEventListener('input', function(e){var v = e.target.value.replace(/\D/g,'');e.target.value = v;if(v.length === 4 && v === APP_LOCK_CODE){ tryUnlock(); }});
     }
 
+    // Attendre que byok-vault soit chargé
+    await new Promise(resolve => setTimeout(resolve, 500));
+    await initVault();
+    
     document.getElementById('api-save-btn').addEventListener('click', saveKeysFromUI);
+    document.getElementById('api-unlock-btn').addEventListener('click', promptUnlock);
     document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
     
     document.getElementById('generate-ref-btn').addEventListener('click', generateRefImage);
@@ -1172,44 +1186,12 @@ function extractLastFrame(videoUrl){
     document.getElementById('tab-tech').addEventListener('click', ()=>switchTab('tech'));
     document.getElementById('debug-collapse-btn').addEventListener('click', e=>{e.stopPropagation();toggleDebugCollapse()});
     
-    const saved = loadProject();
-    if(saved && saved.story){
-        setTimeout(() => {
-            if(confirm('Projet trouvé. Restaurer ?')){
-                state.mode = saved.mode || 'auto';
-                state.autoIdea = saved.autoIdea || '';
-                state.manualScript = saved.manualScript || '';
-                state.context = saved.context || '';
-                state.story = saved.story;
-                state.masterImageUrl = saved.masterImageUrl;
-                state.refImageUrl = saved.refImageUrl;
-                state.characterDesc = saved.characterDesc || '';
-                state.style = saved.style || 'popart';
-                state.targetDuration = saved.targetDuration || 70;
-                state.clipDuration = saved.clipDuration || 10;
-                state.clips = saved.clips || [];
-                state.validated = saved.validated || false;
-                state.validationClipUrl = saved.validationClipUrl;
-                state.validationClipLines = saved.validationClipLines;
-                state.useKeyframeMode = saved.useKeyframeMode || false;
-                
-                setMode(state.mode);
-                if(state.refImageUrl) renderRefImage();
-                renderClips();
-                if(state.validated){
-                    document.getElementById('section-clips').classList.remove('hidden');
-                    document.getElementById('generate-btn').style.display = 'block';
-                }
-                updateButtons();
-                journalLog('Projet restauré.', 'save');
-            } else { clearProject(); }
-        }, 500);
-    }
-    
     setMode('auto');
-    refreshKeyPool(); updateApiPanel(); updateButtons(); updateQuotaDisplay();
+    updateButtons(); updateQuotaDisplay();
     journalLog('TikTok Moneymaker prêt.','lock');
-})();
+}
+
+init();
 </script>
 </body>
 </html>
