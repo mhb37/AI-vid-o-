@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Fruit Tales Studio — Tes répliques, notre film</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -39,7 +40,6 @@ input:focus,textarea:focus{outline:none;border-color:var(--acc2)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0}
 .status.ok .dot{background:var(--ok);box-shadow:0 0 8px var(--ok)}
 .hint{font-size:.68rem;color:var(--dim);margin-top:.4rem}
-.hint a{color:var(--acc2);text-decoration:none}
 .quota-line{font-size:.7rem;padding:.5rem .7rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-top:.4rem;color:var(--dim);font-family:var(--fm);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
 .quota-line .q-val{color:var(--acc2);font-weight:600}
 .section{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.8rem;overflow:hidden}
@@ -56,18 +56,15 @@ input:focus,textarea:focus{outline:none;border-color:var(--acc2)}
 .control-label{display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600}
 select{width:100%;padding:.75rem .9rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--ink);font-size:.85rem;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23e87b35' d='M0 0l5 6 5-6z'/></svg>");background-repeat:no-repeat;background-position:right .9rem center;background-size:10px;font-family:inherit}
 select:focus{outline:none;border-color:var(--acc2)}
-select option{background:var(--bg2);color:var(--ink)}
 .preset-chips{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem}
 .preset-chip{padding:.35rem .7rem;border-radius:999px;border:1px solid var(--border);background:var(--bg2);color:var(--dim);font-size:.68rem;cursor:pointer;transition:all .15s}
 .preset-chip:hover{color:var(--acc2);border-color:var(--acc2);background:rgba(232,123,53,.05)}
 .story-view{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.8rem;margin-top:.4rem;font-size:.8rem;line-height:1.6;color:var(--ink);max-height:420px;overflow-y:auto}
 .story-title{font-size:1rem;font-weight:500;color:var(--acc2);margin-bottom:.3rem}
-.story-logline{font-style:italic;color:var(--dim);margin-bottom:.8rem;font-size:.78rem}
-.story-meta{font-size:.68rem;color:var(--faint);font-family:var(--fm);margin-bottom:.8rem;padding-bottom:.6rem;border-bottom:1px dashed var(--border)}
-.character-card{background:var(--bg3);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.4rem;font-size:.75rem;border-left:2px solid var(--acc2)}
-.character-card strong{color:var(--acc2)}
 .env-card{background:rgba(232,123,53,.06);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.6rem;font-size:.72rem;border-left:2px solid var(--acc2);color:var(--dim);font-family:var(--fm)}
 .env-card strong{color:var(--acc2)}
+.character-card{background:var(--bg3);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.4rem;font-size:.75rem;border-left:2px solid var(--acc2)}
+.character-card strong{color:var(--acc2)}
 .scene-block{margin-bottom:.8rem;padding-left:.7rem;border-left:2px solid var(--border)}
 .scene-block .sc-head{font-size:.7rem;color:var(--acc2);font-weight:600;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.25rem}
 .scene-block .sc-line{margin-bottom:.2rem;font-size:.76rem}
@@ -78,14 +75,12 @@ select option{background:var(--bg2);color:var(--ink)}
 .scene-card.generating{border-color:var(--acc2)}
 .scene-card.done{border-color:var(--ok)}
 .scene-card.error{border-color:var(--err)}
-.scene-card.retrying{border-color:var(--warn);animation:pulseWarn 1.5s ease infinite}
 .scene-card.queued{border-color:#4a7bc8;animation:pulseBlue 1.5s ease infinite}
-@keyframes pulseWarn{0%,100%{border-color:var(--warn)}50%{border-color:rgba(212,160,23,.4)}}
 @keyframes pulseBlue{0%,100%{border-color:#4a7bc8}50%{border-color:rgba(74,123,200,.4)}}
 .scene-card-header{padding:.45rem .6rem;font-size:.64rem;font-family:var(--fm);color:var(--dim);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);gap:.4rem}
 .scene-card-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
 .scene-card-body{padding:.55rem}
-.scene-card-body video{width:100%;border-radius:2px;background:#000;display:block;aspect-ratio:9/16;object-fit:cover}
+.scene-card-body video, .scene-card-body img{width:100%;border-radius:2px;background:#000;display:block;aspect-ratio:9/16;object-fit:cover}
 .scene-placeholder{width:100%;aspect-ratio:9/16;background:#0a0a12;border-radius:2px;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.68rem;font-family:var(--fm);flex-direction:column;gap:.4rem;text-align:center;padding:.4rem}
 .scene-download{display:block;width:100%;margin-top:.4rem;font-size:.72rem;color:#0a0a12;text-decoration:none;text-align:center;padding:.55rem;border:1px solid var(--acc2);border-radius:3px;background:var(--acc2);cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:.05em;transition:all .15s}
 .scene-download:hover{background:var(--acc);border-color:var(--acc)}
@@ -103,7 +98,6 @@ select option{background:var(--bg2);color:var(--ink)}
 .debug-tab.active{color:var(--acc2);border-color:var(--acc2);background:rgba(232,123,53,.08)}
 .debug-actions{display:flex;gap:.25rem}
 .debug-actions button{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:.58rem;padding:.25rem .5rem;border-radius:2px;cursor:pointer;font-family:inherit}
-.debug-actions button:hover{color:var(--acc2);border-color:var(--acc2)}
 .debug-body{flex:1;overflow-y:auto;padding:.5rem .7rem .8rem;font-size:.7rem;line-height:1.5;color:#c8c8d0}
 .debug-body.hidden{display:none}
 .journal-body{font-size:.74rem;line-height:1.55}
@@ -125,6 +119,11 @@ select option{background:var(--bg2);color:var(--ink)}
 .lock-btn{width:100%;max-width:280px;margin-top:1rem;padding:.9rem;border-radius:10px;border:1px solid var(--acc2);background:linear-gradient(135deg,rgba(232,123,53,.15),rgba(229,193,90,.12));color:var(--acc2);font-size:.9rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:all .2s}
 .lock-btn:hover{background:linear-gradient(135deg,rgba(232,123,53,.25),rgba(229,193,90,.22))}
 .lock-error{font-size:.72rem;color:var(--err);margin-top:.8rem;min-height:1.2em;font-family:var(--fm);text-align:center}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--panel);border:1px solid var(--border);padding:.8rem 1.2rem;border-radius:8px;color:var(--ink);font-size:.8rem;z-index:10000;transition:transform .3s;display:flex;align-items:center;gap:.5rem;opacity:0;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+#toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+#toast.success{border-color:var(--ok);color:var(--ok)}
+#toast.error{border-color:var(--err);color:var(--err)}
+#toast.warn{border-color:var(--warn);color:var(--warn)}
 </style>
 </head>
 <body>
@@ -133,10 +132,12 @@ select option{background:var(--bg2);color:var(--ink)}
     <div class="lock-icon">🔒</div>
     <div class="lock-title">Fruit Tales Studio</div>
     <div class="lock-subtitle">Accès protégé</div>
-    <input type="password" id="lock-code" class="lock-input" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••" autocomplete="off">
+    <input type="password" id="lock-code" class="lock-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" autocomplete="off">
     <button type="button" id="lock-btn" class="lock-btn">Déverrouiller</button>
     <div class="lock-error" id="lock-error"></div>
 </div>
+
+<div id="toast"><span id="toast-text"></span></div>
 
 <header>
 <h1>Fruit Tales Studio</h1>
@@ -144,20 +145,17 @@ select option{background:var(--bg2);color:var(--ink)}
 </header>
 
 <div class="banner">
-<strong>💬 Tes répliques d'abord.</strong> Colle tes dialogues (un par ligne). L'IA construit une histoire cohérente où chaque réplique trouve sa place.
-<strong>🎬 Décor verrouillé.</strong> La 1ère image devient la référence décor + personnage pour toutes les scènes.
-<strong>📥 Partage iOS.</strong> Bouton "Enregistrer" qui ouvre le menu natif.
+<strong>💬 Tes répliques d'abord.</strong> Colle tes dialogues (un par ligne). L'IA construit une histoire cohérente.<br>
+<strong>🎨 Images multiples.</strong> Génération d'une image par scène avec verrouillage du décor.<br>
+<strong>📥 Partage iOS.</strong> Bouton "Enregistrer" qui ouvre le menu natif d'iOS.
 </div>
 
 <div class="panel" id="api-panel">
-<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600;">Clés API Agnes — une par ligne</label>
-<textarea id="api-keys-input" placeholder="Collez votre clé API ici — une par ligne" rows="3" spellcheck="false" autocomplete="off"></textarea>
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600;">Clés API Agnes</label>
+<textarea id="api-keys-input" placeholder="Collez votre clé API ici (une par ligne)" rows="2" spellcheck="false"></textarea>
 <button type="button" class="btn" id="api-save-btn">Enregistrer les clés</button>
-<div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé API enregistrée</span></div>
-<div class="keys-list" id="api-keys-status"></div>
-<div class="quota-line">
-    <span>📊 Vidéo générée aujourd'hui : <span class="q-val" id="video-quota-used">0</span>s</span>
-</div>
+<div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé API</span></div>
+<div class="quota-line"><span>📊 Vidéo générée : <span class="q-val" id="video-quota-used">0</span>s</span></div>
 </div>
 
 <div class="section open" id="section-dialogues">
@@ -166,25 +164,21 @@ select option{background:var(--bg2);color:var(--ink)}
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
-<div class="control-row">
-<label class="control-label">Colle tes répliques (une par ligne)</label>
-<textarea id="dialogue-input" placeholder="Tu m'as menti.&#10;Et je le savais depuis le début.&#10;Rends-moi ce que tu m'as pris." style="min-height:120px;">Tu m'as menti.
+<textarea id="dialogue-input" style="min-height:120px">Tu m'as menti.
 Et je le savais depuis le début.
 Rends-moi ce que tu m'as pris.
 Je t'ai fait confiance.
-Tu m'as trahi.
-Maintenant tu vas payer.</textarea>
-</div>
-<div class="control-row">
-<label class="control-label">Contexte de l'histoire (optionnel)</label>
-<textarea id="context-input" placeholder="Ex : Deux anciens amis dans un bar de nuit. L'un a trahi l'autre pour de l'argent." style="min-height:60px;"></textarea>
+Tu m'as trahi.</textarea>
+<div class="control-row" style="margin-top:1rem">
+<label class="control-label">Contexte (optionnel)</label>
+<textarea id="context-input" placeholder="Ex : Deux anciens amis dans un bar de nuit..." style="min-height:60px"></textarea>
 </div>
 </div></div>
 </div>
 
 <div class="section open" id="section-idea">
 <div class="section-header" data-toggle="section-idea">
-<span class="section-title">🎬 Ambiance</span>
+<span class="section-title">🎬 Ambiance <span class="badge">obligatoire</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
@@ -193,7 +187,7 @@ Maintenant tu vas payer.</textarea>
 <div class="preset-chips" id="theme-chips"></div>
 </div>
 <div class="control-row">
-<label class="control-label">Durée de chaque vidéo (secondes)</label>
+<label class="control-label">Durée vidéo</label>
 <select id="duration-select">
 <option value="7" selected>7 secondes</option>
 <option value="8">8 secondes</option>
@@ -206,31 +200,30 @@ Maintenant tu vas payer.</textarea>
 <button type="button" class="btn btn-primary" id="prepare-btn" disabled>1. Préparer l'histoire et les images</button>
 <button type="button" class="btn btn-stop" id="stop-btn">⏹ Arrêter</button>
 
-<div class="section hidden" id="section-validation" style="border-color:var(--acc2);box-shadow:0 0 15px rgba(232,123,53,.1)">
+<div class="section hidden" id="section-validation" style="border-color:var(--acc2)">
     <div class="section-header" style="background:rgba(232,123,53,.05)">
-        <span class="section-title">👀 Vérification & Validation <span class="badge" style="color:var(--acc2);border-color:var(--acc2)">Action requise</span></span>
+        <span class="section-title">👀 Vérification <span class="badge" style="color:var(--acc2);border-color:var(--acc2)">Action requise</span></span>
     </div>
     <div class="section-content" style="padding-top:1rem">
-        <p class="hint" style="margin-bottom:1rem;color:var(--ink)">Vérifiez le scénario et la photo de référence. S'ils ne vous plaisent pas, régénérez-les.</p>
         <button type="button" class="btn btn-secondary" id="regen-story-btn">🔄 Régénérer le scénario</button>
-        <button type="button" class="btn btn-secondary" id="regen-image-btn" style="margin-bottom:1.5rem;">🔄 Régénérer la photo de référence</button>
+        <button type="button" class="btn btn-secondary" id="regen-image-btn" style="margin-bottom:1.5rem;">🔄 Régénérer les images</button>
         <button type="button" class="btn btn-primary" id="generate-video-btn" style="letter-spacing:.1em;padding:1rem;">🎬 Lancer la génération des vidéos</button>
     </div>
 </div>
 
 <div class="section hidden" id="section-story">
 <div class="section-header" data-toggle="section-story">
-<span class="section-title">📖 Histoire construite <span class="badge" id="story-badge">—</span></span>
+<span class="section-title">📖 Histoire construite</span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
-<div class="story-view" id="story-view">L'histoire apparaîtra ici…</div>
+<div class="story-view" id="story-view"></div>
 </div></div>
 </div>
 
 <div class="section hidden" id="section-images">
 <div class="section-header" data-toggle="section-images">
-<span class="section-title">🎨 Images des scènes <span class="badge" id="images-badge">0</span></span>
+<span class="section-title">🎨 Images des scènes</span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
@@ -240,7 +233,7 @@ Maintenant tu vas payer.</textarea>
 
 <div class="section hidden" id="section-videos">
 <div class="section-header" data-toggle="section-videos">
-<span class="section-title">🎞️ Vidéos des scènes <span class="badge" id="videos-badge">0</span></span>
+<span class="section-title">🎞️ Vidéos des scènes</span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
@@ -256,9 +249,7 @@ Maintenant tu vas payer.</textarea>
 <button type="button" class="debug-tab active" data-tab="journal" id="tab-journal">📻 Journal</button>
 <button type="button" class="debug-tab" data-tab="tech" id="tab-tech">🖥️ Technique</button>
 </div>
-<div class="debug-actions">
-<button type="button" id="debug-collapse-btn">+</button>
-</div>
+<div class="debug-actions"><button type="button" id="debug-collapse-btn">+</button></div>
 </div>
 <div class="debug-body journal-body" id="journal-body"></div>
 <div class="debug-body hidden" id="tech-body"></div>
@@ -266,7 +257,7 @@ Maintenant tu vas payer.</textarea>
 
 <script>
 // ══════════════════════════════════════════════════════════════════
-// VERROUILLAGE (Logique d'origine restaurée)
+// VERROUILLAGE
 // ══════════════════════════════════════════════════════════════════
 const APP_LOCK_CODE = '1992';
 const LOCK_STORAGE_KEY = 'fruit_tales_unlocked_session';
@@ -291,8 +282,6 @@ const API_KEYS_STORAGE = 'fruit_tales_api_keys_v4';
 const QUOTA_STORAGE = 'fruit_tales_quota_v4';
 const DEBUG_MAX = 600;
 
-const PASTEL_PALETTE = { colors: ['#F4C2C2', '#A8D8B9', '#E5B95A', '#F5F0E1', '#C8B0E0', '#FB923C'] };
-
 const THEME_PRESETS = [
     { emoji: '💋', label: 'Femme fatale', prompt: 'Une femme fatale et un homme charismatique se rencontrent dans un bar de nuit.' },
     { emoji: '🥃', label: 'Trahison', prompt: 'Un homme élégant découvre que sa meilleure amie l\'a trahi.' },
@@ -310,27 +299,24 @@ const state = {
 };
 
 // ══════════════════════════════════════════════════════════════════
-// UTILS
+// UTILS & LOGGER
 // ══════════════════════════════════════════════════════════════════
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 function setStatus(text){const b=document.getElementById('status-bar');const t=document.getElementById('status-text');if(!b||!t)return;if(text){b.classList.add('visible');t.textContent=text}else b.classList.remove('visible')}
-function showToast(msg,type='success'){
-    const t=document.getElementById('toast'); document.getElementById('toast-text').textContent=msg;
-    t.className='visible '+type; setTimeout(()=>t.className='',3000);
-}
+function showToast(msg,type='success'){const t=document.getElementById('toast');const txt=document.getElementById('toast-text');if(!t||!txt)return;txt.textContent=msg;t.className='visible '+type;setTimeout(()=>t.className='',3000);}
 function nowTime(){return new Date().toLocaleTimeString('fr-FR',{hour12:false})}
 function sanitizeForApi(text){if(text==null)return '';return String(text).replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/\u2013/g,'-').replace(/\u2014/g,'--').replace(/\u2026/g,'...').replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/\u00A0/g,' ')}
 
-function journalLog(msg, level){level=level||'info';const body=document.getElementById('journal-body');if(!body)return;const icons={info:'·',highlight:'▶',success:'✅',warn:'⚠️',error:'❌',story:'📖',image:'🎨',video:'🎥',play:'🎬',key:'🔑',voice:'🔊',retry:'↻',ref:'🔗',queue:'⏳',lock:'🔒',keyframe:'🔗',dialogue:'💬',download:'📥'};const icon=icons[level]||'·';const entry=document.createElement('div');entry.className='j-entry '+level;entry.innerHTML='<span class="j-time">'+esc(nowTime())+'</span><span class="j-icon">'+icon+'</span><span class="j-msg">'+esc(msg)+'</span>';body.appendChild(entry);body.scrollTop=body.scrollHeight;while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild)}
+function journalLog(msg, level){level=level||'info';const body=document.getElementById('journal-body');if(!body)return;const icons={info:'·',highlight:'▶',success:'✅',warn:'⚠️',error:'❌',story:'📖',image:'🎨',video:'🎥',play:'🎬',key:'🔑',retry:'↻',ref:'🔗',queue:'⏳',lock:'🔒',download:'📥'};const icon=icons[level]||'·';const entry=document.createElement('div');entry.className='j-entry '+level;entry.innerHTML='<span class="j-time">'+esc(nowTime())+'</span><span class="j-icon">'+icon+'</span><span class="j-msg">'+esc(msg)+'</span>';body.appendChild(entry);body.scrollTop=body.scrollHeight;while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild)}
 
-let debugCount=0,debugEntries=[],debugCollapsed=false,currentTab='journal';
-function debugLog(level,category,message,data){const body=document.getElementById('tech-body');if(!body)return;const time=nowTime();const entry=document.createElement('div');entry.className='debug-entry '+level;let html='<span class="debug-time">'+time+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';if(data!==undefined&&data!==null){let ds;if(typeof data==='string')ds=data;else{try{ds=JSON.stringify(data,null,2)}catch(e){ds=String(data)}}if(ds.length>2500)ds=ds.slice(0,2500)+'\n…[tronqué]';html+='<pre class="debug-data">'+esc(ds)+'</pre>'}entry.innerHTML=html;body.appendChild(entry);debugEntries.push({time,level,category,message});if(debugEntries.length>DEBUG_MAX)debugEntries.shift();while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild);body.scrollTop=body.scrollHeight;debugCount++;}
-function toggleDebugCollapse(){const p=document.getElementById('debug-panel');const b=document.getElementById('debug-collapse-btn');if(!p||!b)return;debugCollapsed=!debugCollapsed;p.classList.toggle('collapsed',debugCollapsed);b.textContent=debugCollapsed?'+':'−'}
-function switchTab(tab){currentTab=tab;const j=document.getElementById('journal-body');const t=document.getElementById('tech-body');const tj=document.getElementById('tab-journal');const tt=document.getElementById('tab-tech');if(!j||!t)return;if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active')}else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight}}
+let debugEntries=[];
+function debugLog(level,category,message,data){const body=document.getElementById('tech-body');if(!body)return;const time=nowTime();const entry=document.createElement('div');entry.className='debug-entry '+level;let html='<span class="debug-time">'+time+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';if(data!==undefined&&data!==null){let ds=typeof data==='string'?data:JSON.stringify(data,null,2);if(ds.length>2500)ds=ds.slice(0,2500)+'…';html+='<pre class="debug-data">'+esc(ds)+'</pre>'}entry.innerHTML=html;body.appendChild(entry);debugEntries.push({time,level,category,message});if(debugEntries.length>DEBUG_MAX)debugEntries.shift();while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild);body.scrollTop=body.scrollHeight;}
+function toggleDebugCollapse(){const p=document.getElementById('debug-panel');const b=document.getElementById('debug-collapse-btn');if(!p||!b)return;const c=p.classList.toggle('collapsed');b.textContent=c?'+':'−'}
+function switchTab(tab){const j=document.getElementById('journal-body');const t=document.getElementById('tech-body');const tj=document.getElementById('tab-journal');const tt=document.getElementById('tab-tech');if(!j||!t)return;if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active')}else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight}}
 
 // ══════════════════════════════════════════════════════════════════
-// QUOTA & CLÉS API
+// QUOTA & CLÉS
 // ══════════════════════════════════════════════════════════════════
 function getQuota(){try{const raw=localStorage.getItem(QUOTA_STORAGE);if(!raw)return{date:'',seconds:0};const q=JSON.parse(raw);const today=new Date().toISOString().slice(0,10);if(q.date!==today)return{date:today,seconds:0};return q}catch(e){return{date:new Date().toISOString().slice(0,10),seconds:0}}}
 function setQuota(q){try{localStorage.setItem(QUOTA_STORAGE,JSON.stringify(q))}catch(e){}}
@@ -345,13 +331,13 @@ function getReadyKey(){const now=Date.now();const active=state.keyPool.filter(k=
 async function acquireKey(label){while(true){if(state.stopRequested)throw new Error('Arrêt demandé');const{key,waitMs}=getReadyKey();if(key){key.lastUsed=Date.now();return key}if(waitMs===0)throw new Error('Aucune clé API active');debugLog('warn',label,'Toutes les clés en cooldown — attente '+Math.round(waitMs/1000)+'s');setStatus('Clés en cooldown — attente '+Math.round(waitMs/1000)+'s');await sleep(waitMs)}}
 
 function saveKeysFromUI(){const input=document.getElementById('api-keys-input');if(!input)return;const raw=input.value||'';const keys=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);if(keys.length===0){setStoredKeys([]);refreshKeyPool();updateApiPanel();showToast('Aucune clé saisie','warn');return}setStoredKeys(keys);refreshKeyPool();updateApiPanel();showToast(keys.length+' clé(s) enregistrée(s) ✓','success');journalLog(keys.length+' clé(s) API active(s).','key')}
-function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');if(!panel||!input||!line||!text)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s)';input.value=state.keyPool.map(k=>k.key).join('\n');input.placeholder=''}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';input.placeholder='Collez votre clé API — une par ligne'}updateButtons();updateQuotaDisplay()}
+function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');if(!panel||!input||!line||!text)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s)';input.value=state.keyPool.map(k=>k.key).join('\n');}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';}updateButtons();updateQuotaDisplay()}
 
 // ══════════════════════════════════════════════════════════════════
 // FETCH & JSON
 // ══════════════════════════════════════════════════════════════════
 async function apiFetch(url, options, label, maxAttempts){
-    options=options||{};label=label||'API';maxAttempts=(typeof maxAttempts==='number'&&maxAttempts>0)?maxAttempts:6;let lastErr=null;
+    options=options||{};label=label||'API';maxAttempts=maxAttempts||6;let lastErr=null;
     for(let attempt=0;attempt<maxAttempts;attempt++){
         if(state.stopRequested)throw new Error('Arrêt demandé');
         let keyObj=null;try{keyObj=await acquireKey(label)}catch(e){throw e}
@@ -394,7 +380,7 @@ async function createVideoTask(prompt, firstFrameUrl, lastFrameUrl){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS (MODIFIÉS POUR LE SEXY)
+// PROMPTS
 // ══════════════════════════════════════════════════════════════════
 function buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount){
     const dialogueList = dialogues.map((d, i) => (i+1) + '. "' + d + '"').join('\n');
@@ -458,7 +444,7 @@ CONSTRAINTS : vertical 9:16, ${state.durationSeconds} seconds, no text.`;
 }
 
 // ══════════════════════════════════════════════════════════════════
-// LOGIQUE UI & PIPELINE
+// PIPELINE & UI
 // ══════════════════════════════════════════════════════════════════
 function updateButtons(){
     const prepare=document.getElementById('prepare-btn');
@@ -501,17 +487,28 @@ async function prepareProject(isRegenStory){
             journalLog('Scénario généré.','story');
         }
         
-        // 2. Image
-        setStatus('Génération de l\'image…');
-        state.images = [{status:'loading'}]; renderImages();
+        // 2. Images (Une par scène)
+        setStatus('Génération des images de référence…');
+        state.images = state.story.scenes.map(()=>({status:'pending', url:null}));
+        renderImages();
         document.getElementById('section-images').classList.remove('hidden');
         document.getElementById('section-images').classList.add('open');
         
-        const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[0], state.story, true), null);
-        state.characterReferenceUrl = imgUrl;
-        state.images = [{status:'done', url:imgUrl}];
-        renderImages();
-        journalLog('Image de référence prête.','image');
+        for(let i=0; i<state.story.scenes.length; i++) {
+            state.images[i].status = 'loading'; renderImages();
+            try {
+                // L'image de la scène 1 sert de référence globale pour toutes les autres
+                const refUrl = i === 0 ? null : state.characterReferenceUrl;
+                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, i===0), refUrl);
+                state.images[i] = {status:'done', url:imgUrl};
+                if(i === 0) state.characterReferenceUrl = imgUrl;
+            } catch(e) {
+                state.images[i] = {status:'error'};
+                debugLog('Erreur Image', e.message);
+            }
+            renderImages();
+        }
+        journalLog('Images de référence prêtes.','image');
         
         document.getElementById('section-validation').classList.remove('hidden');
         showToast('Prêt à générer les vidéos');
@@ -547,7 +544,9 @@ async function startVideoGeneration(){
             attempts++;
             try {
                 const prompt = buildVideoPrompt(scene, state.story, prevScene, dialogue);
-                const taskId = await createVideoTask(prompt, state.characterReferenceUrl, state.characterReferenceUrl);
+                // Utilise l'image de la scène courante comme first frame, et la même comme last frame
+                const frameRef = state.images[i] ? state.images[i].url : state.characterReferenceUrl;
+                const taskId = await createVideoTask(prompt, frameRef, frameRef);
                 
                 let vUrl = null;
                 let pollCount = 0;
@@ -596,10 +595,10 @@ function renderStory(){
 
 function renderImages(){
     const grid=document.getElementById('images-grid'); if(!grid)return;
-    grid.innerHTML=state.images.map(img=>{
-        if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
-        if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
-        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image de Référence</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
+    grid.innerHTML=state.images.map((img,i)=>{
+        if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
+        if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
+        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
     }).join('');
 }
 
@@ -613,9 +612,7 @@ function renderVideos(){
     }
     state.videos.forEach((v,i)=>{
         const card=grid.children[i]; if(!card)return;
-        const titleEl=card.querySelector('.scene-card-title'); const statusEl=card.querySelector('.scene-card-status'); const bodyEl=card.querySelector('.scene-card-body');
-        let titleText='🎬 Scène '+(i+1);
-        if(titleEl.innerHTML!==titleText)titleEl.innerHTML=titleText;
+        const statusEl=card.querySelector('.scene-card-status'); const bodyEl=card.querySelector('.scene-card-body');
         
         const newClass='scene-card '+(v.status==='done'?'done':v.status==='error'?'error':v.status==='queued'?'queued':v.status==='retrying'?'retrying':(v.status==='loading'||v.status==='pending')?'generating':'');
         if(card.className!==newClass)card.className=newClass;
@@ -625,13 +622,31 @@ function renderVideos(){
             bodyEl.innerHTML='';
             const video=document.createElement('video');video.src=v.url;video.controls=true;video.preload='metadata';video.setAttribute('playsinline','');bodyEl.appendChild(video);
             const dl=document.createElement('button'); dl.className='scene-download'; dl.textContent='📥 Enregistrer la vidéo';
-            dl.onclick = () => {
-                if(navigator.share && navigator.canShare) {
-                    fetch(v.url).then(r=>r.blob()).then(blob=>{
-                        const file = new File([blob], `scene-${i+1}.mp4`, {type:'video/mp4'});
-                        if(navigator.canShare({files:[file]})) navigator.share({files:[file]}).catch(()=>{});
-                    }).catch(()=>window.open(v.url,'_blank'));
-                } else { window.open(v.url,'_blank'); }
+            
+            // TÉLÉCHARGEMENT iOS NATIF
+            dl.onclick = async () => {
+                try {
+                    setStatus('Préparation du fichier…');
+                    const response = await fetch(v.url);
+                    const blob = await response.blob();
+                    setStatus(null);
+                    
+                    if(navigator.share && navigator.canShare) {
+                        const file = new File([blob], `scene-${i+1}.mp4`, { type: 'video/mp4' });
+                        if(navigator.canShare({ files: [file] })) {
+                            await navigator.share({ files: [file] });
+                            return;
+                        }
+                    }
+                    // Fallback pour les ordinateurs
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `scene-${i+1}.mp4`;
+                    a.click();
+                } catch(err) {
+                    setStatus(null);
+                    if(err.name !== 'AbortError') window.open(v.url, '_blank');
+                }
             };
             bodyEl.appendChild(dl);
         } else if(v.status==='error'){
@@ -648,7 +663,7 @@ function renderVideos(){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// INIT & VERROU (Logique d'origine)
+// INIT
 // ══════════════════════════════════════════════════════════════════
 (function init(){
     clearAppUnlock();
@@ -682,12 +697,20 @@ function renderVideos(){
     
     document.getElementById('regen-image-btn').addEventListener('click',async ()=>{
         if(state.isRunning) return;
-        state.isRunning=true; updateButtons(); setStatus('Régénération image…');
-        state.images = [{status:'loading'}]; renderImages();
+        state.isRunning=true; updateButtons(); setStatus('Régénération des images…');
+        state.images = state.story.scenes.map(()=>({status:'pending', url:null}));
+        state.characterReferenceUrl = null;
+        renderImages();
         try {
-            const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[0], state.story, true), null);
-            state.characterReferenceUrl = imgUrl;
-            state.images = [{status:'done', url:imgUrl}]; renderImages(); showToast('Image régénérée');
+            for(let i=0; i<state.story.scenes.length; i++) {
+                state.images[i].status = 'loading'; renderImages();
+                const refUrl = i === 0 ? null : state.characterReferenceUrl;
+                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, i===0), refUrl);
+                state.images[i] = {status:'done', url:imgUrl};
+                if(i === 0) state.characterReferenceUrl = imgUrl;
+                renderImages();
+            }
+            showToast('Images régénérées');
         } catch(e) { showToast('Erreur','error'); }
         state.isRunning=false; updateButtons(); setStatus(null);
     });
@@ -700,7 +723,6 @@ function renderVideos(){
     document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse()});
     
     refreshKeyPool();updateApiPanel();updateButtons();updateQuotaDisplay();
-    setInterval(()=>{ /* render keys state */ },1000);
     journalLog('Prêt.','lock');
 })();
 </script>
