@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Fruit Tales Studio — Tes répliques, notre film</title>
+<title>Fruit Tales Studio — Viral TikTok Edition</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -25,7 +25,7 @@ h1{font-size:1.6rem;font-weight:300;margin-bottom:.3rem;background:linear-gradie
 .banner strong{color:var(--ink)}.banner .hl{color:var(--acc2)}
 .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:.8rem}
 .panel.ok{box-shadow:inset 3px 0 0 var(--ok)}
-input[type=password],textarea{width:100%;padding:.8rem .9rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--ink);font-family:var(--fm);font-size:.78rem;margin-bottom:.5rem}
+input[type=password],input[type=url],textarea{width:100%;padding:.8rem .9rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--ink);font-family:var(--fm);font-size:.78rem;margin-bottom:.5rem}
 textarea{font-family:var(--fs);font-size:.88rem;line-height:1.5;resize:vertical;min-height:90px}
 input:focus,textarea:focus{outline:none;border-color:var(--acc2)}
 .btn{width:100%;padding:.8rem 1rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--ink);font-size:.82rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:.5rem;transition:all .2s;font-family:inherit}
@@ -141,13 +141,13 @@ select:focus{outline:none;border-color:var(--acc2)}
 
 <header>
 <h1>Fruit Tales Studio</h1>
-<p class="subtitle">Tes répliques · L'IA invente l'histoire autour</p>
+<p class="subtitle">Viral TikTok Edition · Références & Cohérence</p>
 </header>
 
 <div class="banner">
-<strong>💬 Tes répliques d'abord.</strong> Colle tes dialogues (un par ligne). L'IA construit une histoire cohérente.<br>
-<strong>🎨 Images multiples.</strong> Génération d'une image par scène avec verrouillage du décor.<br>
-<strong>📥 Partage iOS.</strong> Bouton "Enregistrer" qui ouvre le menu natif d'iOS.
+<strong>🎭 Casting.</strong> Fournissez les URLs de vos personnages.<br>
+<strong>🎨 Cohérence.</strong> La scène 1 devient la référence absolue du décor.<br>
+<strong>📥 Partage iOS.</strong> Téléchargement natif via le menu de partage.
 </div>
 
 <div class="panel" id="api-panel">
@@ -158,34 +158,52 @@ select:focus{outline:none;border-color:var(--acc2)}
 <div class="quota-line"><span>📊 Vidéo générée : <span class="q-val" id="video-quota-used">0</span>s</span></div>
 </div>
 
-<div class="section open" id="section-dialogues">
-<div class="section-header" data-toggle="section-dialogues">
-<span class="section-title">💬 Tes répliques <span class="badge">obligatoire</span></span>
+<!-- SECTION CASTING : NOUVEAU -->
+<div class="section open" id="section-casting">
+<div class="section-header" data-toggle="section-casting">
+<span class="section-title">🎭 Casting & Références <span class="badge">Optionnel</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
+<p class="hint" style="margin-bottom:1rem;">Fournissez les URLs publiques de vos photos de personnages. L'IA les utilisera comme référence absolue pour les visages et les habits.</p>
+<div class="control-row">
+<label class="control-label">Photo Personnage 1 (URL)</label>
+<input type="url" id="char1-url" placeholder="https://exemple.com/photo-personnage-1.jpg">
+</div>
+<div class="control-row">
+<label class="control-label">Photo Personnage 2 (URL)</label>
+<input type="url" id="char2-url" placeholder="https://exemple.com/photo-personnage-2.jpg">
+</div>
+</div></div>
+</div>
+
+<div class="section open" id="section-dialogues">
+<div class="section-header" data-toggle="section-dialogues">
+<span class="section-title">💬 Script & Voix <span class="badge">obligatoire</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="control-row">
+<label class="control-label">Script / Répliques (une par ligne)</label>
 <textarea id="dialogue-input" style="min-height:120px">Tu m'as menti.
 Et je le savais depuis le début.
 Rends-moi ce que tu m'as pris.
 Je t'ai fait confiance.
 Tu m'as trahi.</textarea>
-<div class="control-row" style="margin-top:1rem">
-<label class="control-label">Contexte (optionnel)</label>
-<textarea id="context-input" placeholder="Ex : Deux anciens amis dans un bar de nuit..." style="min-height:60px"></textarea>
+</div>
+<div class="control-row">
+<label class="control-label">Contexte / Direction (optionnel)</label>
+<textarea id="context-input" placeholder="Ex : Style cartoon 3D, couleurs pop, deux amis dans un diner rétro..." style="min-height:60px"></textarea>
 </div>
 </div></div>
 </div>
 
 <div class="section open" id="section-idea">
 <div class="section-header" data-toggle="section-idea">
-<span class="section-title">🎬 Ambiance <span class="badge">obligatoire</span></span>
+<span class="section-title">🎬 Ambiance</span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
-<div class="control-row">
-<label class="control-label">Thème visuel</label>
-<div class="preset-chips" id="theme-chips"></div>
-</div>
 <div class="control-row">
 <label class="control-label">Durée vidéo</label>
 <select id="duration-select">
@@ -282,19 +300,11 @@ const API_KEYS_STORAGE = 'fruit_tales_api_keys_v4';
 const QUOTA_STORAGE = 'fruit_tales_quota_v4';
 const DEBUG_MAX = 600;
 
-const THEME_PRESETS = [
-    { emoji: '💋', label: 'Femme fatale', prompt: 'Une femme fatale et un homme charismatique se rencontrent dans un bar de nuit.' },
-    { emoji: '🥃', label: 'Trahison', prompt: 'Un homme élégant découvre que sa meilleure amie l\'a trahi.' },
-    { emoji: '🌹', label: 'Vengeance', prompt: 'Une femme mystérieuse prépare une vengeance froide.' },
-    { emoji: '🚬', label: 'Rupture', prompt: 'Une femme annonce à son amant qu\'elle le quitte.' },
-    { emoji: '🎲', label: 'Dette', prompt: 'Un homme endetté face à un caïd de la pègre.' },
-    { emoji: '🖤', label: 'Rivalité', prompt: 'Deux sœurs se déchirent pour un héritage.' }
-];
-
 const state = {
     keyPool: [], isRunning: false, stopRequested: false, dialogues: [],
     context: '', sceneCount: 0, durationSeconds: 7, story: null,
     images: [], videos: [], characterReferenceUrl: null,
+    casting: [], // URLs des personnages fournies
     isGeneratingVideos: false
 };
 
@@ -367,6 +377,7 @@ async function callChatCompletion(systemPrompt,userPrompt,label,maxTokens,temper
 
 async function generateImage(prompt, referenceUrl){
     const body={model:MODEL_IMAGE,prompt:sanitizeForApi(prompt),n:1,size:'1K',ratio:'9:16'};
+    // Si une référence est fournie, on l'injecte
     if(referenceUrl)body.extra_body={image:[referenceUrl]};
     const res=await apiFetch(API_BASE+'/images/generations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Image',4);
     const data=await res.json();return data.data[0].url;
@@ -380,46 +391,53 @@ async function createVideoTask(prompt, firstFrameUrl, lastFrameUrl){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS
+// PROMPTS (MIS À JOUR POUR LE STYLE VIRAL & RÉFÉRENCES)
 // ══════════════════════════════════════════════════════════════════
 function buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount){
     const dialogueList = dialogues.map((d, i) => (i+1) + '. "' + d + '"').join('\n');
-    return `Tu es un scénariste de séries adultes (HBO / Netflix). Tu écris des drames urbains crus, violents, sensuels.
+    // On ajoute une instruction pour un style visuel "Viral"
+    return `Tu es un scénariste de contenus viraux pour TikTok. Tu écris des histoires courtes, impactantes et visuellement marquantes.
 L'UTILISATEUR A FOURNI CES RÉPLIQUES (dans cet ordre, une par scène) :
 ${dialogueList}
 
 CONTEXTE : ${context || 'Aucun'}
 
 MISSION : Construis une histoire COHÉRENTE où chaque réplique trouve sa place naturelle.
-**DIRECTIVE CRÉATIVE IMPORTANTE :** Les personnages doivent être ULTRA SEXY et charismatiques. Les femmes doivent être décrites comme très attirantes, avec une silhouette voluptueuse, des tenues élégantes et sensuelles (robes moulantes, décolletés, talons hauts). Les hommes doivent être virils, bien habillés et mystérieux.
+**STYLE VISUEL IMPOSÉ :** Le rendu doit être "Stylized 3D", "Pop Art", avec des couleurs très saturées, un aspect un peu cartoon mais détaillé, comme les vidéos virales tendance sur TikTok.
 
 RÈGLES ABSOLUES :
 - Il y a exactement ${sceneCount} scènes.
 - La scène N utilise EXACTEMENT la réplique N.
-- Tu dois définir UN SEUL lieu physique (environment_lock) où toute l'histoire se passe.
-- Chaque personnage a : prénom, genre, âge, métier, "face_lock" (visage), "outfit_lock" (habits).
+- Tu dois définir UN SEUL lieu physique (environment_lock) où toute l'histoire se passe. Ce lieu doit être décrit avec précision pour ne jamais changer.
+- Chaque personnage a : prénom, genre, âge, métier, "face_lock" (visage), "outfit_lock" (habits). Ces descriptions seront utilisées telles quelles.
 
 FORMAT JSON STRICT :
 {
   "title": "Titre",
-  "environment_lock": "English detailed description of the room",
-  "characters": [ { "name": "Nom", "gender": "homme/femme", "age": 30, "face_lock": "English physical description (beautiful face, flawless makeup)", "outfit_lock": "English clothing (sexy tight dress, high heels)" } ],
+  "environment_lock": "English detailed description of the room (colors, lights, furniture) - MUST STAY IDENTICAL",
+  "characters": [ { "name": "Nom", "gender": "homme/femme", "age": 30, "face_lock": "English physical description", "outfit_lock": "English clothing description" } ],
   "scenes": [ { "scene_number": 1, "summary": "Résumé en français", "action": "English action for video AI", "speaker": "Nom" } ]
 }`;
 }
 
-function buildImagePrompt(scene, story, isFirstImage){
+function buildImagePrompt(scene, story, isFirstImage, castingUrls){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.age+' ans, '+c.job+', '+c.gender+'): '+c.face_lock+', '+c.outfit_lock).join(' | ');
     const identityLock = (story.characters||[]).map(c => `${c.name} — FACE: ${c.face_lock} | OUTFIT: ${c.outfit_lock}`).join('\n');
     const envLock = story.environment_lock || 'consistent location';
     
-    return `PASTEL CINEMATIC 35MM. REFERENCE SCENE.
-ENVIRONMENT (DO NOT CHANGE): ${envLock}
-CHARACTERS (ULTRA SEXY, ALLURING): 
+    let refBlock = '';
+    if (castingUrls && castingUrls.length > 0) {
+        refBlock = 'REFERENCE IMAGES PROVIDED — YOU MUST USE THE PROVIDED CHARACTER IMAGES AS THE ABSOLUTE REFERENCE FOR FACES AND OUTFITS.\n';
+    }
+    
+    return `STYLIZED 3D POP ART. VIRAL TIKTOK AESTHETIC. HIGH SATURATION.
+${refBlock}
+ENVIRONMENT LOCK (DO NOT CHANGE): ${envLock}
+CHARACTERS LOCK: 
 ${identityLock}
 CHARACTERS LIST: ${charList}
 ACTION: ${scene.action}
-CONSTRAINTS: portrait 9:16, no text, high quality.`;
+CONSTRAINTS: portrait 9:16, no text, high quality, vibrant colors.`;
 }
 
 function buildVideoPrompt(scene, story, previousScene, dialogue){
@@ -432,15 +450,14 @@ function buildVideoPrompt(scene, story, previousScene, dialogue){
         dialogueBlock = 'DIALOGUE — SPEAKER: ' + dialogue.speaker + ' says: "' + dialogue.line_fr + '". Mouth moving naturally. ONLY this character speaks.';
     }
     
-    return `PASTEL CINEMATIC ADULT SHORT FILM — ${state.durationSeconds}-SECOND SCENE. TIKTOK 9:16.
-STYLE : Wes Anderson meets Nicolas Winding Refn. Pastel cinematic, 35mm film grain.
+    return `STYLIZED 3D POP ART. VIRAL TIKTOK AESTHETIC.
 ENVIRONMENT LOCK (DO NOT CHANGE): ${envLock}
-CHARACTERS (ULTRA SEXY, ALLURING): 
+CHARACTERS LOCK: 
 ${identityLock}
 ADULT HUMANS: ${charList}
 ACTION : ${scene.action}
 ${dialogueBlock}
-CONSTRAINTS : vertical 9:16, ${state.durationSeconds} seconds, no text.`;
+CONSTRAINTS : vertical 9:16, ${state.durationSeconds} seconds, no text, vibrant colors.`;
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -468,6 +485,11 @@ async function prepareProject(isRegenStory){
     state.context=document.getElementById('context-input').value.trim();
     state.durationSeconds=parseInt(document.getElementById('duration-select').value);
     
+    // Récupération des URLs de casting
+    const c1 = document.getElementById('char1-url').value.trim();
+    const c2 = document.getElementById('char2-url').value.trim();
+    state.casting = [c1, c2].filter(url => url.length > 0);
+    
     document.getElementById('section-validation').classList.add('hidden');
     document.getElementById('section-videos').classList.add('hidden');
     document.getElementById('videos-grid').innerHTML = '';
@@ -487,7 +509,7 @@ async function prepareProject(isRegenStory){
             journalLog('Scénario généré.','story');
         }
         
-        // 2. Images (Une par scène)
+        // 2. Images (Une par scène, avec référence)
         setStatus('Génération des images de référence…');
         state.images = state.story.scenes.map(()=>({status:'pending', url:null}));
         renderImages();
@@ -495,13 +517,21 @@ async function prepareProject(isRegenStory){
         document.getElementById('section-images').classList.add('open');
         
         for(let i=0; i<state.story.scenes.length; i++) {
-            state.images[i].status = 'loading'; renderImages();
+            state.images[i] = {status: 'loading'};
+            renderImages();
             try {
-                // L'image de la scène 1 sert de référence globale pour toutes les autres
-                const refUrl = i === 0 ? null : state.characterReferenceUrl;
-                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, i===0), refUrl);
+                // Si on a des URLs de casting, on les utilise pour TOUTES les images
+                // Sinon, on utilise l'image de la scène 1 comme référence pour les suivantes
+                let refUrl = null;
+                if (state.casting.length > 0) {
+                    refUrl = state.casting[0]; // On utilise le premier personnage comme référence principale
+                } else if (i > 0) {
+                    refUrl = state.characterReferenceUrl;
+                }
+                
+                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, i===0, state.casting), refUrl);
                 state.images[i] = {status:'done', url:imgUrl};
-                if(i === 0) state.characterReferenceUrl = imgUrl;
+                if(i === 0 && state.casting.length === 0) state.characterReferenceUrl = imgUrl;
             } catch(e) {
                 state.images[i] = {status:'error'};
                 debugLog('Erreur Image', e.message);
@@ -544,8 +574,8 @@ async function startVideoGeneration(){
             attempts++;
             try {
                 const prompt = buildVideoPrompt(scene, state.story, prevScene, dialogue);
-                // Utilise l'image de la scène courante comme first frame, et la même comme last frame
-                const frameRef = state.images[i] ? state.images[i].url : state.characterReferenceUrl;
+                // On utilise l'image de la scène courante comme frame de départ
+                const frameRef = state.images[i] ? state.images[i].url : (state.casting.length > 0 ? state.casting[0] : state.characterReferenceUrl);
                 const taskId = await createVideoTask(prompt, frameRef, frameRef);
                 
                 let vUrl = null;
@@ -561,7 +591,7 @@ async function startVideoGeneration(){
                         if(d.status === 'failed') throw new Error('Échec');
                     }
                 }
-                if(vUrl) { state.videos[i] = {status:'done', url:vUrl}; success = true; }
+                if(vUrl) { state.videos[i] = {status:'done', url:vUrl}; success = true; addVideoSeconds(state.durationSeconds); }
                 else { throw new Error('Timeout'); }
             } catch(e) {
                 if(e.isQueueFull || e.message === 'QUEUE_FULL'){
@@ -595,6 +625,7 @@ function renderStory(){
 
 function renderImages(){
     const grid=document.getElementById('images-grid'); if(!grid)return;
+    if(!state.images || !state.images.length) { grid.innerHTML = ''; return; }
     grid.innerHTML=state.images.map((img,i)=>{
         if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
         if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
@@ -623,7 +654,6 @@ function renderVideos(){
             const video=document.createElement('video');video.src=v.url;video.controls=true;video.preload='metadata';video.setAttribute('playsinline','');bodyEl.appendChild(video);
             const dl=document.createElement('button'); dl.className='scene-download'; dl.textContent='📥 Enregistrer la vidéo';
             
-            // TÉLÉCHARGEMENT iOS NATIF
             dl.onclick = async () => {
                 try {
                     setStatus('Préparation du fichier…');
@@ -638,7 +668,6 @@ function renderVideos(){
                             return;
                         }
                     }
-                    // Fallback pour les ordinateurs
                     const a = document.createElement('a');
                     a.href = URL.createObjectURL(blob);
                     a.download = `scene-${i+1}.mp4`;
@@ -686,12 +715,6 @@ function renderVideos(){
     document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
     document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
     
-    const chips=document.getElementById('theme-chips');
-    if(chips){
-        chips.innerHTML=THEME_PRESETS.map((p,i)=>'<button type="button" class="preset-chip" data-theme="'+i+'">'+p.emoji+' '+p.label+'</button>').join('');
-        chips.querySelectorAll('.preset-chip').forEach(chip=>{chip.addEventListener('click',()=>{const idx=parseInt(chip.dataset.theme,10);const p=THEME_PRESETS[idx];if(!p)return;document.getElementById('context-input').value=p.prompt;showToast('Thème : '+p.label,'success')})})
-    }
-    
     document.getElementById('prepare-btn').addEventListener('click',()=>prepareProject(false));
     document.getElementById('regen-story-btn').addEventListener('click',()=>prepareProject(true));
     
@@ -703,11 +726,16 @@ function renderVideos(){
         renderImages();
         try {
             for(let i=0; i<state.story.scenes.length; i++) {
-                state.images[i].status = 'loading'; renderImages();
-                const refUrl = i === 0 ? null : state.characterReferenceUrl;
-                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, i===0), refUrl);
+                state.images[i] = {status:'loading'}; renderImages();
+                let refUrl = null;
+                if (state.casting.length > 0) {
+                    refUrl = state.casting[0];
+                } else if (i > 0) {
+                    refUrl = state.characterReferenceUrl;
+                }
+                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, i===0, state.casting), refUrl);
                 state.images[i] = {status:'done', url:imgUrl};
-                if(i === 0) state.characterReferenceUrl = imgUrl;
+                if(i === 0 && state.casting.length === 0) state.characterReferenceUrl = imgUrl;
                 renderImages();
             }
             showToast('Images régénérées');
