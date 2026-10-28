@@ -277,7 +277,6 @@ Maintenant tu vas payer.</textarea>
 <div class="debug-body hidden" id="tech-body"></div>
 </div>
 
-<!-- byok-vault depuis CDN -->
 <script type="module">
 import { BYOKVault } from 'https://esm.sh/byok-vault@0.2.1';
 window.BYOKVault = BYOKVault;
@@ -304,10 +303,12 @@ const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
 const MODEL_TEXT = 'agnes-2.5-flash';
 const MODEL_IMAGE = 'agnes-image-2.1-flash';
 const MODEL_VIDEO = 'agnes-video-2.5-flash';
-const MODEL_VIDEO_NAME = 'agnes-video-2.5-flash';
+const MODEL_VIDEO_NAME = 'agnes-video-2.5-flash'; // Obligatoire pour le polling [citation:2][citation:8]
 const QUOTA_STORAGE = 'tiktok_moneymaker_quota';
 const PROJECT_STORAGE = 'tiktok_moneymaker_project';
 const DEBUG_MAX = 600;
+const POLL_DELAY_MS = 12000; // 12s entre chaque poll
+const POLL_INITIAL_WAIT_MS = 20000; // 20s d'attente avant le premier poll [citation:7]
 
 const state = {
     isRunning: false, stopRequested: false,
@@ -344,15 +345,11 @@ function toggleDebugCollapse(){const p=document.getElementById('debug-panel');co
 function switchTab(tab){const j=document.getElementById('journal-body');const t=document.getElementById('tech-body');const tj=document.getElementById('tab-journal');const tt=document.getElementById('tab-tech');if(!j||!t)return;if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active')}else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight}}
 
 // =================================================================
-// VAULT : GESTION CHIFFRÉE DE LA CLÉ
+// VAULT
 // =================================================================
 async function initVault() {
-    if (!window.BYOKVault) {
-        console.warn('byok-vault non chargé, fallback localStorage');
-        return;
-    }
+    if (!window.BYOKVault) { console.warn('byok-vault non chargé'); return; }
     vault = new window.BYOKVault();
-    const state = vault.getState();
     updateApiPanelFromVault();
 }
 
@@ -360,21 +357,10 @@ function updateApiPanelFromVault() {
     const text = document.getElementById('api-status-text');
     const unlockBtn = document.getElementById('api-unlock-btn');
     if (!vault) { text.textContent = 'byok-vault non chargé'; return; }
-    
     const vs = vault.getState();
-    if (vs === 'none') {
-        text.textContent = 'Aucune clé configurée';
-        unlockBtn.style.display = 'none';
-        document.getElementById('api-panel').classList.remove('ok');
-    } else if (vs === 'locked') {
-        text.textContent = '🔒 Clé verrouillée — entrez la passphrase';
-        unlockBtn.style.display = 'block';
-        document.getElementById('api-panel').classList.remove('ok');
-    } else {
-        text.textContent = '✅ Clé déverrouillée (chiffrée)';
-        unlockBtn.style.display = 'none';
-        document.getElementById('api-panel').classList.add('ok');
-    }
+    if (vs === 'none') { text.textContent = 'Aucune clé configurée'; unlockBtn.style.display = 'none'; document.getElementById('api-panel').classList.remove('ok'); }
+    else if (vs === 'locked') { text.textContent = '🔒 Clé verrouillée — entrez la passphrase'; unlockBtn.style.display = 'block'; document.getElementById('api-panel').classList.remove('ok'); }
+    else { text.textContent = '✅ Clé déverrouillée (chiffrée)'; unlockBtn.style.display = 'none'; document.getElementById('api-panel').classList.add('ok'); }
     updateButtons();
 }
 
@@ -383,30 +369,20 @@ async function saveKeysFromUI() {
     const input = document.getElementById('api-keys-input');
     const raw = (input.value || '').trim();
     if (!raw) { showToast('Collez votre clé API', 'warn'); return; }
-    
     const passphrase = prompt('Choisissez une passphrase pour chiffrer votre clé.\n(Elle ne sera JAMAIS stockée. Notez-la !)');
-    if (!passphrase || passphrase.length < 6) {
-        showToast('Passphrase trop courte (min 6 caractères)', 'error');
-        return;
-    }
-    
+    if (!passphrase || passphrase.length < 6) { showToast('Passphrase trop courte (min 6 caractères)', 'error'); return; }
     try {
         await vault.setConfig({ apiKey: raw }, passphrase);
         input.value = '';
         updateApiPanelFromVault();
         showToast('Clé chiffrée et enregistrée ✓');
         journalLog('Clé API chiffrée avec byok-vault.', 'key');
-    } catch(e) {
-        showToast('Erreur de chiffrement : ' + e.message, 'error');
-    }
+    } catch(e) { showToast('Erreur de chiffrement : ' + e.message, 'error'); }
 }
 
 async function promptUnlock() {
     if (!vault || vault.getState() === 'unlocked') return true;
-    if (vault.getState() === 'none') {
-        showToast('Configurez d\'abord votre clé API', 'error');
-        return false;
-    }
+    if (vault.getState() === 'none') { showToast('Configurez d\'abord votre clé API', 'error'); return false; }
     const pass = prompt('Entrez votre passphrase pour déverrouiller la clé API :');
     if (!pass) return false;
     try {
@@ -424,9 +400,7 @@ async function promptUnlock() {
 async function hasActiveKey() {
     if (!vault) return false;
     if (vault.getState() === 'unlocked') return true;
-    if (vault.getState() === 'locked') {
-        return await promptUnlock();
-    }
+    if (vault.getState() === 'locked') return await promptUnlock();
     return false;
 }
 
@@ -439,28 +413,20 @@ function addVideoSeconds(sec){const q=getQuota();q.seconds=(q.seconds||0)+sec;se
 function updateQuotaDisplay(){const el=document.getElementById('video-quota-used');if(!el)return;const q=getQuota();el.textContent=Math.round(q.seconds||0)}
 
 // =================================================================
-// FETCH AVEC VAULT
+// FETCH
 // =================================================================
 async function apiFetch(url, options, label, maxAttempts){
     options=options||{};label=label||'API';maxAttempts=maxAttempts||6;let lastErr=null;
-    
     for(let attempt=0;attempt<maxAttempts;attempt++){
         if(state.stopRequested)throw new Error('Arrêt demandé');
-        
-        // Vérifier que le vault est déverrouillé
-        if (!await hasActiveKey()) {
-            throw new Error('Clé API verrouillée');
-        }
-        
+        if (!await hasActiveKey()) throw new Error('Clé API verrouillée');
         try {
             const res = await vault.withKey(async (key) => {
                 const headers = Object.assign({}, options.headers||{}, {'Authorization': 'Bearer ' + key});
                 return await fetch(url, Object.assign({}, options, {headers}));
             });
-            
             if(res.ok){return res}
             let errorText='';try{errorText=(await res.clone().text()).slice(0,1000)}catch(e){}
-            
             if(res.status===400) throw new Error('HTTP 400 — ' + errorText.slice(0,200));
             if(res.status===401||res.status===403){ throw new Error('HTTP '+res.status+' — Clé API invalide.'); }
             if(res.status===402) throw new Error('QUOTA_EPUISE');
@@ -490,7 +456,9 @@ async function generateImage(prompt){
     const data=await res.json();return data.data[0].url;
 }
 
-// MODE REFERENCE : retourne uniquement video_id (pas id ni task_id)
+// =================================================================
+// CRÉATION TÂCHE VIDÉO
+// =================================================================
 async function createVideoTaskReference(prompt, referenceImages){
     const body = {
         model: MODEL_VIDEO, prompt: sanitizeForApi(prompt),
@@ -501,15 +469,14 @@ async function createVideoTaskReference(prompt, referenceImages){
     const res = await apiFetch(API_BASE+'/videos', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}, 'Video', 4);
     if(res.status === 503) { const text = await res.text(); if(text.toLowerCase().includes('queue')) { const err = new Error('QUEUE_FULL'); err.isQueueFull = true; throw err; } }
     const data = await res.json();
+    // OBLIGATOIRE : video_id (pas id, pas task_id) [citation:2][citation:8]
     if (!data.video_id) throw new Error('video_id manquant dans la réponse');
-    return data.video_id; // UNIQUEMENT video_id
+    return data.video_id;
 }
 
-// MODE KEYFRAME : retourne uniquement video_id
 async function createVideoTaskKeyframe(prompt, firstFrameUrl){
     const safeFirstFrame = firstFrameUrl || state.masterImageUrl;
     if(!safeFirstFrame) throw new Error('Aucune image de départ disponible');
-    
     const body = {
         model: MODEL_VIDEO, prompt: sanitizeForApi(prompt),
         mode: 'keyframe', seconds: String(state.clipDuration),
@@ -524,40 +491,36 @@ async function createVideoTaskKeyframe(prompt, firstFrameUrl){
 }
 
 async function createVideoTask(prompt, referenceImages, firstFrameUrl){
-    if(state.useKeyframeMode){
-        return createVideoTaskKeyframe(prompt, firstFrameUrl);
-    }
+    if(state.useKeyframeMode) return createVideoTaskKeyframe(prompt, firstFrameUrl);
     return createVideoTaskReference(prompt, referenceImages);
 }
 
 // =================================================================
-// POLLING CORRIGÉ
+// POLLING CORRIGÉ (model_name OBLIGATOIRE + video_id)
 // =================================================================
 async function pollVideo(videoId, onProgress){
-    const maxPolls = 180; // 15 min à 12s = 180 polls
+    // Attente initiale de 20s pour éviter le faux 404 [citation:7]
+    await sleep(POLL_INITIAL_WAIT_MS);
+    
+    const maxPolls = 80; // ~16 min avec 12s entre chaque
     for(let i=0; i<maxPolls; i++){
         if(state.stopRequested) throw new Error('Arrêt demandé');
         
-        await sleep(12000); // 12s pour respecter le RPM
-        
-        const progressText = `Clip ${Math.round((i+1)*12/60)}min ${(i+1)*12%60}s`;
-        if(onProgress) onProgress(progressText);
+        if(onProgress) onProgress(`Clip ${Math.round((i+1)*12/60)}min ${(i+1)*12%60}s`);
         
         try {
-            // Vérifier que le vault est déverrouillé
-            if (!await hasActiveKey()) {
-                throw new Error('Clé API verrouillée');
-            }
+            if (!await hasActiveKey()) throw new Error('Clé verrouillée');
             
             const pollRes = await vault.withKey(async (key) => {
+                // URL avec video_id ET model_name (obligatoire) [citation:2][citation:8]
                 const url = `${POLL_BASE}?video_id=${encodeURIComponent(videoId)}&model_name=${MODEL_VIDEO_NAME}`;
-                return await fetch(url, {headers:{'Authorization':'Bearer '+key}});
+                return await fetch(url, { headers: { 'Authorization': 'Bearer ' + key } });
             });
             
             if(!pollRes.ok){
                 const errText = await pollRes.text();
                 debugLog('error', 'POLLING', 'HTTP ' + pollRes.status + ' — ' + errText.slice(0, 200));
-                if(pollRes.status === 404) throw new Error('Tâche introuvable (video_id invalide ?)');
+                if(pollRes.status === 404) throw new Error('Tâche introuvable (video_id invalide ou model_name manquant)');
                 if(pollRes.status === 401) throw new Error('Clé API invalide');
                 continue;
             }
@@ -576,8 +539,10 @@ async function pollVideo(videoId, onProgress){
             debugLog('warn', 'POLLING', 'Erreur: ' + e.message);
             if(e.message.includes('video_id invalide') || e.message.includes('Clé API invalide')) throw e;
         }
+        
+        await sleep(POLL_DELAY_MS);
     }
-    throw new Error('Timeout (15 min)');
+    throw new Error('Timeout (16 min)');
 }
 
 // =================================================================
@@ -887,7 +852,7 @@ async function generateRefImage(){
 }
 
 // =================================================================
-// VALIDATION : Scénario + Aperçu
+// VALIDATION
 // =================================================================
 async function validateCharacter(){
     if(state.isRunning) return;
@@ -944,7 +909,7 @@ async function validateCharacter(){
 }
 
 // =================================================================
-// CONFIRMATION SCÉNARIO → Clip test
+// CLIP TEST
 // =================================================================
 async function confirmStoryAndTest(){
     if(state.isRunning || !state.story) return;
@@ -962,20 +927,17 @@ async function confirmStoryAndTest(){
         const testClip = { lines: state.story.clips[0]?.lines || [state.scriptLines[0]], action: scene0.action };
         const testPrompt = buildVideoPromptReference(testClip, state.story, null, 1);
         
-        // Test du mode reference pour décider AVANT la chaîne
         let videoId;
         try {
             videoId = await createVideoTaskReference(testPrompt, [imgUrl]);
             state.useKeyframeMode = false;
-            journalLog('Mode reference validé pour la chaîne.', 'info');
+            journalLog('Mode reference validé.', 'info');
         } catch(e) {
             if(e.message.startsWith('HTTP 400')){
-                journalLog('Mode reference refusé. Bascule sur keyframe.', 'warn');
+                journalLog('Mode reference refusé. Bascule keyframe.', 'warn');
                 state.useKeyframeMode = true;
                 videoId = await createVideoTaskKeyframe(testPrompt, imgUrl);
-            } else {
-                throw e;
-            }
+            } else { throw e; }
         }
         
         const testUrl = await pollVideo(videoId, (prog) => setStatus('Clip test — ' + prog));
@@ -1005,7 +967,7 @@ async function confirmStoryAndTest(){
 }
 
 // =================================================================
-// GÉNÉRATION FILM COMPLET
+// FILM COMPLET
 // =================================================================
 async function generateFullFilm(){
     if(state.isRunning || !state.validated) return;
@@ -1158,7 +1120,6 @@ async function init(){
         lockInput.addEventListener('input', function(e){var v = e.target.value.replace(/\D/g,'');e.target.value = v;if(v.length === 4 && v === APP_LOCK_CODE){ tryUnlock(); }});
     }
 
-    // Attendre que byok-vault soit chargé
     await new Promise(resolve => setTimeout(resolve, 500));
     await initVault();
     
