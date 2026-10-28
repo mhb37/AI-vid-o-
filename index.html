@@ -75,7 +75,13 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc2)}
 .progress-bar-container{background:var(--bg2);border-radius:99px;height:8px;overflow:hidden;margin:.6rem 0}
 .progress-bar{height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));transition:width .4s;border-radius:99px}
 .progress-text{font-size:.72rem;color:var(--dim);text-align:center;font-family:var(--fm)}
-.ref-image{width:100%;max-width:280px;border-radius:8px;margin-top:.5rem;display:block;border:1px solid var(--border)}
+.ref-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.8rem}
+.ref-option{position:relative;cursor:pointer;border:2px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .2s}
+.ref-option:hover{border-color:var(--acc2)}
+.ref-option.selected{border-color:var(--ok);box-shadow:0 0 0 3px rgba(74,157,106,.2)}
+.ref-option img{width:100%;display:block;aspect-ratio:9/16;object-fit:cover}
+.ref-option .ref-check{position:absolute;top:.3rem;right:.3rem;background:var(--ok);color:#fff;width:24px;height:24px;border-radius:50%;display:none;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}
+.ref-option.selected .ref-check{display:flex}
 .spinner-mini{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:.3rem}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
@@ -125,13 +131,13 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc2)}
 
 <header>
 <h1>TikTok Moneymaker</h1>
-<p class="subtitle">Mode Auto · Photo IA · Clé Chiffrée · 9:16</p>
+<p class="subtitle">Mode Auto · 10 Photos au choix · Keyframe Rapide · 9:16</p>
 </header>
 
 <div class="banner">
 <strong>🔐 Clé chiffrée.</strong> Ta clé API est protégée par une passphrase.<br>
-<strong>🎨 Photo IA.</strong> L'IA crée ton personnage sexy.<br>
-<strong>📱 9:16.</strong> Format vertical natif.
+<strong>📸 10 Photos.</strong> L'IA génère 10 photos, tu choisis la meilleure.<br>
+<strong>⚡ Keyframe.</strong> Mode rapide pour des clips générés plus vite.
 </div>
 
 <div class="panel" id="api-panel">
@@ -190,7 +196,7 @@ Maintenant tu vas payer.</textarea>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
-<p class="hint" style="margin-bottom:1rem;">Décris ton personnage (ou laisse vide pour que l'IA invente).</p>
+<p class="hint" style="margin-bottom:1rem;">Décris ton personnage (ou laisse vide pour que l'IA invente). L'IA génère 10 photos, tu choisis la meilleure.</p>
 <textarea id="character-desc" placeholder="Ex : Femme brune aux yeux verts, robe noire moulante, talons hauts..." style="min-height:60px"></textarea>
 <div class="control-row">
 <label class="control-label">Style visuel</label>
@@ -217,7 +223,7 @@ Maintenant tu vas payer.</textarea>
 <option value="12">12s (max Agnes)</option>
 </select>
 </div>
-<button type="button" class="btn btn-secondary" id="generate-ref-btn">🎨 Générer la photo de référence</button>
+<button type="button" class="btn btn-secondary" id="generate-ref-btn">📸 Générer 10 photos de référence</button>
 <div id="ref-container" style="margin-top:.8rem;"></div>
 </div></div>
 </div>
@@ -303,12 +309,12 @@ const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
 const MODEL_TEXT = 'agnes-2.5-flash';
 const MODEL_IMAGE = 'agnes-image-2.1-flash';
 const MODEL_VIDEO = 'agnes-video-2.5-flash';
-const MODEL_VIDEO_NAME = 'agnes-video-2.5-flash'; // Obligatoire pour le polling [citation:2][citation:8]
+const MODEL_VIDEO_NAME = 'agnes-video-2.5-flash';
 const QUOTA_STORAGE = 'tiktok_moneymaker_quota';
-const PROJECT_STORAGE = 'tiktok_moneymaker_project';
 const DEBUG_MAX = 600;
-const POLL_DELAY_MS = 12000; // 12s entre chaque poll
-const POLL_INITIAL_WAIT_MS = 20000; // 20s d'attente avant le premier poll [citation:7]
+const POLL_DELAY_MS = 12000;
+const POLL_INITIAL_WAIT_MS = 20000;
+const NUM_REF_PHOTOS = 10;
 
 const state = {
     isRunning: false, stopRequested: false,
@@ -316,13 +322,14 @@ const state = {
     autoIdea: '', manualScript: '',
     scriptLines: [], context: '',
     story: null, masterImageUrl: null,
-    refImageUrl: null,
+    refImages: [], // 10 photos générées
+    selectedRefIndex: -1, // index de la photo choisie
     characterDesc: '',
     style: 'popart', targetDuration: 70, clipDuration: 10,
     clips: [], validated: false, totalClips: 0,
     validationClipUrl: null, validationClipLines: null,
     storyPreviewed: false,
-    useKeyframeMode: false
+    useKeyframeMode: true // TOUJOURS keyframe pour la rapidité
 };
 
 let vault = null;
@@ -456,24 +463,7 @@ async function generateImage(prompt){
     const data=await res.json();return data.data[0].url;
 }
 
-// =================================================================
-// CRÉATION TÂCHE VIDÉO
-// =================================================================
-async function createVideoTaskReference(prompt, referenceImages){
-    const body = {
-        model: MODEL_VIDEO, prompt: sanitizeForApi(prompt),
-        mode: 'reference', seconds: String(state.clipDuration),
-        size: '720P', aspect_ratio: '9:16', n: 1,
-        images: referenceImages.slice(0, 5)
-    };
-    const res = await apiFetch(API_BASE+'/videos', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}, 'Video', 4);
-    if(res.status === 503) { const text = await res.text(); if(text.toLowerCase().includes('queue')) { const err = new Error('QUEUE_FULL'); err.isQueueFull = true; throw err; } }
-    const data = await res.json();
-    // OBLIGATOIRE : video_id (pas id, pas task_id) [citation:2][citation:8]
-    if (!data.video_id) throw new Error('video_id manquant dans la réponse');
-    return data.video_id;
-}
-
+// KEYFRAME uniquement (rapide)
 async function createVideoTaskKeyframe(prompt, firstFrameUrl){
     const safeFirstFrame = firstFrameUrl || state.masterImageUrl;
     if(!safeFirstFrame) throw new Error('Aucune image de départ disponible');
@@ -490,44 +480,30 @@ async function createVideoTaskKeyframe(prompt, firstFrameUrl){
     return data.video_id;
 }
 
-async function createVideoTask(prompt, referenceImages, firstFrameUrl){
-    if(state.useKeyframeMode) return createVideoTaskKeyframe(prompt, firstFrameUrl);
-    return createVideoTaskReference(prompt, referenceImages);
-}
-
 // =================================================================
-// POLLING CORRIGÉ (model_name OBLIGATOIRE + video_id)
+// POLLING
 // =================================================================
 async function pollVideo(videoId, onProgress){
-    // Attente initiale de 20s pour éviter le faux 404 [citation:7]
     await sleep(POLL_INITIAL_WAIT_MS);
-    
-    const maxPolls = 80; // ~16 min avec 12s entre chaque
+    const maxPolls = 80;
     for(let i=0; i<maxPolls; i++){
         if(state.stopRequested) throw new Error('Arrêt demandé');
-        
         if(onProgress) onProgress(`Clip ${Math.round((i+1)*12/60)}min ${(i+1)*12%60}s`);
-        
         try {
             if (!await hasActiveKey()) throw new Error('Clé verrouillée');
-            
             const pollRes = await vault.withKey(async (key) => {
-                // URL avec video_id ET model_name (obligatoire) [citation:2][citation:8]
                 const url = `${POLL_BASE}?video_id=${encodeURIComponent(videoId)}&model_name=${MODEL_VIDEO_NAME}`;
                 return await fetch(url, { headers: { 'Authorization': 'Bearer ' + key } });
             });
-            
             if(!pollRes.ok){
                 const errText = await pollRes.text();
                 debugLog('error', 'POLLING', 'HTTP ' + pollRes.status + ' — ' + errText.slice(0, 200));
-                if(pollRes.status === 404) throw new Error('Tâche introuvable (video_id invalide ou model_name manquant)');
+                if(pollRes.status === 404) throw new Error('Tâche introuvable');
                 if(pollRes.status === 401) throw new Error('Clé API invalide');
                 continue;
             }
-            
             const d = await pollRes.json();
             debugLog('info', 'POLLING', 'Statut: ' + (d.status || 'unknown') + ' — progress: ' + (d.progress || 0));
-            
             if(d.status === 'completed'){
                 const videoUrl = d.url || (d.metadata && d.metadata.url);
                 if(!videoUrl) throw new Error('Terminé mais pas d\'URL');
@@ -537,9 +513,8 @@ async function pollVideo(videoId, onProgress){
         } catch(e) {
             if(e.message === 'Arrêt demandé') throw e;
             debugLog('warn', 'POLLING', 'Erreur: ' + e.message);
-            if(e.message.includes('video_id invalide') || e.message.includes('Clé API invalide')) throw e;
+            if(e.message.includes('Tâche introuvable') || e.message.includes('Clé API invalide')) throw e;
         }
-        
         await sleep(POLL_DELAY_MS);
     }
     throw new Error('Timeout (16 min)');
@@ -558,14 +533,27 @@ const STYLE_BLOCKS = {
 // =================================================================
 // PROMPTS
 // =================================================================
-function buildCharacterRefPrompt(){
+function buildCharacterRefPrompt(variation){
     const desc = state.characterDesc ? state.characterDesc : 'a very attractive adult woman with an alluring gaze, confident posture, elegant sexy outfit';
     const styleBlock = STYLE_BLOCKS[state.style] || STYLE_BLOCKS.popart;
+    const angles = [
+        'front view, looking at camera',
+        'three-quarter view, soft smile',
+        'slight side angle, mysterious gaze',
+        'close-up portrait, intense eyes',
+        'full body, confident stance',
+        'medium shot, elegant pose',
+        'over-the-shoulder glance',
+        'low angle, powerful presence',
+        'high angle, alluring look',
+        'profile view, sophisticated'
+    ];
+    const angle = angles[variation % angles.length];
     return `${styleBlock}
-CHARACTER REFERENCE PORTRAIT — STYLIZED 3D, VIRAL TIKTOK AESTHETIC.
+CHARACTER REFERENCE PORTRAIT — ${angle.toUpperCase()}.
 CHARACTER: ${desc}
 The character MUST be ULTRA ATTRACTIVE: flawless skin, beautiful face, sensual expression, attractive body, stylish revealing but tasteful outfit.
-Full body or 3/4 portrait, centered, looking at camera.
+${angle}.
 CONSTRAINTS: portrait 9:16, no text, high quality, vibrant colors.`;
 }
 
@@ -577,7 +565,7 @@ IDÉE DE L'UTILISATEUR : "${state.autoIdea}"
 MISSION : Écris toi-même le script complet (5 à 8 répliques percutantes) et découpe-le en segments de ~${state.clipDuration} secondes.
 Tu dois définir UN SEUL lieu physique (environment_lock) TRÈS DÉTAILLÉ en anglais.
 
-DIRECTIVE CRÉATIVE : Les personnages doivent être ULTRA SEXY et charismatiques. Les femmes très attirantes, silhouette voluptueuse, tenues sensuelles. Les hommes virils.
+DIRECTIVE CRÉATIVE : Les personnages doivent être ULTRA SEXY et charismatiques.
 
 STYLE VISUEL : ${styleBlock}
 
@@ -625,14 +613,11 @@ ACTION: ${scene.action || 'standing, looking at camera'}
 CONSTRAINTS: portrait 9:16, no text, high quality.`;
 }
 
-function buildVideoPromptReference(clip, story, prevClip, refCount){
+function buildVideoPrompt(clip, story, prevClip){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.gender+', '+c.age+'): '+c.face_lock+', '+c.outfit_lock).join(' | ');
     const identityLock = (story.characters||[]).map(c => `${c.name} — FACE: ${c.face_lock} | OUTFIT: ${c.outfit_lock}`).join('\n');
     const envLock = story.environment_lock || 'consistent location';
     const styleBlock = STYLE_BLOCKS[state.style] || STYLE_BLOCKS.popart;
-    
-    let refPlaceholder = 'Use <Picture 1> as the character identity reference.';
-    if (refCount > 1) refPlaceholder += ' Use <Picture 2> as the last frame of the previous clip for visual continuity.';
     
     let dialogueBlock = '';
     if(clip.lines && clip.lines.length > 0){
@@ -646,7 +631,6 @@ AUDIO CONTINUITY: This clip's dialogue continues naturally from the previous cli
     }
     
     return `${styleBlock}
-${refPlaceholder}
 ${continuityBlock}
 ENVIRONMENT LOCK (DO NOT CHANGE): ${envLock}
 CHARACTERS (ULTRA SEXY, ALLURING): 
@@ -666,14 +650,14 @@ function updateButtons(){
     const stop=document.getElementById('stop-btn');
     const genRef=document.getElementById('generate-ref-btn');
     const vaultReady = vault && vault.getState() === 'unlocked';
-    const hasRef=!!state.refImageUrl;
+    const hasRef=state.selectedRefIndex >= 0;
     
     if(genRef) genRef.disabled = !vaultReady || state.isRunning;
     
     if(validate){
         validate.disabled = !vaultReady || !hasRef || state.isRunning;
         if(!vaultReady) validate.innerHTML='🔐 Déverrouillez la clé';
-        else if(!hasRef) validate.innerHTML='🎨 Générez d\'abord la photo';
+        else if(!hasRef) validate.innerHTML='📸 Choisissez une photo';
         else if(state.isRunning) validate.innerHTML='⏳ En cours…';
         else if(state.validated) validate.innerHTML='✅ Personnage validé';
         else validate.innerHTML='1. Préparer le scénario';
@@ -685,15 +669,52 @@ function updateButtons(){
     if(stop) stop.classList.toggle('visible', state.isRunning);
 }
 
-function renderRefImage(){
+function invalidateValidation(){
+    state.validated = false;
+    state.validationClipUrl = null;
+    state.validationClipLines = null;
+    state.storyPreviewed = false;
+    const preview = document.getElementById('section-preview');
+    const clips = document.getElementById('section-clips');
+    const genBtn = document.getElementById('generate-btn');
+    if(preview) preview.classList.add('hidden');
+    if(clips) clips.classList.add('hidden');
+    if(genBtn) genBtn.style.display = 'none';
+    updateButtons();
+}
+
+function renderRefImages(){
     const c = document.getElementById('ref-container');
     if(!c) return;
-    if(!state.refImageUrl){ c.innerHTML = ''; return; }
-    c.innerHTML = `
-        <img src="${state.refImageUrl}" class="ref-image" alt="Photo de référence">
-        <button class="btn btn-secondary" style="margin-top:.6rem;" onclick="regenerateRef()">🔄 Régénérer la photo</button>
-    `;
+    if(!state.refImages.length){ c.innerHTML = ''; return; }
+    
+    let html = '<div class="hint" style="margin-bottom:.5rem;">Clique sur une photo pour la sélectionner :</div>';
+    html += '<div class="ref-grid">';
+    state.refImages.forEach((img, i) => {
+        const selected = i === state.selectedRefIndex ? 'selected' : '';
+        html += `<div class="ref-option ${selected}" onclick="selectRef(${i})">
+            <img src="${img.url}" alt="Photo ${i+1}">
+            <div class="ref-check">✓</div>
+        </div>`;
+    });
+    html += '</div>';
+    
+    if(state.selectedRefIndex >= 0){
+        html += '<button class="btn btn-secondary" style="margin-top:.8rem;" onclick="regenerateRef()">📸 Régénérer 10 nouvelles photos</button>';
+    }
+    
+    c.innerHTML = html;
 }
+
+window.selectRef = function(index){
+    state.selectedRefIndex = index;
+    state.masterImageUrl = state.refImages[index].url;
+    renderRefImages();
+    updateButtons();
+    showToast('Photo ' + (index+1) + ' sélectionnée ✓');
+    journalLog('Photo ' + (index+1) + ' sélectionnée comme image maîtresse.', 'image');
+    saveProject();
+};
 
 window.regenerateRef = async function(){
     if(state.isRunning) return;
@@ -795,11 +816,8 @@ window.retryClip = async function(index){
             try { previousFrameUrl = await extractLastFrame(state.clips[index-1].url); } catch(e) {}
         }
         
-        const refImages = [state.masterImageUrl];
-        if (previousFrameUrl !== state.masterImageUrl) refImages.push(previousFrameUrl);
-        
-        const prompt = buildVideoPromptReference(clip, state.story, prevClip, refImages.length);
-        const videoId = await createVideoTask(prompt, refImages, previousFrameUrl);
+        const prompt = buildVideoPrompt(clip, state.story, prevClip);
+        const videoId = await createVideoTaskKeyframe(prompt, previousFrameUrl);
         
         const vUrl = await pollVideo(videoId, (prog) => {
             state.clips[index].progress = prog;
@@ -810,7 +828,6 @@ window.retryClip = async function(index){
         state.clips[index].url = vUrl;
         state.clips[index].progress = '';
         journalLog(`Clip ${index+1} régénéré.`,'video');
-        saveProject();
     } catch(e) {
         state.clips[index].status = 'error';
         state.clips[index].error = e.message;
@@ -822,7 +839,7 @@ window.retryClip = async function(index){
 };
 
 // =================================================================
-// GÉNÉRATION PHOTO
+// GÉNÉRATION DES 10 PHOTOS
 // =================================================================
 async function generateRefImage(){
     if(state.isRunning) return;
@@ -832,20 +849,40 @@ async function generateRefImage(){
     state.style = document.getElementById('style-select').value;
     
     state.isRunning = true; updateButtons();
-    setStatus('Génération de la photo de référence…');
+    state.refImages = [];
+    state.selectedRefIndex = -1;
+    state.masterImageUrl = null;
+    document.getElementById('ref-container').innerHTML = '<div class="hint">Génération de 10 photos… (peut prendre 2-3 min)</div>';
     
     try {
-        const prompt = buildCharacterRefPrompt();
-        const url = await generateImage(prompt);
-        state.refImageUrl = url;
-        renderRefImage();
+        for(let i=0; i<NUM_REF_PHOTOS; i++){
+            setStatus(`Génération photo ${i+1}/${NUM_REF_PHOTOS}…`);
+            try {
+                const prompt = buildCharacterRefPrompt(i);
+                const url = await generateImage(prompt);
+                state.refImages.push({ url });
+                renderRefImages();
+                journalLog(`Photo ${i+1}/${NUM_REF_PHOTOS} générée.`, 'image');
+            } catch(e) {
+                debugLog('warn', 'REF', `Photo ${i+1} échouée: ${e.message}`);
+            }
+        }
+        
+        if(state.refImages.length === 0) throw new Error('Aucune photo générée');
+        
+        // Sélectionner la première par défaut
+        state.selectedRefIndex = 0;
+        state.masterImageUrl = state.refImages[0].url;
+        renderRefImages();
         invalidateValidation();
-        showToast('Photo générée ✓');
-        journalLog('Photo de référence générée.','image');
+        
+        showToast(`${state.refImages.length} photos générées. Choisis la meilleure !`);
+        journalLog(`${state.refImages.length} photos générées.`, 'image');
     } catch(e) {
         debugLog('Erreur ref', e.message);
         if(e.message === 'QUOTA_EPUISE') showToast('Quota Agnes épuisé.','error');
         else showToast('Erreur : '+e.message, 'error');
+        document.getElementById('ref-container').innerHTML = '';
     }
     
     state.isRunning = false; updateButtons(); setStatus(null);
@@ -856,7 +893,7 @@ async function generateRefImage(){
 // =================================================================
 async function validateCharacter(){
     if(state.isRunning) return;
-    if(!state.refImageUrl){ showToast('Générez d\'abord la photo','error'); return; }
+    if(state.selectedRefIndex < 0){ showToast('Choisissez d\'abord une photo','error'); return; }
     if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
     
     state.style = document.getElementById('style-select').value;
@@ -919,27 +956,10 @@ async function confirmStoryAndTest(){
     
     try {
         const scene0 = state.story.clips[0] || { action: 'standing' };
-        const imgPrompt = buildImagePrompt(scene0, state.story);
-        const imgUrl = await generateImage(imgPrompt);
-        state.masterImageUrl = imgUrl;
-        journalLog('Image maîtresse générée.','image');
-        
         const testClip = { lines: state.story.clips[0]?.lines || [state.scriptLines[0]], action: scene0.action };
-        const testPrompt = buildVideoPromptReference(testClip, state.story, null, 1);
+        const testPrompt = buildVideoPrompt(testClip, state.story, null);
         
-        let videoId;
-        try {
-            videoId = await createVideoTaskReference(testPrompt, [imgUrl]);
-            state.useKeyframeMode = false;
-            journalLog('Mode reference validé.', 'info');
-        } catch(e) {
-            if(e.message.startsWith('HTTP 400')){
-                journalLog('Mode reference refusé. Bascule keyframe.', 'warn');
-                state.useKeyframeMode = true;
-                videoId = await createVideoTaskKeyframe(testPrompt, imgUrl);
-            } else { throw e; }
-        }
-        
+        const videoId = await createVideoTaskKeyframe(testPrompt, state.masterImageUrl);
         const testUrl = await pollVideo(videoId, (prog) => setStatus('Clip test — ' + prog));
         
         state.validationClipUrl = testUrl;
@@ -953,9 +973,8 @@ async function confirmStoryAndTest(){
         document.getElementById('section-clips').classList.add('open');
         document.getElementById('generate-btn').style.display = 'block';
         
-        showToast('Clip test prêt ! Mode: ' + (state.useKeyframeMode ? 'keyframe' : 'reference'));
+        showToast('Clip test prêt !');
         journalLog('Clip de validation généré.','video');
-        saveProject();
         
     } catch(e) {
         debugLog('Erreur test', e.message);
@@ -1013,11 +1032,8 @@ async function generateFullFilm(){
         while(attempts < 4 && !success && !state.stopRequested){
             attempts++;
             try {
-                const refImages = [state.masterImageUrl];
-                if (previousFrameUrl && previousFrameUrl !== state.masterImageUrl) refImages.push(previousFrameUrl);
-                
-                const prompt = buildVideoPromptReference(clip, state.story, i>0 ? state.story.clips[i-1] : null, refImages.length);
-                const videoId = await createVideoTask(prompt, refImages, previousFrameUrl);
+                const prompt = buildVideoPrompt(clip, state.story, i>0 ? state.story.clips[i-1] : null);
+                const videoId = await createVideoTaskKeyframe(prompt, previousFrameUrl);
                 
                 const vUrl = await pollVideo(videoId, (prog) => {
                     state.clips[i].progress = prog;
@@ -1035,7 +1051,6 @@ async function generateFullFilm(){
                 catch(e) { journalLog('Continuité inter-clip perdue (CORS).', 'warn'); previousFrameUrl = state.masterImageUrl; }
                 
                 renderClips(); renderProgress();
-                saveProject();
             } catch(e) {
                 if(e.isQueueFull || e.message === 'QUEUE_FULL'){
                     state.clips[i].progress = `File pleine. Attente 45s…`;
@@ -1045,7 +1060,7 @@ async function generateFullFilm(){
                     showToast('Quota Agnes épuisé.','error');
                     state.stopRequested = true;
                     allDone = false;
-                } else if(e.message.startsWith('HTTP 4') || e.message.includes('video_id invalide')) {
+                } else if(e.message.startsWith('HTTP 4') || e.message.includes('Tâche introuvable')) {
                     journalLog(`Clip ${i+1} erreur définitive : ${e.message}`, 'error');
                     state.clips[i].status = 'error';
                     state.clips[i].error = e.message;
@@ -1068,7 +1083,6 @@ async function generateFullFilm(){
     
     state.isRunning = false; updateButtons(); setStatus(null);
     renderProgress();
-    saveProject();
     
     if(allDone && !state.stopRequested){
         document.getElementById('final-download-area').style.display = 'block';
@@ -1103,6 +1117,19 @@ function extractLastFrame(videoUrl){
         setTimeout(() => reject(new Error('Timeout extraction')), 15000);
     });
 }
+
+// =================================================================
+// MODE
+// =================================================================
+window.setMode = function(mode){
+    state.mode = mode;
+    document.getElementById('mode-auto-btn').classList.toggle('active', mode === 'auto');
+    document.getElementById('mode-manual-btn').classList.toggle('active', mode === 'manual');
+    document.getElementById('section-auto').style.display = mode === 'auto' ? 'block' : 'none';
+    document.getElementById('section-manual').style.display = mode === 'manual' ? 'block' : 'none';
+    invalidateValidation();
+    journalLog('Mode : ' + (mode === 'auto' ? 'Auto' : 'Manuel'), 'info');
+};
 
 // =================================================================
 // INIT
