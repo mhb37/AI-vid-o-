@@ -84,6 +84,8 @@ select:focus{outline:none;border-color:var(--acc2)}
 .scene-placeholder{width:100%;aspect-ratio:9/16;background:#0a0a12;border-radius:2px;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.68rem;font-family:var(--fm);flex-direction:column;gap:.4rem;text-align:center;padding:.4rem}
 .scene-download{display:block;width:100%;margin-top:.4rem;font-size:.72rem;color:#0a0a12;text-decoration:none;text-align:center;padding:.55rem;border:1px solid var(--acc2);border-radius:3px;background:var(--acc2);cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:.05em;transition:all .15s}
 .scene-download:hover{background:var(--acc);border-color:var(--acc)}
+.scene-download:disabled{opacity:.5;cursor:wait}
+.scene-download.preparing{background:var(--bg3);color:var(--warn);border-color:var(--warn)}
 .ref-badge{display:inline-block;padding:.1rem .35rem;border-radius:2px;background:rgba(232,123,53,.15);color:var(--acc2);font-size:.55rem;font-family:var(--fm);letter-spacing:.05em;margin-left:.3rem}
 .spinner-mini{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -141,13 +143,13 @@ select:focus{outline:none;border-color:var(--acc2)}
 
 <header>
 <h1>Fruit Tales Studio</h1>
-<p class="subtitle">Viral TikTok Edition · Références & Cohérence</p>
+<p class="subtitle">Viral TikTok Edition · Photos de référence & Cohérence</p>
 </header>
 
 <div class="banner">
-<strong>🎭 Casting.</strong> Fournissez les URLs de vos personnages.<br>
+<strong>📸 Tes Photos.</strong> Choisis tes personnages depuis ta pellicule.<br>
 <strong>🎨 Cohérence.</strong> La scène 1 devient la référence absolue du décor.<br>
-<strong>📥 Partage iOS.</strong> Téléchargement natif via le menu de partage.
+<strong>📥 Partage iOS.</strong> Pré-chargement automatique pour le menu natif.
 </div>
 
 <div class="panel" id="api-panel">
@@ -158,21 +160,25 @@ select:focus{outline:none;border-color:var(--acc2)}
 <div class="quota-line"><span>📊 Vidéo générée : <span class="q-val" id="video-quota-used">0</span>s</span></div>
 </div>
 
-<!-- SECTION CASTING : NOUVEAU -->
+<!-- SECTION CASTING : UPLOAD DIRECT -->
 <div class="section open" id="section-casting">
 <div class="section-header" data-toggle="section-casting">
-<span class="section-title">🎭 Casting & Références <span class="badge">Optionnel</span></span>
+<span class="section-title">📸 Casting & Références <span class="badge">Optionnel</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
-<p class="hint" style="margin-bottom:1rem;">Fournissez les URLs publiques de vos photos de personnages. L'IA les utilisera comme référence absolue pour les visages et les habits.</p>
+<p class="hint" style="margin-bottom:1rem;">Choisis les photos de tes personnages depuis ta pellicule. L'IA les utilisera comme référence absolue.</p>
 <div class="control-row">
-<label class="control-label">Photo Personnage 1 (URL)</label>
-<input type="url" id="char1-url" placeholder="https://exemple.com/photo-personnage-1.jpg">
+<label class="control-label">Photo Personnage 1</label>
+<input type="file" id="char1-file" accept="image/*" style="display:none">
+<button type="button" class="btn btn-secondary" id="char1-btn" onclick="document.getElementById('char1-file').click()">📷 Choisir la photo 1</button>
+<img id="char1-preview" style="display:none;width:100%;max-width:200px;border-radius:8px;margin-top:.5rem;" alt="">
 </div>
 <div class="control-row">
-<label class="control-label">Photo Personnage 2 (URL)</label>
-<input type="url" id="char2-url" placeholder="https://exemple.com/photo-personnage-2.jpg">
+<label class="control-label">Photo Personnage 2</label>
+<input type="file" id="char2-file" accept="image/*" style="display:none">
+<button type="button" class="btn btn-secondary" id="char2-btn" onclick="document.getElementById('char2-file').click()">📷 Choisir la photo 2</button>
+<img id="char2-preview" style="display:none;width:100%;max-width:200px;border-radius:8px;margin-top:.5rem;" alt="">
 </div>
 </div></div>
 </div>
@@ -304,7 +310,7 @@ const state = {
     keyPool: [], isRunning: false, stopRequested: false, dialogues: [],
     context: '', sceneCount: 0, durationSeconds: 7, story: null,
     images: [], videos: [], characterReferenceUrl: null,
-    casting: [], // URLs des personnages fournies
+    castingBase64: [], // Photos uploadées en Base64
     isGeneratingVideos: false
 };
 
@@ -344,6 +350,39 @@ function saveKeysFromUI(){const input=document.getElementById('api-keys-input');
 function updateApiPanel(){const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');if(!panel||!input||!line||!text)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){panel.classList.add('ok');line.classList.add('ok');text.textContent=n+' clé(s) active(s)';input.value=state.keyPool.map(k=>k.key).join('\n');}else{panel.classList.remove('ok');line.classList.remove('ok');text.textContent='Aucune clé API enregistrée';input.value='';}updateButtons();updateQuotaDisplay()}
 
 // ══════════════════════════════════════════════════════════════════
+// UPLOAD PHOTOS (Base64)
+// ══════════════════════════════════════════════════════════════════
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+async function handlePhotoUpload(fileInputId, previewId, buttonId) {
+    const input = document.getElementById(fileInputId);
+    const file = input.files[0];
+    if (!file) return;
+    
+    try {
+        const base64 = await fileToBase64(file);
+        const preview = document.getElementById(previewId);
+        preview.src = base64;
+        preview.style.display = 'block';
+        
+        // Stocker dans le state
+        if (fileInputId === 'char1-file') state.castingBase64[0] = base64;
+        else state.castingBase64[1] = base64;
+        
+        showToast('Photo chargée ✓');
+    } catch(e) {
+        showToast('Erreur de chargement', 'error');
+    }
+}
+
+// ══════════════════════════════════════════════════════════════════
 // FETCH & JSON
 // ══════════════════════════════════════════════════════════════════
 async function apiFetch(url, options, label, maxAttempts){
@@ -375,10 +414,11 @@ async function callChatCompletion(systemPrompt,userPrompt,label,maxTokens,temper
     const data=await res.json();return data.choices[0].message.content;
 }
 
-async function generateImage(prompt, referenceUrl){
+async function generateImage(prompt, referenceBase64){
     const body={model:MODEL_IMAGE,prompt:sanitizeForApi(prompt),n:1,size:'1K',ratio:'9:16'};
-    // Si une référence est fournie, on l'injecte
-    if(referenceUrl)body.extra_body={image:[referenceUrl]};
+    // L'API accepte les Data URI Base64 dans extra_body.image
+    if(referenceBase64) body.extra_body = { image: [referenceBase64] };
+    
     const res=await apiFetch(API_BASE+'/images/generations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Image',4);
     const data=await res.json();return data.data[0].url;
 }
@@ -391,11 +431,10 @@ async function createVideoTask(prompt, firstFrameUrl, lastFrameUrl){
 }
 
 // ══════════════════════════════════════════════════════════════════
-// PROMPTS (MIS À JOUR POUR LE STYLE VIRAL & RÉFÉRENCES)
+// PROMPTS
 // ══════════════════════════════════════════════════════════════════
 function buildStoryAroundDialoguesPrompt(dialogues, context, sceneCount){
     const dialogueList = dialogues.map((d, i) => (i+1) + '. "' + d + '"').join('\n');
-    // On ajoute une instruction pour un style visuel "Viral"
     return `Tu es un scénariste de contenus viraux pour TikTok. Tu écris des histoires courtes, impactantes et visuellement marquantes.
 L'UTILISATEUR A FOURNI CES RÉPLIQUES (dans cet ordre, une par scène) :
 ${dialogueList}
@@ -408,25 +447,25 @@ MISSION : Construis une histoire COHÉRENTE où chaque réplique trouve sa place
 RÈGLES ABSOLUES :
 - Il y a exactement ${sceneCount} scènes.
 - La scène N utilise EXACTEMENT la réplique N.
-- Tu dois définir UN SEUL lieu physique (environment_lock) où toute l'histoire se passe. Ce lieu doit être décrit avec précision pour ne jamais changer.
-- Chaque personnage a : prénom, genre, âge, métier, "face_lock" (visage), "outfit_lock" (habits). Ces descriptions seront utilisées telles quelles.
+- Tu dois définir UN SEUL lieu physique (environment_lock) où toute l'histoire se passe.
+- Chaque personnage a : prénom, genre, âge, métier, "face_lock" (visage), "outfit_lock" (habits).
 
 FORMAT JSON STRICT :
 {
   "title": "Titre",
-  "environment_lock": "English detailed description of the room (colors, lights, furniture) - MUST STAY IDENTICAL",
+  "environment_lock": "English detailed description of the room",
   "characters": [ { "name": "Nom", "gender": "homme/femme", "age": 30, "face_lock": "English physical description", "outfit_lock": "English clothing description" } ],
   "scenes": [ { "scene_number": 1, "summary": "Résumé en français", "action": "English action for video AI", "speaker": "Nom" } ]
 }`;
 }
 
-function buildImagePrompt(scene, story, isFirstImage, castingUrls){
+function buildImagePrompt(scene, story, isFirstImage){
     const charList=(story.characters||[]).map(c=>c.name+' ('+c.age+' ans, '+c.job+', '+c.gender+'): '+c.face_lock+', '+c.outfit_lock).join(' | ');
     const identityLock = (story.characters||[]).map(c => `${c.name} — FACE: ${c.face_lock} | OUTFIT: ${c.outfit_lock}`).join('\n');
     const envLock = story.environment_lock || 'consistent location';
     
     let refBlock = '';
-    if (castingUrls && castingUrls.length > 0) {
+    if (state.castingBase64.length > 0) {
         refBlock = 'REFERENCE IMAGES PROVIDED — YOU MUST USE THE PROVIDED CHARACTER IMAGES AS THE ABSOLUTE REFERENCE FOR FACES AND OUTFITS.\n';
     }
     
@@ -485,11 +524,6 @@ async function prepareProject(isRegenStory){
     state.context=document.getElementById('context-input').value.trim();
     state.durationSeconds=parseInt(document.getElementById('duration-select').value);
     
-    // Récupération des URLs de casting
-    const c1 = document.getElementById('char1-url').value.trim();
-    const c2 = document.getElementById('char2-url').value.trim();
-    state.casting = [c1, c2].filter(url => url.length > 0);
-    
     document.getElementById('section-validation').classList.add('hidden');
     document.getElementById('section-videos').classList.add('hidden');
     document.getElementById('videos-grid').innerHTML = '';
@@ -509,7 +543,7 @@ async function prepareProject(isRegenStory){
             journalLog('Scénario généré.','story');
         }
         
-        // 2. Images (Une par scène, avec référence)
+        // 2. Images (Une par scène, avec référence Base64)
         setStatus('Génération des images de référence…');
         state.images = state.story.scenes.map(()=>({status:'pending', url:null}));
         renderImages();
@@ -520,18 +554,19 @@ async function prepareProject(isRegenStory){
             state.images[i] = {status: 'loading'};
             renderImages();
             try {
-                // Si on a des URLs de casting, on les utilise pour TOUTES les images
-                // Sinon, on utilise l'image de la scène 1 comme référence pour les suivantes
-                let refUrl = null;
-                if (state.casting.length > 0) {
-                    refUrl = state.casting[0]; // On utilise le premier personnage comme référence principale
-                } else if (i > 0) {
-                    refUrl = state.characterReferenceUrl;
+                // Si on a une photo de casting, on l'utilise comme référence pour TOUTES les images
+                let refBase64 = null;
+                if (state.castingBase64.length > 0 && state.castingBase64[0]) {
+                    refBase64 = state.castingBase64[0];
+                } else if (i > 0 && state.characterReferenceUrl) {
+                    // Sinon, on utilise l'image de la scène 1 comme référence (mais c'est une URL, pas Base64)
+                    // L'API accepte aussi les URLs, mais ici on reste sur Base64 pour la cohérence
+                    refBase64 = null;
                 }
                 
-                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, i===0, state.casting), refUrl);
+                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, i===0), refBase64);
                 state.images[i] = {status:'done', url:imgUrl};
-                if(i === 0 && state.casting.length === 0) state.characterReferenceUrl = imgUrl;
+                if(i === 0) state.characterReferenceUrl = imgUrl;
             } catch(e) {
                 state.images[i] = {status:'error'};
                 debugLog('Erreur Image', e.message);
@@ -555,7 +590,7 @@ async function startVideoGeneration(){
     
     document.getElementById('generate-video-btn').style.display = 'none';
     document.getElementById('section-videos').classList.remove('hidden');
-    state.videos = state.story.scenes.map(()=>({status:'pending', progress:'Attente…'}));
+    state.videos = state.story.scenes.map(()=>({status:'pending', progress:'Attente…', blob:null, blobLoading:false}));
     renderVideos();
     
     for(let i=0; i<state.story.scenes.length; i++){
@@ -574,8 +609,7 @@ async function startVideoGeneration(){
             attempts++;
             try {
                 const prompt = buildVideoPrompt(scene, state.story, prevScene, dialogue);
-                // On utilise l'image de la scène courante comme frame de départ
-                const frameRef = state.images[i] ? state.images[i].url : (state.casting.length > 0 ? state.casting[0] : state.characterReferenceUrl);
+                const frameRef = state.images[i] ? state.images[i].url : state.characterReferenceUrl;
                 const taskId = await createVideoTask(prompt, frameRef, frameRef);
                 
                 let vUrl = null;
@@ -591,7 +625,13 @@ async function startVideoGeneration(){
                         if(d.status === 'failed') throw new Error('Échec');
                     }
                 }
-                if(vUrl) { state.videos[i] = {status:'done', url:vUrl}; success = true; addVideoSeconds(state.durationSeconds); }
+                if(vUrl) { 
+                    state.videos[i] = {status:'done', url:vUrl, blob:null, blobLoading:false}; 
+                    success = true; 
+                    addVideoSeconds(state.durationSeconds);
+                    // PRÉ-CHARGEMENT DU BLOB POUR LE PARTAGE iOS
+                    preloadVideoBlob(i, vUrl);
+                }
                 else { throw new Error('Timeout'); }
             } catch(e) {
                 if(e.isQueueFull || e.message === 'QUEUE_FULL'){
@@ -608,6 +648,31 @@ async function startVideoGeneration(){
         }
     }
     state.isRunning=false; updateButtons(); setStatus(null);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// PRÉ-CHARGEMENT DU BLOB (Solution iOS)
+// ══════════════════════════════════════════════════════════════════
+async function preloadVideoBlob(index, url){
+    if (state.videos[index]._blob || state.videos[index]._blobLoading) return;
+    state.videos[index]._blobLoading = true;
+    renderVideos();
+    
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP '+res.status);
+        const blob = await res.blob();
+        if (blob.size < 1000) throw new Error('Blob trop petit');
+        
+        state.videos[index]._blob = blob;
+        state.videos[index]._blobLoading = false;
+        journalLog('Scène '+(index+1)+' prête à télécharger.','download');
+        renderVideos();
+    } catch(e) {
+        state.videos[index]._blobLoading = false;
+        debugLog('warn','BLOB','Échec pré-chargement scène '+(index+1)+' : '+e.message);
+        renderVideos();
+    }
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -652,29 +717,55 @@ function renderVideos(){
             statusEl.innerHTML='<span style="color:var(--ok);">✓</span>';
             bodyEl.innerHTML='';
             const video=document.createElement('video');video.src=v.url;video.controls=true;video.preload='metadata';video.setAttribute('playsinline','');bodyEl.appendChild(video);
-            const dl=document.createElement('button'); dl.className='scene-download'; dl.textContent='📥 Enregistrer la vidéo';
             
-            dl.onclick = async () => {
-                try {
-                    setStatus('Préparation du fichier…');
-                    const response = await fetch(v.url);
-                    const blob = await response.blob();
-                    setStatus(null);
-                    
-                    if(navigator.share && navigator.canShare) {
-                        const file = new File([blob], `scene-${i+1}.mp4`, { type: 'video/mp4' });
-                        if(navigator.canShare({ files: [file] })) {
-                            await navigator.share({ files: [file] });
+            // BOUTON DE TÉLÉCHARGEMENT AVEC GESTION iOS
+            const dl=document.createElement('button'); 
+            dl.className='scene-download'; 
+            
+            if (v._blob) {
+                dl.textContent='📥 Enregistrer la vidéo';
+                dl.disabled = false;
+            } else if (v._blobLoading) {
+                dl.textContent='⏳ Préparation…';
+                dl.classList.add('preparing');
+                dl.disabled = true;
+            } else {
+                dl.textContent='📥 Enregistrer la vidéo';
+                dl.disabled = false;
+            }
+            
+            dl.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // CAS 1 : Blob prêt → partage SYNCHRONE (iOS accepte le user gesture)
+                if (v._blob && navigator.share && navigator.canShare) {
+                    try {
+                        const file = new File([v._blob], `scene-${i+1}.mp4`, { type: 'video/mp4' });
+                        if (navigator.canShare({ files: [file] })) {
+                            // ⚠️ iOS : passer UNIQUEMENT files, pas de title/text/url
+                            navigator.share({ files: [file] }).then(() => {
+                                journalLog('Scène '+(i+1)+' partagée.','download');
+                            }).catch(err => {
+                                if (err.name !== 'AbortError') {
+                                    debugLog('warn','SHARE',err.message);
+                                }
+                            });
                             return;
                         }
+                    } catch(err) {
+                        debugLog('warn','SHARE',err.message);
                     }
+                }
+                
+                // CAS 2 : Pas de blob → fallback téléchargement direct
+                if (v._blob) {
                     const a = document.createElement('a');
-                    a.href = URL.createObjectURL(blob);
+                    a.href = URL.createObjectURL(v._blob);
                     a.download = `scene-${i+1}.mp4`;
                     a.click();
-                } catch(err) {
-                    setStatus(null);
-                    if(err.name !== 'AbortError') window.open(v.url, '_blank');
+                } else {
+                    window.open(v.url, '_blank');
                 }
             };
             bodyEl.appendChild(dl);
@@ -715,6 +806,10 @@ function renderVideos(){
     document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
     document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
     
+    // GESTION DES UPLOADS PHOTOS
+    document.getElementById('char1-file').addEventListener('change', () => handlePhotoUpload('char1-file', 'char1-preview', 'char1-btn'));
+    document.getElementById('char2-file').addEventListener('change', () => handlePhotoUpload('char2-file', 'char2-preview', 'char2-btn'));
+    
     document.getElementById('prepare-btn').addEventListener('click',()=>prepareProject(false));
     document.getElementById('regen-story-btn').addEventListener('click',()=>prepareProject(true));
     
@@ -727,15 +822,13 @@ function renderVideos(){
         try {
             for(let i=0; i<state.story.scenes.length; i++) {
                 state.images[i] = {status:'loading'}; renderImages();
-                let refUrl = null;
-                if (state.casting.length > 0) {
-                    refUrl = state.casting[0];
-                } else if (i > 0) {
-                    refUrl = state.characterReferenceUrl;
+                let refBase64 = null;
+                if (state.castingBase64.length > 0 && state.castingBase64[0]) {
+                    refBase64 = state.castingBase64[0];
                 }
-                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, i===0, state.casting), refUrl);
+                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, i===0), refBase64);
                 state.images[i] = {status:'done', url:imgUrl};
-                if(i === 0 && state.casting.length === 0) state.characterReferenceUrl = imgUrl;
+                if(i === 0) state.characterReferenceUrl = imgUrl;
                 renderImages();
             }
             showToast('Images régénérées');
