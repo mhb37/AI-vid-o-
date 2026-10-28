@@ -143,13 +143,13 @@ select:focus{outline:none;border-color:var(--acc2)}
 
 <header>
 <h1>Fruit Tales Studio</h1>
-<p class="subtitle">Viral TikTok Edition · Multi-Références & Verrouillage</p>
+<p class="subtitle">Viral TikTok Edition · Image Maîtresse & Continuité</p>
 </header>
 
 <div class="banner">
-<strong>📸 Multi-Références.</strong> Fournis jusqu'à 4 photos de ton personnage (face, profil, tenue).<br>
-<strong>🎬 Image Maîtresse.</strong> L'IA fusionne tes photos en une seule image verrouillée.<br>
-<strong>💾 Sauvegarde auto.</strong> Ton projet est conservé même si tu fermes l'onglet.
+<strong>📸 Multi-Références.</strong> Fournis jusqu'à 4 photos de ton personnage.<br>
+<strong>🎨 Image Maîtresse.</strong> L'IA fusionne tes photos en une seule image verrouillée.<br>
+<strong>🎬 Continuité.</strong> Toutes les scènes vidéo utilisent cette image unique.
 </div>
 
 <div class="panel" id="api-panel">
@@ -242,7 +242,7 @@ Tu m'as trahi.</textarea>
     </div>
     <div class="section-content" style="padding-top:1rem">
         <button type="button" class="btn btn-secondary" id="regen-story-btn">🔄 Régénérer le scénario</button>
-        <button type="button" class="btn btn-secondary" id="regen-image-btn" style="margin-bottom:1.5rem;">🔄 Régénérer les images</button>
+        <button type="button" class="btn btn-secondary" id="regen-image-btn" style="margin-bottom:1.5rem;">🔄 Régénérer l'image maîtresse</button>
         <button type="button" class="btn btn-primary" id="generate-video-btn" style="letter-spacing:.1em;padding:1rem;">🎬 Lancer la génération des vidéos</button>
     </div>
 </div>
@@ -259,7 +259,7 @@ Tu m'as trahi.</textarea>
 
 <div class="section hidden" id="section-images">
 <div class="section-header" data-toggle="section-images">
-<span class="section-title">🎨 Images des scènes</span>
+<span class="section-title">🎨 Image Maîtresse</span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
@@ -325,7 +325,7 @@ const state = {
     keyPool: [], isRunning: false, stopRequested: false, dialogues: [],
     context: '', sceneCount: 0, durationSeconds: 7, story: null,
     images: [], videos: [], characterReferenceUrl: null,
-    castingBase64Array: [], // Tableau des photos uploadées
+    castingBase64Array: [],
     masterImageUrl: null,
     isGeneratingVideos: false
 };
@@ -483,7 +483,6 @@ async function callChatCompletion(systemPrompt,userPrompt,label,maxTokens,temper
 
 async function generateImage(prompt, referenceArray){
     const body={model:MODEL_IMAGE,prompt:sanitizeForApi(prompt),n:1,size:'1K',ratio:'9:16'};
-    // On accepte un tableau d'images de référence
     if(referenceArray && referenceArray.length > 0) {
         body.extra_body = { image: referenceArray.filter(Boolean) };
     }
@@ -537,20 +536,11 @@ function buildImagePrompt(scene, story, isFirstImage){
     
     let refBlock = '';
     if (isFirstImage) {
-        // Image maîtresse : on utilise les photos uploadées comme référence
         if (state.castingBase64Array.length > 0) {
             refBlock = 'REFERENCE IMAGES PROVIDED — YOU MUST USE ALL PROVIDED CHARACTER IMAGES AS THE ABSOLUTE REFERENCE FOR FACE, OUTFIT AND IDENTITY.\n';
         }
     } else {
-        // Images suivantes : on utilise l'image maîtresse comme référence ABSOLUE
-        refBlock = `CRITICAL INSTRUCTION — This is a CONTINUATION of the SAME video. You MUST COPY the provided reference image EXACTLY:
-- Same person (same face, same hair, same skin tone, same outfit).
-- Same room (same walls, same furniture, same lighting, same colors).
-- Same camera angle if possible.
-- ONLY change the character's POSE and ACTION as described below.
-- DO NOT change the environment. DO NOT change the clothes. DO NOT change the face.
-
-The reference image is the ABSOLUTE TRUTH. Do not interpret, do not imagine, COPY it.\n`;
+        refBlock = `CRITICAL INSTRUCTION — This is a CONTINUATION. COPY the provided reference image EXACTLY: same person, same room, same lighting. DO NOT change the environment. DO NOT change the clothes.\n`;
     }
     
     return `STYLIZED 3D POP ART. VIRAL TIKTOK AESTHETIC. HIGH SATURATION.
@@ -634,14 +624,13 @@ async function prepareProject(isRegenStory){
             saveProject();
         }
         
-        // 2. Images (Image maîtresse + autres scènes)
+        // 2. IMAGE MAÎTRESSE UNIQUE
         setStatus('Génération de l\'image maîtresse…');
-        state.images = state.story.scenes.map(()=>({status:'pending', url:null}));
+        state.images = [{status: 'pending', url: null}];
         renderImages();
         document.getElementById('section-images').classList.remove('hidden');
         document.getElementById('section-images').classList.add('open');
         
-        // Étape 2a : Image maîtresse (utilise TOUTES les photos de référence)
         state.images[0] = {status: 'loading'};
         renderImages();
         
@@ -658,24 +647,8 @@ async function prepareProject(isRegenStory){
         }
         renderImages();
         
-        // Étape 2b : Images des autres scènes (utilisent l'image maîtresse)
-        for(let i=1; i<state.story.scenes.length; i++) {
-            state.images[i] = {status:'loading'};
-            renderImages();
-            try {
-                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, false), [state.masterImageUrl]);
-                state.images[i] = {status:'done', url:imgUrl};
-            } catch(e) {
-                state.images[i] = {status:'error'};
-                debugLog('Erreur Image ' + (i+1), e.message);
-            }
-            renderImages();
-            saveProject();
-        }
-        journalLog('Images prêtes (référence unique).','image');
-        
         document.getElementById('section-validation').classList.remove('hidden');
-        showToast('Prêt à générer les vidéos');
+        showToast('Image maîtresse prête. Prêt pour les vidéos.');
         saveProject();
     } catch(e) {
         debugLog('Erreur prep', e.message); showToast('Erreur : '+e.message, 'error');
@@ -709,7 +682,8 @@ async function startVideoGeneration(){
             attempts++;
             try {
                 const prompt = buildVideoPrompt(scene, state.story, prevScene, dialogue);
-                const frameRef = state.images[i] ? state.images[i].url : state.masterImageUrl;
+                // On utilise L'IMAGE MAÎTRESSE UNIQUE comme frame de départ ET d'arrivée
+                const frameRef = state.masterImageUrl;
                 const taskId = await createVideoTask(prompt, frameRef, frameRef);
                 
                 let vUrl = null;
@@ -795,9 +769,9 @@ function renderImages(){
     const grid=document.getElementById('images-grid'); if(!grid)return;
     if(!state.images || !state.images.length) { grid.innerHTML = ''; return; }
     grid.innerHTML=state.images.map((img,i)=>{
-        if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
-        if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+'</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
-        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image '+(i+1)+(i===0?' <span class="ref-badge">MAÎTRESSE</span>':'')+'</span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
+        if(img.status==='loading')return'<div class="scene-card generating"><div class="scene-card-header"><span class="scene-card-title">🎨 Image Maîtresse</span><span class="spinner-mini"></span></div><div class="scene-card-body"><div class="scene-placeholder"><div class="spinner-mini"></div><span>Génération…</span></div></div></div>';
+        if(img.status==='error')return'<div class="scene-card error"><div class="scene-card-header"><span class="scene-card-title">🎨 Image Maîtresse</span><span style="color:var(--err);">✕</span></div><div class="scene-card-body"><div class="scene-placeholder" style="color:var(--err);">Erreur</div></div></div>';
+        return'<div class="scene-card done"><div class="scene-card-header"><span class="scene-card-title">🎨 Image Maîtresse <span class="ref-badge">UNIQUE</span></span><span style="color:var(--ok);">✓</span></div><div class="scene-card-body"><img src="'+img.url+'" style="width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:2px;" alt=""></div></div>';
     }).join('');
 }
 
@@ -907,12 +881,10 @@ function renderVideos(){
     document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
     document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
     
-    // Upload multi-photos
     for (let i = 1; i <= MAX_PHOTOS; i++) {
         document.getElementById('char-file-' + i).addEventListener('change', () => handlePhotoUpload(i));
     }
     
-    // TENTATIVE DE RESTAURATION DU PROJET
     const saved = loadProject();
     if (saved && saved.story) {
         setTimeout(() => {
@@ -945,7 +917,6 @@ function renderVideos(){
                 document.getElementById('section-videos').classList.remove('hidden');
                 document.getElementById('section-validation').classList.remove('hidden');
                 
-                // Restaurer les previews
                 state.castingBase64Array.forEach((b64, idx) => {
                     if (b64) {
                         const preview = document.getElementById('char-preview-' + (idx + 1));
@@ -968,26 +939,18 @@ function renderVideos(){
     
     document.getElementById('regen-image-btn').addEventListener('click',async ()=>{
         if(state.isRunning) return;
-        state.isRunning=true; updateButtons(); setStatus('Régénération des images…');
-        state.images = state.story.scenes.map(()=>({status:'pending', url:null}));
+        state.isRunning=true; updateButtons(); setStatus('Régénération de l\'image maîtresse…');
+        state.images = [{status: 'loading', url: null}];
         state.masterImageUrl = null;
         state.characterReferenceUrl = null;
         renderImages();
         try {
-            state.images[0] = {status:'loading'}; renderImages();
             const masterImgUrl = await generateImage(buildImagePrompt(state.story.scenes[0], state.story, true), state.castingBase64Array);
             state.images[0] = {status:'done', url:masterImgUrl};
             state.masterImageUrl = masterImgUrl;
             state.characterReferenceUrl = masterImgUrl;
             renderImages();
-            
-            for(let i=1; i<state.story.scenes.length; i++) {
-                state.images[i] = {status:'loading'}; renderImages();
-                const imgUrl = await generateImage(buildImagePrompt(state.story.scenes[i], state.story, false), [state.masterImageUrl]);
-                state.images[i] = {status:'done', url:imgUrl};
-                renderImages();
-            }
-            showToast('Images régénérées');
+            showToast('Image maîtresse régénérée');
             saveProject();
         } catch(e) { showToast('Erreur','error'); }
         state.isRunning=false; updateButtons(); setStatus(null);
