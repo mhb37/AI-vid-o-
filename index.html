@@ -23,4 +23,1225 @@ h1{font-size:1.6rem;font-weight:300;margin-bottom:.3rem;background:linear-gradie
 .subtitle{font-size:.75rem;color:var(--dim);font-style:italic}
 .banner{background:var(--panel);border:1px solid var(--border);border-left:2px solid var(--acc2);padding:.8rem .9rem;border-radius:var(--r);font-size:.75rem;color:var(--dim);margin-bottom:1rem;line-height:1.6}
 .banner strong{color:var(--ink)}
-.panel{background
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:.8rem}
+.panel.ok{box-shadow:inset 3px 0 0 var(--ok)}
+input[type=password],textarea,select{width:100%;padding:.8rem .9rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--ink);font-family:var(--fs);font-size:.88rem;margin-bottom:.5rem}
+textarea{resize:vertical;min-height:90px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc2)}
+.btn{width:100%;padding:.8rem 1rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--ink);font-size:.82rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;margin-bottom:.5rem;transition:all .2s;font-family:inherit}
+.btn:hover:not(:disabled){background:var(--bg3);border-color:var(--acc2)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-primary{border-color:var(--acc2);background:linear-gradient(135deg,rgba(232,123,53,.18),rgba(229,193,90,.12));color:var(--acc2);font-size:.95rem;padding:1.2rem;letter-spacing:.15em}
+.btn-secondary{border-color:var(--warn);color:var(--warn);background:rgba(212,160,23,.08);font-size:.75rem}
+.btn-small{padding:.4rem .6rem;font-size:.65rem;margin-bottom:.3rem}
+.btn-stop{border-color:var(--err);color:var(--err);background:transparent;display:none}
+.btn-stop.visible{display:block}
+.status{font-size:.72rem;padding:.5rem .8rem;border-radius:var(--r);margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem;background:var(--bg2);color:var(--dim);border:1px solid var(--border)}
+.status.ok{background:rgba(74,157,106,.08);color:var(--ok);border-color:rgba(74,157,106,.3)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0}
+.status.ok .dot{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.hint{font-size:.68rem;color:var(--dim);margin-top:.4rem}
+.quota-line{font-size:.7rem;padding:.5rem .7rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-top:.4rem;color:var(--dim);font-family:var(--fm);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
+.quota-line .q-val{color:var(--acc2);font-weight:600}
+.section{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.8rem;overflow:hidden}
+.section.hidden{display:none!important}
+.section-header{padding:.8rem 1rem;cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center}
+.section-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.15em;color:var(--ink);font-weight:500;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.badge{display:inline-block;padding:.12rem .45rem;background:transparent;color:var(--acc2);border:1px solid var(--border);border-radius:2px;font-size:.58rem;letter-spacing:.12em;font-weight:600}
+.chevron{font-size:.65rem;color:var(--faint);transition:transform .3s}
+.section.open .chevron{transform:rotate(180deg);color:var(--acc2)}
+.section-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.section.open .section-body{max-height:12000px}
+.section-content{padding:0 1rem 1rem}
+.control-row{margin-bottom:.9rem}
+.control-label{display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600}
+.mode-toggle{display:flex;gap:.4rem;margin-bottom:1rem}
+.mode-btn{flex:1;padding:.7rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--dim);font-size:.75rem;font-weight:600;cursor:pointer;text-align:center;transition:all .2s}
+.mode-btn.active{border-color:var(--acc2);background:rgba(232,123,53,.12);color:var(--acc2)}
+.story-view{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.8rem;margin-top:.4rem;font-size:.8rem;line-height:1.6;max-height:420px;overflow-y:auto}
+.env-card{background:rgba(232,123,53,.06);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.6rem;font-size:.72rem;border-left:2px solid var(--acc2);color:var(--dim);font-family:var(--fm)}
+.character-card{background:var(--bg3);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.4rem;font-size:.75rem;border-left:2px solid var(--acc2)}
+.scene-block{margin-bottom:.8rem;padding-left:.7rem;border-left:2px solid var(--border)}
+.scene-block .sc-head{font-size:.7rem;color:var(--acc2);font-weight:600;margin-bottom:.25rem}
+.clip-list{display:flex;flex-direction:column;gap:.5rem;margin-top:.6rem}
+.clip-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.6rem;display:flex;gap:.6rem;align-items:center}
+.clip-card.done{border-color:var(--ok)}
+.clip-card.error{border-color:var(--err)}
+.clip-card.generating{border-color:var(--acc2)}
+.clip-index{font-family:var(--fm);font-size:.7rem;color:var(--acc2);font-weight:700;flex-shrink:0;width:30px}
+.clip-body{flex:1;font-size:.72rem;color:var(--dim)}
+.clip-body video{width:100%;max-width:140px;border-radius:4px;margin-top:.3rem;display:block}
+.clip-status{font-size:.65rem;flex-shrink:0}
+.progress-bar-container{background:var(--bg2);border-radius:99px;height:8px;overflow:hidden;margin:.6rem 0}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));transition:width .4s;border-radius:99px}
+.progress-text{font-size:.72rem;color:var(--dim);text-align:center;font-family:var(--fm)}
+.ref-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.8rem}
+.ref-option{position:relative;cursor:pointer;border:2px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .2s}
+.ref-option:hover{border-color:var(--acc2)}
+.ref-option.selected{border-color:var(--ok);box-shadow:0 0 0 3px rgba(74,157,106,.2)}
+.ref-option img{width:100%;display:block;aspect-ratio:9/16;object-fit:cover}
+.ref-option .ref-check{position:absolute;top:.3rem;right:.3rem;background:var(--ok);color:#fff;width:24px;height:24px;border-radius:50%;display:none;align-items:center;justify-content:center;font-weight:700;font-size:.8rem}
+.ref-option.selected .ref-check{display:flex}
+.spinner-mini{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:.3rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:12px;height:12px;border:2px solid rgba(232,123,53,.2);border-top-color:var(--acc2);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+.status-bar{position:fixed;bottom:200px;left:0;right:0;background:var(--bg3);border-top:1px solid var(--border);color:var(--ink);padding:.65rem 1rem;font-size:.72rem;display:flex;align-items:center;gap:.6rem;transform:translateY(200%);transition:transform .35s;z-index:150;font-family:var(--fm);box-shadow:0 -4px 20px rgba(0,0,0,.4)}
+.status-bar.visible{transform:translateY(0)}
+.debug-panel{position:fixed;bottom:0;left:0;right:0;height:190px;background:#05050a;border-top:2px solid var(--acc2);z-index:200;display:flex;flex-direction:column;font-family:var(--fm);box-shadow:0 -8px 32px rgba(0,0,0,.7);transition:height .3s ease}
+.debug-panel.collapsed{height:36px}
+.debug-header{display:flex;justify-content:space-between;align-items:center;padding:.35rem .6rem;background:linear-gradient(90deg,#0f0f18,#1a1a28);border-bottom:1px solid var(--border);flex-shrink:0;user-select:none}
+.debug-tabs{display:flex;gap:.2rem}
+.debug-tab{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:.62rem;padding:.3rem .6rem;border-radius:3px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;font-family:inherit}
+.debug-tab.active{color:var(--acc2);border-color:var(--acc2);background:rgba(232,123,53,.08)}
+.debug-actions{display:flex;gap:.25rem}
+.debug-actions button{background:transparent;border:1px solid var(--border);color:var(--dim);font-size:.58rem;padding:.25rem .5rem;border-radius:2px;cursor:pointer;font-family:inherit}
+.debug-body{flex:1;overflow-y:auto;padding:.5rem .7rem .8rem;font-size:.7rem;line-height:1.5;color:#c8c8d0}
+.debug-body.hidden{display:none}
+.journal-body .j-entry{display:flex;gap:.5rem;padding:.2rem 0;border-bottom:1px dashed rgba(255,255,255,.04);font-size:.74rem}
+.journal-body .j-time{font-family:var(--fm);font-size:.66rem;color:var(--faint);flex-shrink:0;min-width:58px}
+.journal-body .j-msg{color:#d8d8e0;flex:1;word-break:break-word}
+.hidden{display:none!important}
+#lock-screen{position:fixed;inset:0;background:linear-gradient(160deg,#0a0a12 0%,#1a1a28 100%);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem}
+.lock-icon{font-size:3.2rem;margin-bottom:1.2rem;filter:drop-shadow(0 0 18px rgba(232,123,53,.4))}
+.lock-title{font-size:1.4rem;font-weight:300;margin-bottom:.4rem;background:linear-gradient(135deg,var(--acc2),var(--acc));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lock-subtitle{font-size:.75rem;color:var(--dim);margin-bottom:2rem;font-style:italic}
+.lock-input{width:100%;max-width:280px;padding:1rem;border-radius:10px;border:1px solid var(--border);background:rgba(10,10,18,.6);color:var(--ink);font-family:var(--fm);font-size:1.4rem;text-align:center;letter-spacing:.8em;outline:none}
+.lock-input:focus{border-color:var(--acc2)}
+.lock-btn{width:100%;max-width:280px;margin-top:1rem;padding:.9rem;border-radius:10px;border:1px solid var(--acc2);background:linear-gradient(135deg,rgba(232,123,53,.15),rgba(229,193,90,.12));color:var(--acc2);font-size:.9rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;font-family:inherit}
+.lock-error{font-size:.72rem;color:var(--err);margin-top:.8rem;min-height:1.2em;font-family:var(--fm);text-align:center}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--panel);border:1px solid var(--border);padding:.8rem 1.2rem;border-radius:8px;color:var(--ink);font-size:.8rem;z-index:10000;transition:transform .3s;display:flex;align-items:center;gap:.5rem;opacity:0;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+#toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+#toast.success{border-color:var(--ok);color:var(--ok)}
+#toast.error{border-color:var(--err);color:var(--err)}
+#toast.warn{border-color:var(--warn);color:var(--warn)}
+</style>
+</head>
+<body>
+
+<div id="lock-screen">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">TikTok Moneymaker</div>
+    <div class="lock-subtitle">Accès protégé</div>
+    <input type="password" id="lock-code" class="lock-input" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off">
+    <button type="button" id="lock-btn" class="lock-btn">Déverrouiller</button>
+    <div class="lock-error" id="lock-error"></div>
+</div>
+
+<div id="toast"><span id="toast-text"></span></div>
+
+<header>
+<h1>TikTok Moneymaker</h1>
+<p class="subtitle">Mode Auto · 10 Photos au choix · Cohérence Renforcée · 9:16</p>
+</header>
+
+<div class="banner">
+<strong>🔐 Clé chiffrée.</strong> Ta clé API est protégée par une passphrase.<br>
+<strong>📸 10 Photos.</strong> L'IA génère 10 photos, tu choisis la meilleure.<br>
+<strong>🧬 Cohérence.</strong> Character Bible + Environment Lock pour éviter les dérives.
+</div>
+
+<div class="panel" id="api-panel">
+<label style="display:block;font-size:.7rem;color:var(--dim);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600;">Clé API Agnes (chiffrée)</label>
+<textarea id="api-keys-input" placeholder="Collez votre clé API ici" rows="1" spellcheck="false"></textarea>
+<button type="button" class="btn" id="api-save-btn">🔐 Chiffrer et enregistrer</button>
+<button type="button" class="btn btn-secondary" id="api-unlock-btn" style="display:none;">🔓 Déverrouiller la clé</button>
+<div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé configurée</span></div>
+<div class="quota-line"><span>📊 Vidéo générée : <span class="q-val" id="video-quota-used">0</span>s</span></div>
+</div>
+
+<div class="section open" id="section-mode">
+<div class="section-header">
+<span class="section-title">🎛️ Mode de génération</span>
+</div>
+<div class="section-content">
+<div class="mode-toggle">
+<button type="button" class="mode-btn active" id="mode-auto-btn" onclick="setMode('auto')">🤖 Auto (IA écrit tout)</button>
+<button type="button" class="mode-btn" id="mode-manual-btn" onclick="setMode('manual')">✍️ Manuel (mon script)</button>
+</div>
+</div>
+</div>
+
+<div class="section open" id="section-auto">
+<div class="section-header" data-toggle="section-auto">
+<span class="section-title">🤖 Idée de l'IA</span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<textarea id="auto-idea" placeholder="Ex : Une femme fatale se venge de son ex qui l'a trahie dans un bar de nuit." style="min-height:80px"></textarea>
+</div></div>
+</div>
+
+<div class="section open" id="section-manual" style="display:none;">
+<div class="section-header" data-toggle="section-manual">
+<span class="section-title">✍️ Ton script</span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<textarea id="manual-script" style="min-height:140px">Tu m'as menti.
+Et je le savais depuis le début.
+Rends-moi ce que tu m'as pris.
+Je t'ai fait confiance.
+Tu m'as trahi.
+Maintenant tu vas payer.</textarea>
+<div class="control-row" style="margin-top:.8rem">
+<label class="control-label">Contexte (optionnel)</label>
+<textarea id="context-input" placeholder="Ex : Bar de nuit sombre, ambiance années 80..." style="min-height:50px"></textarea>
+</div>
+</div></div>
+</div>
+
+<div class="section open" id="section-character">
+<div class="section-header" data-toggle="section-character">
+<span class="section-title">🎨 Personnage & Style</span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<p class="hint" style="margin-bottom:1rem;">Décris ton personnage (ou laisse vide pour que l'IA invente). L'IA génère 10 photos, tu choisis la meilleure.</p>
+<textarea id="character-desc" placeholder="Ex : Femme brune aux yeux verts, robe noire moulante, talons hauts..." style="min-height:60px"></textarea>
+<div class="control-row">
+<label class="control-label">Style visuel</label>
+<select id="style-select">
+<option value="popart" selected>Pop Art 3D — saturé, cartoon</option>
+<option value="pastel">Pastel Cinéma — doux, film 35mm</option>
+<option value="neon">Néon Cyberpunk — sombre, contrasté</option>
+<option value="bw">Noir & Blanc — dramatique</option>
+</select>
+</div>
+<div class="control-row">
+<label class="control-label">Durée cible du film</label>
+<select id="target-duration">
+<option value="60">~1 minute</option>
+<option value="70" selected>~1m10</option>
+</select>
+</div>
+<div class="control-row">
+<label class="control-label">Durée par clip</label>
+<select id="clip-duration">
+<option value="6" selected>6s (meilleur lip-sync, plus cohérent)</option>
+<option value="8">8s</option>
+<option value="10">10s</option>
+<option value="12">12s (max Agnes)</option>
+</select>
+</div>
+<button type="button" class="btn btn-secondary" id="generate-ref-btn">📸 Générer 10 photos de référence</button>
+<div id="ref-container" style="margin-top:.8rem;"></div>
+</div></div>
+</div>
+
+<button type="button" class="btn btn-primary" id="validate-btn" disabled>1. Préparer le scénario</button>
+<button type="button" class="btn btn-primary" id="generate-btn" disabled style="display:none;">2. Lancer le film complet</button>
+<button type="button" class="btn btn-stop" id="stop-btn">⏹ Arrêter</button>
+
+<div class="section hidden" id="section-preview">
+<div class="section-header">
+<span class="section-title">📖 Aperçu du scénario</span>
+</div>
+<div class="section-content">
+<div class="story-view" id="story-view"></div>
+<div style="margin-top:1rem;">
+<button type="button" class="btn btn-secondary" id="regen-story-btn">🔄 Régénérer le scénario</button>
+<button type="button" class="btn btn-primary" id="confirm-story-btn">✅ Continuer avec ce scénario</button>
+</div>
+</div>
+</div>
+
+<div class="section hidden" id="section-progress">
+<div class="section-header">
+<span class="section-title">🎬 Génération du Film</span>
+</div>
+<div class="section-content">
+<div class="progress-bar-container"><div class="progress-bar" id="film-progress" style="width:0%"></div></div>
+<div class="progress-text" id="film-progress-text">En attente…</div>
+</div>
+</div>
+
+<div class="section hidden" id="section-clips">
+<div class="section-header" data-toggle="section-clips">
+<span class="section-title">🎞️ Clips générés</span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="clip-list" id="clip-list"></div>
+<div id="final-download-area" style="display:none;margin-top:1rem;">
+<button type="button" class="btn btn-primary" id="download-all-btn">📥 Télécharger tous les clips</button>
+<div class="hint" style="margin-top:.5rem;">Sur iPhone : utilise Partager → Enregistrer la vidéo pour chaque clip.</div>
+</div>
+</div></div>
+</div>
+
+<div class="status-bar" id="status-bar"><div class="spinner"></div><span id="status-text">Préparation…</span></div>
+
+<div class="debug-panel collapsed" id="debug-panel">
+<div class="debug-header" id="debug-header">
+<div class="debug-tabs">
+<button type="button" class="debug-tab active" id="tab-journal">📻 Journal</button>
+<button type="button" class="debug-tab" id="tab-tech">🖥️ Technique</button>
+</div>
+<div class="debug-actions"><button type="button" id="debug-collapse-btn">+</button></div>
+</div>
+<div class="debug-body journal-body" id="journal-body"></div>
+<div class="debug-body hidden" id="tech-body"></div>
+</div>
+
+<script type="module">
+import { BYOKVault } from 'https://esm.sh/byok-vault@0.2.1';
+window.BYOKVault = BYOKVault;
+</script>
+
+<script>
+// =================================================================
+// VERROUILLAGE
+// =================================================================
+const APP_LOCK_CODE = '1992';
+const LOCK_STORAGE_KEY = 'tiktok_moneymaker_unlocked';
+function setAppUnlocked(){try{sessionStorage.setItem(LOCK_STORAGE_KEY,'1')}catch(e){}}
+function clearAppUnlock(){try{sessionStorage.removeItem(LOCK_STORAGE_KEY)}catch(e){}}
+function hideLockScreen(){var el=document.getElementById('lock-screen');if(el){el.style.display='none';el.classList.add('hidden')}}
+function showLockScreen(){var el=document.getElementById('lock-screen');if(el){el.style.display='flex';el.classList.remove('hidden')}var input=document.getElementById('lock-code');if(input){input.value=''}var err=document.getElementById('lock-error');if(err)err.textContent=''}
+function tryUnlock(){var input=document.getElementById('lock-code');var err=document.getElementById('lock-error');if(!input)return;var code=(input.value||'').trim();if(code===APP_LOCK_CODE){setAppUnlocked();hideLockScreen()}else{if(err)err.textContent='Code incorrect';input.value=''}}
+window.tryUnlock = tryUnlock;
+
+// =================================================================
+// CONFIG
+// =================================================================
+const API_BASE = 'https://apihub.agnes-ai.com/v1';
+const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
+const MODEL_TEXT = 'agnes-2.5-flash';
+const MODEL_IMAGE = 'agnes-image-2.1-flash';
+const MODEL_VIDEO = 'agnes-video-2.5-flash';
+const MODEL_VIDEO_NAME = 'agnes-video-2.5-flash';
+const QUOTA_STORAGE = 'tiktok_moneymaker_quota';
+const DEBUG_MAX = 600;
+const POLL_DELAY_MS = 12000;
+const POLL_INITIAL_WAIT_MS = 20000;
+const NUM_REF_PHOTOS = 10;
+
+const state = {
+    isRunning: false, stopRequested: false,
+    mode: 'auto',
+    autoIdea: '', manualScript: '',
+    scriptLines: [], context: '',
+    story: null, masterImageUrl: null,
+    refImages: [],
+    selectedRefIndex: -1,
+    characterDesc: '',
+    style: 'popart', targetDuration: 70, clipDuration: 6,
+    clips: [], validated: false, totalClips: 0,
+    validationClipUrl: null, validationClipLines: null,
+    storyPreviewed: false
+};
+
+let vault = null;
+
+// =================================================================
+// UTILS
+// =================================================================
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function setStatus(text){const b=document.getElementById('status-bar');const t=document.getElementById('status-text');if(!b||!t)return;if(text){b.classList.add('visible');t.textContent=text}else b.classList.remove('visible')}
+function showToast(msg,type='success'){const t=document.getElementById('toast');const txt=document.getElementById('toast-text');if(!t||!txt)return;txt.textContent=msg;t.className='visible '+type;setTimeout(()=>t.className='',3000);}
+function nowTime(){return new Date().toLocaleTimeString('fr-FR',{hour12:false})}
+function sanitizeForApi(text){if(text==null)return '';return String(text).replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/\u2013/g,'-').replace(/\u2014/g,'--').replace(/\u2026/g,'...').replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/\u00A0/g,' ')}
+
+function journalLog(msg, level){level=level||'info';const body=document.getElementById('journal-body');if(!body)return;const icons={info:'·',success:'✅',warn:'⚠️',error:'❌',save:'💾',download:'📥'};const icon=icons[level]||'·';const entry=document.createElement('div');entry.className='j-entry '+level;entry.innerHTML='<span class="j-time">'+esc(nowTime())+'</span><span class="j-icon">'+icon+'</span><span class="j-msg">'+esc(msg)+'</span>';body.appendChild(entry);body.scrollTop=body.scrollHeight;while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild)}
+
+let debugEntries=[];
+function debugLog(level,category,message,data){const body=document.getElementById('tech-body');if(!body)return;const time=nowTime();const entry=document.createElement('div');entry.className='debug-entry '+level;let html='<span class="debug-time">'+time+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';if(data!==undefined&&data!==null){let ds=typeof data==='string'?data:JSON.stringify(data,null,2);if(ds.length>2500)ds=ds.slice(0,2500)+'…';html+='<pre class="debug-data">'+esc(ds)+'</pre>'}entry.innerHTML=html;body.appendChild(entry);debugEntries.push({time,level,category,message});if(debugEntries.length>DEBUG_MAX)debugEntries.shift();while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild);body.scrollTop=body.scrollHeight;}
+function toggleDebugCollapse(){const p=document.getElementById('debug-panel');const b=document.getElementById('debug-collapse-btn');if(!p||!b)return;const c=p.classList.toggle('collapsed');b.textContent=c?'+':'−'}
+function switchTab(tab){const j=document.getElementById('journal-body');const t=document.getElementById('tech-body');const tj=document.getElementById('tab-journal');const tt=document.getElementById('tab-tech');if(!j||!t)return;if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active')}else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight}}
+
+// =================================================================
+// VAULT
+// =================================================================
+async function initVault() {
+    if (!window.BYOKVault) { console.warn('byok-vault non chargé'); return; }
+    vault = new window.BYOKVault();
+    updateApiPanelFromVault();
+}
+
+function updateApiPanelFromVault() {
+    const text = document.getElementById('api-status-text');
+    const unlockBtn = document.getElementById('api-unlock-btn');
+    if (!vault) { text.textContent = 'byok-vault non chargé'; return; }
+    const vs = vault.getState();
+    if (vs === 'none') { text.textContent = 'Aucune clé configurée'; unlockBtn.style.display = 'none'; document.getElementById('api-panel').classList.remove('ok'); }
+    else if (vs === 'locked') { text.textContent = '🔒 Clé verrouillée — entrez la passphrase'; unlockBtn.style.display = 'block'; document.getElementById('api-panel').classList.remove('ok'); }
+    else { text.textContent = '✅ Clé déverrouillée (chiffrée)'; unlockBtn.style.display = 'none'; document.getElementById('api-panel').classList.add('ok'); }
+    updateButtons();
+}
+
+async function saveKeysFromUI() {
+    if (!vault) { showToast('byok-vault non chargé', 'error'); return; }
+    const input = document.getElementById('api-keys-input');
+    const raw = (input.value || '').trim();
+    if (!raw) { showToast('Collez votre clé API', 'warn'); return; }
+    const passphrase = prompt('Choisissez une passphrase pour chiffrer votre clé.\n(Elle ne sera JAMAIS stockée. Notez-la !)');
+    if (!passphrase || passphrase.length < 6) { showToast('Passphrase trop courte (min 6 caractères)', 'error'); return; }
+    try {
+        await vault.setConfig({ apiKey: raw }, passphrase);
+        input.value = '';
+        updateApiPanelFromVault();
+        showToast('Clé chiffrée et enregistrée ✓');
+        journalLog('Clé API chiffrée avec byok-vault.', 'key');
+    } catch(e) { showToast('Erreur de chiffrement : ' + e.message, 'error'); }
+}
+
+async function promptUnlock() {
+    if (!vault || vault.getState() === 'unlocked') return true;
+    if (vault.getState() === 'none') { showToast('Configurez d\'abord votre clé API', 'error'); return false; }
+    const pass = prompt('Entrez votre passphrase pour déverrouiller la clé API :');
+    if (!pass) return false;
+    try {
+        await vault.unlock(pass, { session: 'tab' });
+        updateApiPanelFromVault();
+        showToast('Clé déverrouillée ✓');
+        return true;
+    } catch(e) {
+        if (e.code === 'WRONG_PASSPHRASE') showToast('Passphrase incorrecte', 'error');
+        else showToast('Erreur de déverrouillage', 'error');
+        return false;
+    }
+}
+
+async function hasActiveKey() {
+    if (!vault) return false;
+    if (vault.getState() === 'unlocked') return true;
+    if (vault.getState() === 'locked') return await promptUnlock();
+    return false;
+}
+
+// =================================================================
+// QUOTA
+// =================================================================
+function getQuota(){try{const raw=localStorage.getItem(QUOTA_STORAGE);if(!raw)return{date:'',seconds:0};const q=JSON.parse(raw);const today=new Date().toISOString().slice(0,10);if(q.date!==today)return{date:today,seconds:0};return q}catch(e){return{date:new Date().toISOString().slice(0,10),seconds:0}}}
+function setQuota(q){try{localStorage.setItem(QUOTA_STORAGE,JSON.stringify(q))}catch(e){}}
+function addVideoSeconds(sec){const q=getQuota();q.seconds=(q.seconds||0)+sec;setQuota(q);updateQuotaDisplay()}
+function updateQuotaDisplay(){const el=document.getElementById('video-quota-used');if(!el)return;const q=getQuota();el.textContent=Math.round(q.seconds||0)}
+
+// =================================================================
+// FETCH
+// =================================================================
+async function apiFetch(url, options, label, maxAttempts){
+    options=options||{};label=label||'API';maxAttempts=maxAttempts||6;let lastErr=null;
+    for(let attempt=0;attempt<maxAttempts;attempt++){
+        if(state.stopRequested)throw new Error('Arrêt demandé');
+        if (!await hasActiveKey()) throw new Error('Clé API verrouillée');
+        try {
+            const res = await vault.withKey(async (key) => {
+                const headers = Object.assign({}, options.headers||{}, {'Authorization': 'Bearer ' + key});
+                return await fetch(url, Object.assign({}, options, {headers}));
+            });
+            if(res.ok){return res}
+            let errorText='';try{errorText=(await res.clone().text()).slice(0,1000)}catch(e){}
+            if(res.status===400) throw new Error('HTTP 400 — ' + errorText.slice(0,200));
+            if(res.status===401||res.status===403){ throw new Error('HTTP '+res.status+' — Clé API invalide.'); }
+            if(res.status===402) throw new Error('QUOTA_EPUISE');
+            if(res.status===404) throw new Error('HTTP 404 — Ressource introuvable.');
+            if(res.status===429){ debugLog('warn',label,'Rate limit. Attente 60s.'); await sleep(60000); continue; }
+            await sleep(5000);
+        }catch(e){
+            if(e.message==='Arrêt demandé')throw e;
+            if(e.message==='QUOTA_EPUISE'||e.message.startsWith('HTTP 4')) throw e;
+            lastErr=e; await sleep(4000);
+        }
+    }
+    throw lastErr||new Error('Échec API '+label);
+}
+
+function extractJson(text){if(!text)return null;let c=text.trim();c=c.replace(/```json/gi,'').replace(/```/g,'').trim();const fb=c.indexOf('{');if(fb<0)return null;c=c.slice(fb);try{return JSON.parse(c)}catch(e1){}try{return JSON.parse(c.replace(/(?<=:\s*"[^"]*)\n(?=[^"]*")/g,'\\n'))}catch(e2){}try{return JSON.parse(c.replace(/\n/g,'\\n').replace(/\r/g,'').replace(/\t/g,'\\t'))}catch(e3){}return null}
+
+async function callChatCompletion(systemPrompt,userPrompt,label,maxTokens,temperature){
+    const body={model:MODEL_TEXT,messages:[{role:'system',content:sanitizeForApi(systemPrompt)},{role:'user',content:sanitizeForApi(userPrompt)}],temperature:typeof temperature==='number'?temperature:0.8,max_tokens:maxTokens||8000};
+    const res=await apiFetch(API_BASE+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},label,4);
+    const data=await res.json();return data.choices[0].message.content;
+}
+
+async function generateImage(prompt){
+    const body={model:MODEL_IMAGE,prompt:sanitizeForApi(prompt),n:1,size:'1K',ratio:'9:16'};
+    const res=await apiFetch(API_BASE+'/images/generations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Image',4);
+    const data=await res.json();return data.data[0].url;
+}
+
+// KEYFRAME uniquement (rapide et cohérent)
+async function createVideoTaskKeyframe(prompt, firstFrameUrl){
+    const safeFirstFrame = firstFrameUrl || state.masterImageUrl;
+    if(!safeFirstFrame) throw new Error('Aucune image de départ disponible');
+    const body = {
+        model: MODEL_VIDEO, prompt: sanitizeForApi(prompt),
+        mode: 'keyframe', seconds: String(state.clipDuration),
+        size: '720P', aspect_ratio: '9:16', n: 1,
+        first_frame: safeFirstFrame
+    };
+    const res = await apiFetch(API_BASE+'/videos', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}, 'Video', 4);
+    if(res.status === 503) { const text = await res.text(); if(text.toLowerCase().includes('queue')) { const err = new Error('QUEUE_FULL'); err.isQueueFull = true; throw err; } }
+    const data = await res.json();
+    if (!data.video_id) throw new Error('video_id manquant dans la réponse');
+    return data.video_id;
+}
+
+// =================================================================
+// POLLING (video_id + model_name obligatoires)
+// =================================================================
+async function pollVideo(videoId, onProgress){
+    await sleep(POLL_INITIAL_WAIT_MS);
+    const maxPolls = 80;
+    for(let i=0; i<maxPolls; i++){
+        if(state.stopRequested) throw new Error('Arrêt demandé');
+        if(onProgress) onProgress(`Clip ${Math.round((i+1)*12/60)}min ${(i+1)*12%60}s`);
+        try {
+            if (!await hasActiveKey()) throw new Error('Clé verrouillée');
+            const pollRes = await vault.withKey(async (key) => {
+                const url = `${POLL_BASE}?video_id=${encodeURIComponent(videoId)}&model_name=${MODEL_VIDEO_NAME}`;
+                return await fetch(url, { headers: { 'Authorization': 'Bearer ' + key } });
+            });
+            if(!pollRes.ok){
+                const errText = await pollRes.text();
+                debugLog('error', 'POLLING', 'HTTP ' + pollRes.status + ' — ' + errText.slice(0, 200));
+                if(pollRes.status === 404) throw new Error('Tâche introuvable');
+                if(pollRes.status === 401) throw new Error('Clé API invalide');
+                continue;
+            }
+            const d = await pollRes.json();
+            debugLog('info', 'POLLING', 'Statut: ' + (d.status || 'unknown') + ' — progress: ' + (d.progress || 0));
+            if(d.status === 'completed'){
+                const videoUrl = d.url || (d.metadata && d.metadata.url);
+                if(!videoUrl) throw new Error('Terminé mais pas d\'URL');
+                return videoUrl;
+            }
+            if(d.status === 'failed') throw new Error('Échec de génération');
+        } catch(e) {
+            if(e.message === 'Arrêt demandé') throw e;
+            debugLog('warn', 'POLLING', 'Erreur: ' + e.message);
+            if(e.message.includes('Tâche introuvable') || e.message.includes('Clé API invalide')) throw e;
+        }
+        await sleep(POLL_DELAY_MS);
+    }
+    throw new Error('Timeout (16 min)');
+}
+
+// =================================================================
+// STYLE BLOCKS
+// =================================================================
+const STYLE_BLOCKS = {
+    popart: 'STYLIZED 3D POP ART. Viral TikTok aesthetic. HIGH SATURATION, bold colors, cartoon-like but detailed.',
+    pastel: 'PASTEL CINEMATIC 35MM. Soft film grain, muted pastel palette, warm amber light.',
+    neon: 'NEON CYBERPUNK. Dark atmosphere, vibrant neon lights, high contrast, futuristic.',
+    bw: 'BLACK AND WHITE CINEMATIC. Dramatic chiaroscuro lighting, film noir, deep shadows.'
+};
+
+// =================================================================
+// PROMPTS RENFORCÉS
+// =================================================================
+function buildCharacterRefPrompt(variation){
+    const desc = state.characterDesc ? state.characterDesc : 'a very attractive adult woman with an alluring gaze, confident posture, elegant sexy outfit';
+    const styleBlock = STYLE_BLOCKS[state.style] || STYLE_BLOCKS.popart;
+    const angles = [
+        'front view, neutral expression, eyes looking at camera',
+        'three-quarter view, soft closed-mouth smile',
+        'slight side angle, mysterious gaze',
+        'close-up portrait, intense eyes, detailed skin texture',
+        'full body, confident stance, hands visible',
+        'medium shot, elegant pose, one hand on hip',
+        'over-the-shoulder glance, looking back',
+        'low angle, powerful presence, chin slightly raised',
+        'high angle, alluring look, eyes up at camera',
+        'profile view, sophisticated, jawline visible'
+    ];
+    const angle = angles[variation % angles.length];
+    const consistencyNote = `IMPORTANT: This is portrait #${variation+1} of a series. The face, hair color, skin tone, and outfit MUST be identical across all 10 portraits. Only the camera angle changes.`;
+    return `${styleBlock}
+${consistencyNote}
+
+CHARACTER PORTRAIT — ${angle.toUpperCase()}.
+CHARACTER: ${desc}
+The character MUST be ULTRA ATTRACTIVE: flawless skin, beautiful face, attractive body, stylish outfit.
+${angle}.
+CONSTRAINTS: portrait 9:16, no text, no logo, high quality, vibrant colors.`;
+}
+
+function buildStoryPromptAuto(){
+    const styleBlock = STYLE_BLOCKS[state.style] || STYLE_BLOCKS.popart;
+    return `Tu es un scénariste de contenus viraux TikTok.
+IDÉE DE L'UTILISATEUR : "${state.autoIdea}"
+
+MISSION : Écris toi-même le script complet (5 à 8 répliques percutantes) et découpe-le en segments de ~${state.clipDuration} secondes.
+Tu dois définir UN SEUL lieu physique (environment_lock) TRÈS DÉTAILLÉ en anglais : type de pièce, couleurs des murs, meubles visibles, éclairage (direction et couleur), objets au premier plan ET à l'arrière-plan. Plus c'est précis, moins l'IA variera le décor.
+
+DIRECTIVE CRÉATIVE : Les personnages doivent être ULTRA SEXY et charismatiques. Les femmes très attirantes, silhouette voluptueuse, tenues sensuelles. Les hommes virils.
+
+STYLE VISUEL : ${styleBlock}
+
+FORMAT JSON STRICT :
+{
+  "title": "Titre",
+  "environment_lock": "English detailed description: room type, wall colors, furniture positions, lighting direction, foreground and background objects",
+  "characters": [ { "name": "Nom", "gender": "homme/femme", "age": 25, "face_lock": "skin tone, face shape, hairstyle, eye color, distinctive features", "outfit_lock": "exact colors, fabrics, style, accessories" } ],
+  "clips": [ { "clip_number": 1, "lines": ["réplique 1"], "action": "English action describing pose, gesture, camera movement — be specific" } ]
+}`;
+}
+
+function buildStoryPromptManual(){
+    return `Tu es un scénariste de contenus viraux TikTok.
+VOICI LE SCRIPT FOURNI :
+${state.scriptLines.join('\n')}
+
+CONTEXTE : ${state.context || 'Aucun'}
+
+MISSION : Construis une histoire cohérente. Découpe le script en segments de ~${state.clipDuration} secondes.
+Tu dois définir UN SEUL lieu physique (environment_lock) TRÈS DÉTAILLÉ : type de pièce, couleurs des murs, meubles, éclairage, objets.
+
+DIRECTIVE CRÉATIVE : Les personnages doivent être ULTRA SEXY et charismatiques.
+
+FORMAT JSON STRICT :
+{
+  "title": "Titre",
+  "environment_lock": "English detailed description: room type, wall colors, furniture positions, lighting direction, foreground and background objects",
+  "characters": [ { "name": "Nom", "gender": "homme/femme", "age": 25, "face_lock": "skin tone, face shape, hairstyle, eye color, distinctive features", "outfit_lock": "exact colors, fabrics, style, accessories" } ],
+  "clips": [ { "clip_number": 1, "lines": ["réplique 1"], "action": "English action describing pose, gesture, camera movement" } ]
+}`;
+}
+
+function buildImagePrompt(scene, story){
+    const charList=(story.characters||[]).map(c=>c.name+' ('+c.age+' ans, '+c.gender+'): '+c.face_lock+', '+c.outfit_lock).join(' | ');
+    const identityLock = (story.characters||[]).map(c => 
+        `${c.name} — IDENTITY LOCK (DO NOT CHANGE): ${c.face_lock} | ${c.outfit_lock}`
+    ).join('\n');
+    const envLock = story.environment_lock || 'consistent location';
+    const styleBlock = STYLE_BLOCKS[state.style] || STYLE_BLOCKS.popart;
+    
+    return `${styleBlock}
+🔒 CHARACTER BIBLE — PRESERVE IDENTITY EXACTLY:
+${identityLock}
+
+🔒 ENVIRONMENT LOCK — SAME GEOMETRY IN EVERY SHOT:
+${envLock}
+The room layout, furniture positions, wall colors, and lighting direction MUST be identical to the reference image.
+
+COMPOSITION:
+${scene.action || 'standing, looking at camera'}
+
+CONSTRAINTS: portrait 9:16, no text, no logo, no watermark. High quality, vibrant colors.`;
+}
+
+function buildVideoPrompt(clip, story, prevClip){
+    const charList=(story.characters||[]).map(c=>c.name+' ('+c.gender+', '+c.age+'): '+c.face_lock+', '+c.outfit_lock).join(' | ');
+    const identityLock = (story.characters||[]).map(c => 
+        `${c.name} — IDENTITY LOCK: ${c.face_lock} | ${c.outfit_lock}`
+    ).join('\n');
+    const envLock = story.environment_lock || 'consistent location';
+    const styleBlock = STYLE_BLOCKS[state.style] || STYLE_BLOCKS.popart;
+    
+    let dialogueBlock = '';
+    if(clip.lines && clip.lines.length > 0){
+        dialogueBlock = `DIALOGUE: The character says exactly: "${clip.lines.join(' ')}". Mouth moves naturally. No other dialogue.`;
+    }
+    
+    let continuityBlock = '';
+    if (prevClip) {
+        continuityBlock = `🔗 CONTINUITY: This clip starts EXACTLY where the previous ended. Same camera angle, same lighting, same character position. NO jump cut. NO reset.`;
+    }
+    
+    const actionStart = `CRITICAL: Action starts in frame 1. Do NOT hold the first image. Character is already moving, speaking, or gesturing from the very first frame.`;
+    const motionControl = `CAMERA: locked-off or slow dolly-in ONLY. No handheld shake. No rapid pan. No zoom. Minimal character movement to preserve facial identity.`;
+    
+    return `${styleBlock}
+${actionStart}
+${continuityBlock}
+
+🔒 CHARACTER BIBLE (DO NOT ALTER):
+${identityLock}
+
+🔒 ENVIRONMENT LOCK (DO NOT ALTER):
+${envLock}
+
+${motionControl}
+
+ACTION: ${clip.action || 'continuing the scene'}
+
+${dialogueBlock}
+
+CONSTRAINTS: vertical 9:16, ${state.clipDuration} seconds. No text, no logo. Face MUST remain identical to reference.`;
+}
+
+// =================================================================
+// UI
+// =================================================================
+function updateButtons(){
+    const validate=document.getElementById('validate-btn');
+    const generate=document.getElementById('generate-btn');
+    const stop=document.getElementById('stop-btn');
+    const genRef=document.getElementById('generate-ref-btn');
+    const vaultReady = vault && vault.getState() === 'unlocked';
+    const hasRef=state.selectedRefIndex >= 0;
+    
+    if(genRef) genRef.disabled = !vaultReady || state.isRunning;
+    
+    if(validate){
+        validate.disabled = !vaultReady || !hasRef || state.isRunning;
+        if(!vaultReady) validate.innerHTML='🔐 Déverrouillez la clé';
+        else if(!hasRef) validate.innerHTML='📸 Choisissez une photo';
+        else if(state.isRunning) validate.innerHTML='⏳ En cours…';
+        else if(state.validated) validate.innerHTML='✅ Personnage validé';
+        else validate.innerHTML='1. Préparer le scénario';
+    }
+    if(generate){
+        generate.disabled = !state.validated || state.isRunning;
+        generate.style.display = state.validated ? 'block' : 'none';
+    }
+    if(stop) stop.classList.toggle('visible', state.isRunning);
+}
+
+function invalidateValidation(){
+    state.validated = false;
+    state.validationClipUrl = null;
+    state.validationClipLines = null;
+    state.storyPreviewed = false;
+    const preview = document.getElementById('section-preview');
+    const clips = document.getElementById('section-clips');
+    const genBtn = document.getElementById('generate-btn');
+    if(preview) preview.classList.add('hidden');
+    if(clips) clips.classList.add('hidden');
+    if(genBtn) genBtn.style.display = 'none';
+    updateButtons();
+}
+
+function renderRefImages(){
+    const c = document.getElementById('ref-container');
+    if(!c) return;
+    if(!state.refImages.length){ c.innerHTML = ''; return; }
+    
+    let html = '<div class="hint" style="margin-bottom:.5rem;">Clique sur une photo pour la sélectionner :</div>';
+    html += '<div class="ref-grid">';
+    state.refImages.forEach((img, i) => {
+        const selected = i === state.selectedRefIndex ? 'selected' : '';
+        html += `<div class="ref-option ${selected}" onclick="selectRef(${i})">
+            <img src="${img.url}" alt="Photo ${i+1}">
+            <div class="ref-check">✓</div>
+        </div>`;
+    });
+    html += '</div>';
+    
+    if(state.selectedRefIndex >= 0){
+        html += '<button class="btn btn-secondary" style="margin-top:.8rem;" onclick="regenerateRef()">📸 Régénérer 10 nouvelles photos</button>';
+    }
+    
+    c.innerHTML = html;
+}
+
+window.selectRef = function(index){
+    state.selectedRefIndex = index;
+    state.masterImageUrl = state.refImages[index].url;
+    renderRefImages();
+    updateButtons();
+    showToast('Photo ' + (index+1) + ' sélectionnée ✓');
+    journalLog('Photo ' + (index+1) + ' sélectionnée comme image maîtresse.', 'image');
+};
+
+window.regenerateRef = async function(){
+    if(state.isRunning) return;
+    await generateRefImage();
+};
+
+function renderStoryPreview(){
+    const view = document.getElementById('story-view');
+    if(!view || !state.story) return;
+    const s = state.story;
+    let html = `<div class="story-title">📖 ${esc(s.title||'Sans titre')}</div>`;
+    html += `<div class="env-card"><strong>🔒 Décor :</strong> ${esc(s.environment_lock||'')}</div>`;
+    (s.characters||[]).forEach(c=>{ html += `<div class="character-card"><strong>${esc(c.name||'')}</strong> (${esc(c.age||'')} ans)</div>`; });
+    (s.clips||[]).forEach((c,i)=>{
+        html += `<div class="scene-block"><div class="sc-head">Clip ${i+1}</div>`;
+        (c.lines||[]).forEach(line=>{ html += `<div style="font-style:italic;color:var(--acc);">« ${esc(line)} »</div>`; });
+        html += `</div>`;
+    });
+    view.innerHTML = html;
+}
+
+function renderProgress(){
+    const pct = state.totalClips > 0 ? Math.round((state.clips.filter(c=>c.status==='done').length / state.totalClips) * 100) : 0;
+    const bar = document.getElementById('film-progress');
+    const txt = document.getElementById('film-progress-text');
+    if(bar) bar.style.width = pct + '%';
+    if(txt){
+        const done = state.clips.filter(c=>c.status==='done').length;
+        const remaining = state.totalClips - done;
+        const estMin = Math.ceil(remaining * 2);
+        txt.textContent = state.isRunning ? `Génération : ${done}/${state.totalClips} clips (${pct}%) — reste ~${estMin}min` : (state.validated ? 'Prêt à générer.' : 'En attente…');
+    }
+}
+
+function renderClips(){
+    const list = document.getElementById('clip-list');
+    if(!list) return;
+    if(state.clips.length === 0){ list.innerHTML = '<div class="hint">Aucun clip pour le moment.</div>'; return; }
+    
+    list.innerHTML = state.clips.map((c, i) => {
+        const statusClass = c.status === 'done' ? 'done' : c.status === 'error' ? 'error' : c.status === 'loading' ? 'generating' : '';
+        let bodyHtml = '';
+        if(c.status === 'done' && c.url){
+            bodyHtml = `<video src="${c.url}" controls playsinline preload="metadata"></video>
+                <button class="btn btn-secondary btn-small" onclick="downloadClip(${i})">📥 Télécharger</button>`;
+        } else if(c.status === 'error'){
+            bodyHtml = `<span style="color:var(--err);">Erreur : ${esc(c.error||'')}</span>
+                <button class="btn btn-secondary btn-small" onclick="retryClip(${i})">🔄 Régénérer ce clip</button>`;
+        } else if(c.status === 'loading'){
+            bodyHtml = `<span class="spinner-mini"></span> ${esc(c.progress||'Génération…')}`;
+        } else {
+            bodyHtml = `<span style="color:var(--dim);">En attente</span>`;
+        }
+        const statusIcon = c.status === 'done' ? '✅' : c.status === 'error' ? '❌' : c.status === 'loading' ? '⏳' : '⏸️';
+        return `<div class="clip-card ${statusClass}">
+            <div class="clip-index">#${i+1}</div>
+            <div class="clip-body">${bodyHtml}</div>
+            <div class="clip-status">${statusIcon}</div>
+        </div>`;
+    }).join('');
+}
+
+// Téléchargement iOS corrigé : navigator.share avec files uniquement
+window.downloadClip = async function(index){
+    const clip = state.clips[index];
+    if(!clip || !clip.url) return;
+    
+    // Si le blob est déjà pré-chargé, on partage immédiatement
+    if (clip._blob) {
+        try {
+            const file = new File([clip._blob], `clip-${index+1}.mp4`, { type: 'video/mp4' });
+            // IMPORTANT iOS : passer UNIQUEMENT files
+            await navigator.share({ files: [file] });
+            journalLog('Clip ' + (index+1) + ' partagé.', 'download');
+            return;
+        } catch(e) {
+            if (e.name === 'AbortError') return;
+            debugLog('warn', 'SHARE', e.message);
+        }
+    }
+    
+    // Fallback : fetch puis partage
+    try {
+        setStatus('Préparation du fichier…');
+        const res = await fetch(clip.url);
+        const blob = await res.blob();
+        clip._blob = blob;
+        setStatus(null);
+        
+        const file = new File([blob], `clip-${index+1}.mp4`, { type: 'video/mp4' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file] });
+            journalLog('Clip ' + (index+1) + ' partagé.', 'download');
+        } else {
+            window.open(clip.url, '_blank');
+        }
+    } catch(e) {
+        setStatus(null);
+        if (e.name !== 'AbortError') {
+            debugLog('warn', 'DOWNLOAD', e.message);
+            window.open(clip.url, '_blank');
+        }
+    }
+};
+
+// Pré-charger le blob pour le partage iOS
+async function preloadClipBlob(index, videoUrl){
+    if (state.clips[index]._blob) return;
+    try {
+        const res = await fetch(videoUrl);
+        const blob = await res.blob();
+        state.clips[index]._blob = blob;
+        debugLog('info', 'BLOB', 'Clip ' + (index+1) + ' prêt pour le partage.');
+    } catch(e) {
+        debugLog('warn', 'BLOB', 'Échec pré-chargement clip ' + (index+1) + ': ' + e.message);
+    }
+}
+
+window.retryClip = async function(index){
+    if(state.isRunning) return;
+    if(!state.story || !state.story.clips[index]) return;
+    if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
+    
+    state.isRunning = true; state.stopRequested = false; updateButtons();
+    const clip = state.story.clips[index];
+    const prevClip = index > 0 ? state.story.clips[index-1] : null;
+    
+    state.clips[index].status = 'loading';
+    state.clips[index].progress = 'Régénération…';
+    renderClips();
+    setStatus(`Régénération clip ${index+1}…`);
+    
+    try {
+        let previousFrameUrl = state.masterImageUrl;
+        if(index > 0 && state.clips[index-1].url){
+            try { previousFrameUrl = await extractLastFrame(state.clips[index-1].url); } catch(e) {}
+        }
+        
+        const prompt = buildVideoPrompt(clip, state.story, prevClip);
+        const videoId = await createVideoTaskKeyframe(prompt, previousFrameUrl);
+        
+        const vUrl = await pollVideo(videoId, (prog) => {
+            state.clips[index].progress = prog;
+            renderClips();
+        });
+        
+        state.clips[index].status = 'done';
+        state.clips[index].url = vUrl;
+        state.clips[index].progress = '';
+        state.clips[index]._blob = null;
+        preloadClipBlob(index, vUrl);
+        journalLog(`Clip ${index+1} régénéré.`,'video');
+    } catch(e) {
+        state.clips[index].status = 'error';
+        state.clips[index].error = e.message;
+        debugLog('Erreur retry', e.message);
+    }
+    
+    state.isRunning = false; updateButtons(); setStatus(null);
+    renderClips();
+};
+
+// =================================================================
+// GÉNÉRATION DES 10 PHOTOS
+// =================================================================
+async function generateRefImage(){
+    if(state.isRunning) return;
+    if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
+    
+    state.characterDesc = document.getElementById('character-desc').value.trim();
+    state.style = document.getElementById('style-select').value;
+    
+    state.isRunning = true; updateButtons();
+    state.refImages = [];
+    state.selectedRefIndex = -1;
+    state.masterImageUrl = null;
+    document.getElementById('ref-container').innerHTML = '<div class="hint">Génération de 10 photos… (peut prendre 2-3 min)</div>';
+    
+    try {
+        for(let i=0; i<NUM_REF_PHOTOS; i++){
+            setStatus(`Génération photo ${i+1}/${NUM_REF_PHOTOS}…`);
+            try {
+                const prompt = buildCharacterRefPrompt(i);
+                const url = await generateImage(prompt);
+                state.refImages.push({ url });
+                renderRefImages();
+                journalLog(`Photo ${i+1}/${NUM_REF_PHOTOS} générée.`, 'image');
+            } catch(e) {
+                debugLog('warn', 'REF', `Photo ${i+1} échouée: ${e.message}`);
+            }
+        }
+        
+        if(state.refImages.length === 0) throw new Error('Aucune photo générée');
+        
+        state.selectedRefIndex = 0;
+        state.masterImageUrl = state.refImages[0].url;
+        renderRefImages();
+        invalidateValidation();
+        
+        showToast(`${state.refImages.length} photos générées. Choisis la meilleure !`);
+        journalLog(`${state.refImages.length} photos générées.`, 'image');
+    } catch(e) {
+        debugLog('Erreur ref', e.message);
+        if(e.message === 'QUOTA_EPUISE') showToast('Quota Agnes épuisé.','error');
+        else showToast('Erreur : '+e.message, 'error');
+        document.getElementById('ref-container').innerHTML = '';
+    }
+    
+    state.isRunning = false; updateButtons(); setStatus(null);
+}
+
+// =================================================================
+// VALIDATION
+// =================================================================
+async function validateCharacter(){
+    if(state.isRunning) return;
+    if(state.selectedRefIndex < 0){ showToast('Choisissez d\'abord une photo','error'); return; }
+    if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
+    
+    state.style = document.getElementById('style-select').value;
+    state.targetDuration = parseInt(document.getElementById('target-duration').value);
+    state.clipDuration = parseInt(document.getElementById('clip-duration').value);
+    
+    if(state.mode === 'auto'){
+        state.autoIdea = document.getElementById('auto-idea').value.trim();
+        if(!state.autoIdea){ showToast('Donnez une idée','error'); return; }
+    } else {
+        state.manualScript = document.getElementById('manual-script').value;
+        state.scriptLines = state.manualScript.split('\n').map(l=>l.trim()).filter(l=>l);
+        state.context = document.getElementById('context-input')?.value.trim() || '';
+        if(state.scriptLines.length === 0){ showToast('Ajoutez un script','error'); return; }
+    }
+    
+    state.isRunning = true; updateButtons(); setStatus('Génération du scénario…');
+    
+    try {
+        const prompt = state.mode === 'auto' ? buildStoryPromptAuto() : buildStoryPromptManual();
+        const jsonStr = await callChatCompletion('Tu es un scénariste. Réponds UNIQUEMENT en JSON.', prompt, 'Scénario', 4000, 0.7);
+        state.story = extractJson(jsonStr);
+        if(!state.story) throw new Error('JSON invalide');
+        
+        const maxClips = Math.ceil(state.targetDuration / state.clipDuration);
+        if(state.story.clips.length > maxClips){
+            state.story.clips = state.story.clips.slice(0, maxClips);
+            journalLog('Nombre de clips plafonné à ' + maxClips, 'warn');
+        }
+        
+        if(state.mode === 'auto' && state.story.clips){
+            state.scriptLines = state.story.clips.flatMap(c => c.lines || []);
+        }
+        
+        renderStoryPreview();
+        document.getElementById('section-preview').classList.remove('hidden');
+        document.getElementById('section-preview').classList.add('open');
+        state.storyPreviewed = true;
+        
+        showToast('Scénario prêt. Vérifiez l\'aperçu.');
+        journalLog('Scénario généré.','story');
+        
+    } catch(e) {
+        debugLog('Erreur scénario', e.message);
+        if(e.message === 'QUOTA_EPUISE') showToast('Quota Agnes épuisé.','error');
+        else showToast('Erreur : '+e.message, 'error');
+    }
+    
+    state.isRunning = false; updateButtons(); setStatus(null);
+}
+
+// =================================================================
+// CLIP TEST
+// =================================================================
+async function confirmStoryAndTest(){
+    if(state.isRunning || !state.story) return;
+    if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
+    
+    state.isRunning = true; updateButtons(); setStatus('Génération du clip test…');
+    
+    try {
+        const scene0 = state.story.clips[0] || { action: 'standing' };
+        const testClip = { lines: state.story.clips[0]?.lines || [state.scriptLines[0]], action: scene0.action };
+        const testPrompt = buildVideoPrompt(testClip, state.story, null);
+        
+        const videoId = await createVideoTaskKeyframe(testPrompt, state.masterImageUrl);
+        const testUrl = await pollVideo(videoId, (prog) => setStatus('Clip test — ' + prog));
+        
+        state.validationClipUrl = testUrl;
+        state.validationClipLines = testClip.lines;
+        state.clips = [{ status:'done', url:testUrl, lines: testClip.lines, action: testClip.action, _blob: null }];
+        renderClips();
+        preloadClipBlob(0, testUrl);
+        
+        state.validated = true;
+        document.getElementById('section-preview').classList.add('hidden');
+        document.getElementById('section-clips').classList.remove('hidden');
+        document.getElementById('section-clips').classList.add('open');
+        document.getElementById('generate-btn').style.display = 'block';
+        
+        showToast('Clip test prêt !');
+        journalLog('Clip de validation généré.','video');
+        
+    } catch(e) {
+        debugLog('Erreur test', e.message);
+        if(e.message === 'QUOTA_EPUISE') showToast('Quota Agnes épuisé.','error');
+        else showToast('Erreur : '+e.message, 'error');
+    }
+    
+    state.isRunning = false; updateButtons(); setStatus(null);
+}
+
+// =================================================================
+// FILM COMPLET
+// =================================================================
+async function generateFullFilm(){
+    if(state.isRunning || !state.validated) return;
+    if(!await hasActiveKey()){ showToast('Clé API requise','error'); return; }
+    
+    state.isRunning = true; state.stopRequested = false; updateButtons();
+    
+    const totalClips = state.story.clips.length;
+    state.totalClips = totalClips;
+    
+    state.clips = state.story.clips.map((c, i) => {
+        if(i === 0 && state.validationClipUrl){
+            return { status:'done', url: state.validationClipUrl, lines: c.lines, action: c.action, _blob: null };
+        }
+        return { index: i, status: 'pending', url: null, progress: 'En attente', lines: c.lines, action: c.action, _blob: null };
+    });
+    
+    renderClips(); renderProgress();
+    document.getElementById('section-progress').classList.remove('hidden');
+    document.getElementById('section-progress').classList.add('open');
+    
+    let previousFrameUrl = state.masterImageUrl;
+    if(state.validationClipUrl){
+        try { previousFrameUrl = await extractLastFrame(state.validationClipUrl); }
+        catch(e) { journalLog('Continuité inter-clip perdue (CORS).', 'warn'); }
+    }
+    
+    let allDone = true;
+    const startIndex = state.validationClipUrl ? 1 : 0;
+    
+    for(let i=startIndex; i<state.story.clips.length; i++){
+        if(state.stopRequested) break;
+        
+        const clip = state.story.clips[i];
+        state.clips[i].status = 'loading';
+        state.clips[i].progress = `Génération ${i+1}/${totalClips}…`;
+        renderClips(); renderProgress();
+        setStatus(`Clip ${i+1}/${totalClips}…`);
+        
+        let attempts = 0;
+        let success = false;
+        
+        while(attempts < 4 && !success && !state.stopRequested){
+            attempts++;
+            try {
+                const prompt = buildVideoPrompt(clip, state.story, i>0 ? state.story.clips[i-1] : null);
+                const videoId = await createVideoTaskKeyframe(prompt, previousFrameUrl);
+                
+                const vUrl = await pollVideo(videoId, (prog) => {
+                    state.clips[i].progress = prog;
+                    renderClips();
+                });
+                
+                state.clips[i].status = 'done';
+                state.clips[i].url = vUrl;
+                state.clips[i].progress = '';
+                state.clips[i]._blob = null;
+                success = true;
+                addVideoSeconds(state.clipDuration);
+                journalLog(`Clip ${i+1} prêt.`,'video');
+                preloadClipBlob(i, vUrl);
+                
+                try { previousFrameUrl = await extractLastFrame(vUrl); }
+                catch(e) { journalLog('Continuité inter-clip perdue (CORS).', 'warn'); previousFrameUrl = state.masterImageUrl; }
+                
+                renderClips(); renderProgress();
+            } catch(e) {
+                if(e.isQueueFull || e.message === 'QUEUE_FULL'){
+                    state.clips[i].progress = `File pleine. Attente 45s…`;
+                    renderClips(); await sleep(45000); attempts--;
+                } else if(e.message === 'QUOTA_EPUISE') {
+                    journalLog('Quota Agnes épuisé. Arrêt.', 'error');
+                    showToast('Quota Agnes épuisé.','error');
+                    state.stopRequested = true;
+                    allDone = false;
+                } else if(e.message.startsWith('HTTP 4') || e.message.includes('Tâche introuvable')) {
+                    journalLog(`Clip ${i+1} erreur définitive : ${e.message}`, 'error');
+                    state.clips[i].status = 'error';
+                    state.clips[i].error = e.message;
+                    allDone = false;
+                    break;
+                } else {
+                    debugLog(`Clip ${i+1} échec ${attempts}/4`, e.message);
+                    state.clips[i].progress = `Retry ${attempts}/4…`;
+                    renderClips();
+                    await sleep(10000);
+                    if(attempts >= 4){
+                        state.clips[i].status = 'error';
+                        state.clips[i].error = e.message;
+                        allDone = false;
+                    }
+                }
+            }
+        }
+    }
+    
+    state.isRunning = false; updateButtons(); setStatus(null);
+    renderProgress();
+    
+    if(allDone && !state.stopRequested){
+        document.getElementById('final-download-area').style.display = 'block';
+        showToast('Tous les clips sont prêts !');
+        journalLog('Film complet généré.','success');
+    } else if(state.stopRequested) {
+        showToast('Génération arrêtée.','warn');
+    } else {
+        showToast('Certains clips ont échoué.','warn');
+    }
+}
+
+function extractLastFrame(videoUrl){
+    return new Promise((resolve, reject) => {
+        const video = document.createElement('video');
+        video.crossOrigin = 'anonymous';
+        video.src = videoUrl;
+        video.preload = 'auto';
+        video.muted = true;
+        video.onloadedmetadata = () => { video.currentTime = Math.max(0, video.duration - 0.1); };
+        video.onseeked = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth || 720;
+                canvas.height = video.videoHeight || 1280;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/jpeg', 0.85));
+            } catch(e) { reject(e); }
+        };
+        video.onerror = () => reject(new Error('Erreur chargement vidéo'));
+        setTimeout(() => reject(new Error('Timeout extraction')), 15000);
+    });
+}
+
+// =================================================================
+// MODE
+// =================================================================
+window.setMode = function(mode){
+    state.mode = mode;
+    document.getElementById('mode-auto-btn').classList.toggle('active', mode === 'auto');
+    document.getElementById('mode-manual-btn').classList.toggle('active', mode === 'manual');
+    document.getElementById('section-auto').style.display = mode === 'auto' ? 'block' : 'none';
+    document.getElementById('section-manual').style.display = mode === 'manual' ? 'block' : 'none';
+    invalidateValidation();
+    journalLog('Mode : ' + (mode === 'auto' ? 'Auto' : 'Manuel'), 'info');
+};
+
+// =================================================================
+// INIT
+// =================================================================
+async function init(){
+    clearAppUnlock();
+    showLockScreen();
+    
+    var lockBtn = document.getElementById('lock-btn');
+    var lockInput = document.getElementById('lock-code');
+    
+    if(lockBtn) lockBtn.addEventListener('click', function(ev){ev.preventDefault();ev.stopPropagation();tryUnlock();});
+    if(lockInput){
+        lockInput.addEventListener('keydown', function(e){if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }});
+        lockInput.addEventListener('input', function(e){var v = e.target.value.replace(/\D/g,'');e.target.value = v;if(v.length === 4 && v === APP_LOCK_CODE){ tryUnlock(); }});
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 500));
+    await initVault();
+    
+    document.getElementById('api-save-btn').addEventListener('click', saveKeysFromUI);
+    document.getElementById('api-unlock-btn').addEventListener('click', promptUnlock);
+    document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
+    
+    document.getElementById('generate-ref-btn').addEventListener('click', generateRefImage);
+    document.getElementById('validate-btn').addEventListener('click', validateCharacter);
+    document.getElementById('confirm-story-btn').addEventListener('click', confirmStoryAndTest);
+    document.getElementById('regen-story-btn').addEventListener('click', () => { state.story = null; validateCharacter(); });
+    document.getElementById('generate-btn').addEventListener('click', generateFullFilm);
+    document.getElementById('stop-btn').addEventListener('click', ()=>{state.stopRequested=true;showToast('Arrêt demandé','warn');setStatus('Arrêt en cours…')});
+    
+    document.getElementById('download-all-btn').addEventListener('click', async () => {
+        for(let i=0; i<state.clips.length; i++){
+            if(state.clips[i].status === 'done' && state.clips[i].url){
+                await downloadClip(i);
+                await sleep(1000);
+            }
+        }
+    });
+    
+    document.getElementById('tab-journal').addEventListener('click', ()=>switchTab('journal'));
+    document.getElementById('tab-tech').addEventListener('click', ()=>switchTab('tech'));
+    document.getElementById('debug-collapse-btn').addEventListener('click', e=>{e.stopPropagation();toggleDebugCollapse()});
+    
+    setMode('auto');
+    updateButtons(); updateQuotaDisplay();
+    journalLog('TikTok Moneymaker prêt.','lock');
+}
+
+init();
+</script>
+</body>
+</html>
